@@ -1,3 +1,5 @@
+import '../services/json_bible_service.dart';
+
 class Verse {
   final int id;
   final int bookId;
@@ -79,8 +81,12 @@ class Verse {
     );
   }
 
-  // This should use the book name instead of just the ID
-  String get reference => 'Verse $verseNumber';
+  // Get the proper reference including book name
+  String get reference {
+    // Get book name from the bookId using a lookup method
+    String bookName = JsonBibleService.getBookNameById(bookId);
+    return '$bookName $chapter:$verseNumber';
+  }
 
   @override
   String toString() {

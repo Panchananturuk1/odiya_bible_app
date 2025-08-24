@@ -160,6 +160,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                     itemBuilder: (context, index) {
                       final verse = bibleProvider.currentChapterVerses[index];
                       return VerseCard(
+                        key: Key(verse.id.toString()), // Convert int to String for Key
                         verse: verse,
                         fontSize: settingsProvider.fontSize,
                         onHighlight: () => bibleProvider.toggleHighlight(verse.id),

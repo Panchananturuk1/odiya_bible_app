@@ -172,23 +172,56 @@ class JsonBibleService {
 
   static Future<List<Verse>> getVersesByChapter(String bookName, int chapter) async {
     try {
-      String jsonString = await rootBundle.loadString('JSON/$bookName/$chapter.json');
+      String jsonString = await rootBundle.loadString('assets/JSON/$bookName/$chapter.json');
       Map<String, dynamic> data = json.decode(jsonString);
       
       List<Verse> verses = [];
       List<dynamic> versesData = data['verses'] ?? [];
       
+      // Create a set to track verse numbers we've already processed
+      Set<int> processedVerses = {};
+      
       for (var verseData in versesData) {
+        int verseNumber = verseData['verse'];
+        
+        // Skip if we've already processed this verse number
+        if (processedVerses.contains(verseNumber)) {
+          continue;
+        }
+        
+        // Add to processed set
+        processedVerses.add(verseNumber);
+        
+        // Create a unique ID based on book, chapter, and verse
+        int bookId = _getBookId(bookName);
+        int uniqueId = (bookId * 1000000) + (chapter * 1000) + verseNumber;
+        
+        // Load English text from JSON
+        final String english = _cleanText(verseData['text'] ?? '');
+        
+        // Try to get Odia translation; if not available, fallback to English
+        final String odia = _getOdiyaTranslation(bookName, chapter, verseNumber) ?? english;
+        
+        // DEBUG: Log mapping once per verse
+        // ignore: avoid_print
+        print('[JsonBibleService] $bookName $chapter:$verseNumber | EN: '
+            '${english.length > 40 ? english.substring(0, 40) + '...' : english}'
+            ' | OD: '
+            '${odia.length > 40 ? odia.substring(0, 40) + '...' : odia}');
+        
         verses.add(Verse(
-          id: verseData['verse'],
-          bookId: _getBookId(bookName),
+          id: uniqueId,
+          bookId: bookId,
           chapter: chapter,
-          verseNumber: verseData['verse'],
-          englishText: _cleanText(verseData['text'] ?? ''),
-          odiyaText: _getOdiyaTranslation(bookName, chapter, verseData['verse']),
+          verseNumber: verseNumber,
+          englishText: english,
+          odiyaText: odia,
           hindiText: '', // Can be added later
         ));
       }
+      
+      // Sort verses by verse number to ensure correct order
+      verses.sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
       
       return verses;
     } catch (e) {
@@ -211,11 +244,11 @@ class JsonBibleService {
       'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel',
       '1 Kings', '2 Kings', '1 Chronicles', '2 Chronicles',
       'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalms',
-      'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Isaiah',
-      'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel',
-      'Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah',
-      'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai',
-      'Zechariah', 'Malachi', 'Matthew', 'Mark', 'Luke', 'John', 'Acts',
+      'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Isaiah', 'Jeremiah',
+      'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel',
+      'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum',
+      'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi',
+      'Matthew', 'Mark', 'Luke', 'John', 'Acts',
       'Romans', '1 Corinthians', '2 Corinthians', 'Galatians',
       'Ephesians', 'Philippians', 'Colossians', '1 Thessalonians',
       '2 Thessalonians', '1 Timothy', '2 Timothy', 'Titus',
@@ -224,41 +257,69 @@ class JsonBibleService {
     ];
     return allBooks.indexOf(bookName) + 1;
   }
+  
+  // Get book name by ID for reference display
+  static String getBookNameById(int bookId) {
+    List<String> allBooks = [
+      'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy',
+      'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel',
+      '1 Kings', '2 Kings', '1 Chronicles', '2 Chronicles',
+      'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalms',
+      'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Isaiah', 'Jeremiah',
+      'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel',
+      'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum',
+      'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi',
+      'Matthew', 'Mark', 'Luke', 'John', 'Acts',
+      'Romans', '1 Corinthians', '2 Corinthians', 'Galatians',
+      'Ephesians', 'Philippians', 'Colossians', '1 Thessalonians',
+      '2 Thessalonians', '1 Timothy', '2 Timothy', 'Titus',
+      'Philemon', 'Hebrews', 'James', '1 Peter', '2 Peter',
+      '1 John', '2 John', '3 John', 'Jude', 'Revelation'
+    ];
+    
+    // Adjust for 1-based index
+    int index = bookId - 1;
+    
+    // Check if the index is valid
+    if (index >= 0 && index < allBooks.length) {
+      return allBooks[index];
+    }
+    
+    return 'Unknown Book';
+  }
 
-  static String _getOdiyaTranslation(String bookName, int chapter, int verse) {
+  static String? _getOdiyaTranslation(String bookName, int chapter, int verse) {
     // Basic Odia translations for common verses
     Map<String, String> translations = {
       'Genesis_1_1': 'ଆଦିରେ ଈଶ୍ବର ଆକାଶ ଓ ପୃଥିବୀକୁ ସୃଷ୍ଟି କଲେ |',
       'Genesis_1_2': 'ପୃଥିବୀ ନିରାକାର ଓ ଶୂନ୍ୟ ଥିଲା, ଗଭୀର ଜଳ ଉପରେ ଅନ୍ଧକାର ଛାୟା କରୁଥିଲା, ଏବଂ ଈଶ୍ବରଙ୍କ ଆତ୍ମା ଜଳପୃଷ୍ଠ ଉପରେ ବିଚରଣ କରୁଥିଲେ |',
       'Genesis_1_3': 'ଈଶ୍ବର କହିଲେ, "ଆଲୋକ ହେଉ," ଏବଂ ଆଲୋକ ହେଲା |',
+      'Genesis_1_4': 'ଈଶ୍ବର ଆଲୋକକୁ ଦେଖିଲେ, ତାହା ଉତ୍ତମ; ପୁଣି ଈଶ୍ବର ଆଲୋକକୁ ଅନ୍ଧକାରଠାରୁ ପୃଥକ କଲେ |',
       'John_3_16': 'କାରଣ ଈଶ୍ବର ଜଗତକୁ ଏତେ ପ୍ରେମ କଲେ ଯେ, ସେ ନିଜର ଏକମାତ୍ର ପୁତ୍ରଙ୍କୁ ଦାନ କଲେ, ଯେପରି ଯେକେହି ତାହାଙ୍କଠାରେ ବିଶ୍ବାସ କରେ, ସେ ବିନଷ୍ଟ ନ ହୋଇ ଅନନ୍ତ ଜୀବନ ପାଏ |',
     };
     
     String key = '${bookName}_${chapter}_$verse';
     
-    // Return the translation if it exists in our map
-    if (translations.containsKey(key)) {
-      return translations[key]!;
-    }
-    
-    // Generate a unique placeholder translation for each verse
-    // This ensures each verse has a different Odia text
-    String odiyaName = _bookOdiyaNames[bookName] ?? bookName;
-    return '$odiyaName $chapter:$verse - ଓଡ଼ିଆ ଅନୁବାଦ ଉପଲବ୍ଧ ନାହିଁ';
+    // Return the translation if it exists in our map; otherwise, null to allow fallback to English
+    return translations[key];
   }
 
   static Future<List<Verse>> searchVerses(String query) async {
     List<Verse> results = [];
     List<Book> books = getAllBooks();
+    Set<int> addedVerseIds = {}; // Track already added verse IDs to prevent duplicates
     
     for (Book book in books) {
       for (int chapter = 1; chapter <= book.totalChapters; chapter++) {
         try {
           List<Verse> verses = await getVersesByChapter(book.name, chapter);
           for (Verse verse in verses) {
-            if (verse.englishText?.toLowerCase().contains(query.toLowerCase()) == true ||
-                verse.odiyaText?.toLowerCase().contains(query.toLowerCase()) == true) {
+            // Only add the verse if it matches the query and hasn't been added yet
+            if ((verse.englishText?.toLowerCase().contains(query.toLowerCase()) == true ||
+                verse.odiyaText?.toLowerCase().contains(query.toLowerCase()) == true) &&
+                !addedVerseIds.contains(verse.id)) {
               results.add(verse);
+              addedVerseIds.add(verse.id); // Mark this verse ID as added
             }
           }
         } catch (e) {
@@ -267,6 +328,13 @@ class JsonBibleService {
         }
       }
     }
+    
+    // Sort results by book, chapter, and verse number for consistent ordering
+    results.sort((a, b) {
+      if (a.bookId != b.bookId) return a.bookId.compareTo(b.bookId);
+      if (a.chapter != b.chapter) return a.chapter.compareTo(b.chapter);
+      return a.verseNumber.compareTo(b.verseNumber);
+    });
     
     return results;
   }

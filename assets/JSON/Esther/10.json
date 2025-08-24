@@ -1,0 +1,30 @@
+{
+  "book_name": "Esther",
+  "chapter": 10,
+  "verses": [
+    {
+      "book_name": "Esther",
+      "chapter": 10,
+      "verse": 1,
+      "text": "And the king Ahasuerus laid a tribute upon the land, and <i>upon</i> the isles of the sea.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Esther",
+      "chapter": 10,
+      "verse": 2,
+      "text": "And all the acts of his power and of his might, and the declaration of the greatness of Mordecai, whereunto the king advanced him, <i>are</i> they not written in the book of the chronicles of the kings of Media and Persia?",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Esther",
+      "chapter": 10,
+      "verse": 3,
+      "text": "For Mordecai the Jew <i>was</i> next unto king Ahasuerus, and great among the Jews, and accepted of the multitude of his brethren, seeking the wealth of his people, and speaking peace to all his seed.",
+      "header": "",
+      "footer": ""
+    }
+  ]
+}

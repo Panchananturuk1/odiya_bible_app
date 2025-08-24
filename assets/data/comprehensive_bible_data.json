@@ -1,0 +1,859 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "name": "Genesis",
+      "odiya_name": "ଆଦି ପୁସ୍ତକ",
+      "abbreviation": "Gen",
+      "testament": "Old",
+      "total_chapters": 50,
+      "order_index": 1
+    },
+    {
+      "id": 2,
+      "name": "Exodus",
+      "odiya_name": "ଯାତ୍ରା ପୁସ୍ତକ",
+      "abbreviation": "Exo",
+      "testament": "Old",
+      "total_chapters": 40,
+      "order_index": 2
+    },
+    {
+      "id": 3,
+      "name": "Leviticus",
+      "odiya_name": "ଲେବୀୟ ପୁସ୍ତକ",
+      "abbreviation": "Lev",
+      "testament": "Old",
+      "total_chapters": 27,
+      "order_index": 3
+    },
+    {
+      "id": 4,
+      "name": "Numbers",
+      "odiya_name": "ଗଣନା ପୁସ୍ତକ",
+      "abbreviation": "Num",
+      "testament": "Old",
+      "total_chapters": 36,
+      "order_index": 4
+    },
+    {
+      "id": 5,
+      "name": "Deuteronomy",
+      "odiya_name": "ଦ୍ୱିତୀୟ ବିବରଣ",
+      "abbreviation": "Deu",
+      "testament": "Old",
+      "total_chapters": 34,
+      "order_index": 5
+    },
+    {
+      "id": 6,
+      "name": "Joshua",
+      "odiya_name": "ଯିହୋଶୂୟ",
+      "abbreviation": "Jos",
+      "testament": "Old",
+      "total_chapters": 24,
+      "order_index": 6
+    },
+    {
+      "id": 7,
+      "name": "Judges",
+      "odiya_name": "ବିଚାରକର୍ତ୍ତାମାନଙ୍କ ବିବରଣ",
+      "abbreviation": "Jdg",
+      "testament": "Old",
+      "total_chapters": 21,
+      "order_index": 7
+    },
+    {
+      "id": 8,
+      "name": "Ruth",
+      "odiya_name": "ରୂତ",
+      "abbreviation": "Rut",
+      "testament": "Old",
+      "total_chapters": 4,
+      "order_index": 8
+    },
+    {
+      "id": 9,
+      "name": "1 Samuel",
+      "odiya_name": "୧ ଶାମୁୟେଲ",
+      "abbreviation": "1Sa",
+      "testament": "Old",
+      "total_chapters": 31,
+      "order_index": 9
+    },
+    {
+      "id": 10,
+      "name": "2 Samuel",
+      "odiya_name": "ୂ ଶାମୁୟେଲ",
+      "abbreviation": "2Sa",
+      "testament": "Old",
+      "total_chapters": 24,
+      "order_index": 10
+    },
+    {
+      "id": 11,
+      "name": "1 Kings",
+      "odiya_name": "୧ ରାଜାବଳୀ",
+      "abbreviation": "1Ki",
+      "testament": "Old",
+      "total_chapters": 22,
+      "order_index": 11
+    },
+    {
+      "id": 12,
+      "name": "2 Kings",
+      "odiya_name": "୨ ରାଜାବଳୀ",
+      "abbreviation": "2Ki",
+      "testament": "Old",
+      "total_chapters": 25,
+      "order_index": 12
+    },
+    {
+      "id": 13,
+      "name": "1 Chronicles",
+      "odiya_name": "୧ ବଂଶାବଳୀ",
+      "abbreviation": "1Ch",
+      "testament": "Old",
+      "total_chapters": 29,
+      "order_index": 13
+    },
+    {
+      "id": 14,
+      "name": "2 Chronicles",
+      "odiya_name": "୨ ବଂଶାବଳୀ",
+      "abbreviation": "2Ch",
+      "testament": "Old",
+      "total_chapters": 36,
+      "order_index": 14
+    },
+    {
+      "id": 15,
+      "name": "Ezra",
+      "odiya_name": "ଏଜ୍ରା",
+      "abbreviation": "Ezr",
+      "testament": "Old",
+      "total_chapters": 10,
+      "order_index": 15
+    },
+    {
+      "id": 16,
+      "name": "Nehemiah",
+      "odiya_name": "ନିହିମୀୟା",
+      "abbreviation": "Neh",
+      "testament": "Old",
+      "total_chapters": 13,
+      "order_index": 16
+    },
+    {
+      "id": 17,
+      "name": "Esther",
+      "odiya_name": "ଏଷ୍ଟର",
+      "abbreviation": "Est",
+      "testament": "Old",
+      "total_chapters": 10,
+      "order_index": 17
+    },
+    {
+      "id": 18,
+      "name": "Job",
+      "odiya_name": "ଆୟୁବ",
+      "abbreviation": "Job",
+      "testament": "Old",
+      "total_chapters": 42,
+      "order_index": 18
+    },
+    {
+      "id": 19,
+      "name": "Psalms",
+      "odiya_name": "ଗୀତସଂହିତା",
+      "abbreviation": "Psa",
+      "testament": "Old",
+      "total_chapters": 150,
+      "order_index": 19
+    },
+    {
+      "id": 20,
+      "name": "Proverbs",
+      "odiya_name": "ହିତୋପଦେଶ",
+      "abbreviation": "Pro",
+      "testament": "Old",
+      "total_chapters": 31,
+      "order_index": 20
+    },
+    {
+      "id": 21,
+      "name": "Ecclesiastes",
+      "odiya_name": "ଉପଦେଶକ",
+      "abbreviation": "Ecc",
+      "testament": "Old",
+      "total_chapters": 12,
+      "order_index": 21
+    },
+    {
+      "id": 22,
+      "name": "Song of Songs",
+      "odiya_name": "ପରମଗୀତ",
+      "abbreviation": "Sng",
+      "testament": "Old",
+      "total_chapters": 8,
+      "order_index": 22
+    },
+    {
+      "id": 23,
+      "name": "Isaiah",
+      "odiya_name": "ଯିଶାଇୟ",
+      "abbreviation": "Isa",
+      "testament": "Old",
+      "total_chapters": 66,
+      "order_index": 23
+    },
+    {
+      "id": 24,
+      "name": "Jeremiah",
+      "odiya_name": "ଯିରିମୀୟ",
+      "abbreviation": "Jer",
+      "testament": "Old",
+      "total_chapters": 52,
+      "order_index": 24
+    },
+    {
+      "id": 25,
+      "name": "Lamentations",
+      "odiya_name": "ବିଳାପ",
+      "abbreviation": "Lam",
+      "testament": "Old",
+      "total_chapters": 5,
+      "order_index": 25
+    },
+    {
+      "id": 26,
+      "name": "Ezekiel",
+      "odiya_name": "ଯିହିଜିକଲ",
+      "abbreviation": "Eze",
+      "testament": "Old",
+      "total_chapters": 48,
+      "order_index": 26
+    },
+    {
+      "id": 27,
+      "name": "Daniel",
+      "odiya_name": "ଦାନିୟେଲ",
+      "abbreviation": "Dan",
+      "testament": "Old",
+      "total_chapters": 12,
+      "order_index": 27
+    },
+    {
+      "id": 28,
+      "name": "Hosea",
+      "odiya_name": "ହୋଶେୟ",
+      "abbreviation": "Hos",
+      "testament": "Old",
+      "total_chapters": 14,
+      "order_index": 28
+    },
+    {
+      "id": 29,
+      "name": "Joel",
+      "odiya_name": "ଯୋୟେଲ",
+      "abbreviation": "Joe",
+      "testament": "Old",
+      "total_chapters": 3,
+      "order_index": 29
+    },
+    {
+      "id": 30,
+      "name": "Amos",
+      "odiya_name": "ଆମୋଷ",
+      "abbreviation": "Amo",
+      "testament": "Old",
+      "total_chapters": 9,
+      "order_index": 30
+    },
+    {
+      "id": 31,
+      "name": "Obadiah",
+      "odiya_name": "ଓବଦୀୟ",
+      "abbreviation": "Oba",
+      "testament": "Old",
+      "total_chapters": 1,
+      "order_index": 31
+    },
+    {
+      "id": 32,
+      "name": "Jonah",
+      "odiya_name": "ଯୂନସ",
+      "abbreviation": "Jon",
+      "testament": "Old",
+      "total_chapters": 4,
+      "order_index": 32
+    },
+    {
+      "id": 33,
+      "name": "Micah",
+      "odiya_name": "ମୀଖା",
+      "abbreviation": "Mic",
+      "testament": "Old",
+      "total_chapters": 7,
+      "order_index": 33
+    },
+    {
+      "id": 34,
+      "name": "Nahum",
+      "odiya_name": "ନାହୂମ",
+      "abbreviation": "Nah",
+      "testament": "Old",
+      "total_chapters": 3,
+      "order_index": 34
+    },
+    {
+      "id": 35,
+      "name": "Habakkuk",
+      "odiya_name": "ହବକ୍କୂକ",
+      "abbreviation": "Hab",
+      "testament": "Old",
+      "total_chapters": 3,
+      "order_index": 35
+    },
+    {
+      "id": 36,
+      "name": "Zephaniah",
+      "odiya_name": "ସଫନୀୟ",
+      "abbreviation": "Zep",
+      "testament": "Old",
+      "total_chapters": 3,
+      "order_index": 36
+    },
+    {
+      "id": 37,
+      "name": "Haggai",
+      "odiya_name": "ହାଗୟ",
+      "abbreviation": "Hag",
+      "testament": "Old",
+      "total_chapters": 2,
+      "order_index": 37
+    },
+    {
+      "id": 38,
+      "name": "Zechariah",
+      "odiya_name": "ଜିଖରୀୟ",
+      "abbreviation": "Zec",
+      "testament": "Old",
+      "total_chapters": 14,
+      "order_index": 38
+    },
+    {
+      "id": 39,
+      "name": "Malachi",
+      "odiya_name": "ମାଲାଖି",
+      "abbreviation": "Mal",
+      "testament": "Old",
+      "total_chapters": 4,
+      "order_index": 39
+    },
+    {
+      "id": 40,
+      "name": "Matthew",
+      "odiya_name": "ମାଥିଉ",
+      "abbreviation": "Mat",
+      "testament": "New",
+      "total_chapters": 28,
+      "order_index": 40
+    },
+    {
+      "id": 41,
+      "name": "Mark",
+      "odiya_name": "ମାର୍କ",
+      "abbreviation": "Mar",
+      "testament": "New",
+      "total_chapters": 16,
+      "order_index": 41
+    },
+    {
+      "id": 42,
+      "name": "Luke",
+      "odiya_name": "ଲୂକ",
+      "abbreviation": "Luk",
+      "testament": "New",
+      "total_chapters": 24,
+      "order_index": 42
+    },
+    {
+      "id": 43,
+      "name": "John",
+      "odiya_name": "ଯୋହନ",
+      "abbreviation": "Joh",
+      "testament": "New",
+      "total_chapters": 21,
+      "order_index": 43
+    },
+    {
+      "id": 44,
+      "name": "Acts",
+      "odiya_name": "ପ୍ରେରିତମାନଙ୍କ କାର୍ଯ୍ୟ",
+      "abbreviation": "Act",
+      "testament": "New",
+      "total_chapters": 28,
+      "order_index": 44
+    },
+    {
+      "id": 45,
+      "name": "Romans",
+      "odiya_name": "ରୋମୀୟ",
+      "abbreviation": "Rom",
+      "testament": "New",
+      "total_chapters": 16,
+      "order_index": 45
+    },
+    {
+      "id": 46,
+      "name": "1 Corinthians",
+      "odiya_name": "୧ କରିନ୍ଥୀୟ",
+      "abbreviation": "1Co",
+      "testament": "New",
+      "total_chapters": 16,
+      "order_index": 46
+    },
+    {
+      "id": 47,
+      "name": "2 Corinthians",
+      "odiya_name": "୨ କରିନ୍ଥୀୟ",
+      "abbreviation": "2Co",
+      "testament": "New",
+      "total_chapters": 13,
+      "order_index": 47
+    },
+    {
+      "id": 48,
+      "name": "Galatians",
+      "odiya_name": "ଗାଲାତୀୟ",
+      "abbreviation": "Gal",
+      "testament": "New",
+      "total_chapters": 6,
+      "order_index": 48
+    },
+    {
+      "id": 49,
+      "name": "Ephesians",
+      "odiya_name": "ଇଫିସୀୟ",
+      "abbreviation": "Eph",
+      "testament": "New",
+      "total_chapters": 6,
+      "order_index": 49
+    },
+    {
+      "id": 50,
+      "name": "Philippians",
+      "odiya_name": "ଫିଲିପ୍ପୀୟ",
+      "abbreviation": "Phi",
+      "testament": "New",
+      "total_chapters": 4,
+      "order_index": 50
+    },
+    {
+      "id": 51,
+      "name": "Colossians",
+      "odiya_name": "କଲସୀୟ",
+      "abbreviation": "Col",
+      "testament": "New",
+      "total_chapters": 4,
+      "order_index": 51
+    },
+    {
+      "id": 52,
+      "name": "1 Thessalonians",
+      "odiya_name": "୧ ଥେସଲନୀକୀୟ",
+      "abbreviation": "1Th",
+      "testament": "New",
+      "total_chapters": 5,
+      "order_index": 52
+    },
+    {
+      "id": 53,
+      "name": "2 Thessalonians",
+      "odiya_name": "୨ ଥେସଲନୀକୀୟ",
+      "abbreviation": "2Th",
+      "testament": "New",
+      "total_chapters": 3,
+      "order_index": 53
+    },
+    {
+      "id": 54,
+      "name": "1 Timothy",
+      "odiya_name": "୧ ତୀମଥିୟ",
+      "abbreviation": "1Ti",
+      "testament": "New",
+      "total_chapters": 6,
+      "order_index": 54
+    },
+    {
+      "id": 55,
+      "name": "2 Timothy",
+      "odiya_name": "୨ ତୀମଥିୟ",
+      "abbreviation": "2Ti",
+      "testament": "New",
+      "total_chapters": 4,
+      "order_index": 55
+    },
+    {
+      "id": 56,
+      "name": "Titus",
+      "odiya_name": "ତୀତ",
+      "abbreviation": "Tit",
+      "testament": "New",
+      "total_chapters": 3,
+      "order_index": 56
+    },
+    {
+      "id": 57,
+      "name": "Philemon",
+      "odiya_name": "ଫିଲୀମୋନ",
+      "abbreviation": "Phm",
+      "testament": "New",
+      "total_chapters": 1,
+      "order_index": 57
+    },
+    {
+      "id": 58,
+      "name": "Hebrews",
+      "odiya_name": "ଏବ୍ରୀୟ",
+      "abbreviation": "Heb",
+      "testament": "New",
+      "total_chapters": 13,
+      "order_index": 58
+    },
+    {
+      "id": 59,
+      "name": "James",
+      "odiya_name": "ଯାକୁବ",
+      "abbreviation": "Jas",
+      "testament": "New",
+      "total_chapters": 5,
+      "order_index": 59
+    },
+    {
+      "id": 60,
+      "name": "1 Peter",
+      "odiya_name": "୧ ପିତର",
+      "abbreviation": "1Pe",
+      "testament": "New",
+      "total_chapters": 5,
+      "order_index": 60
+    },
+    {
+      "id": 61,
+      "name": "2 Peter",
+      "odiya_name": "୨ ପିତର",
+      "abbreviation": "2Pe",
+      "testament": "New",
+      "total_chapters": 3,
+      "order_index": 61
+    },
+    {
+      "id": 62,
+      "name": "1 John",
+      "odiya_name": "୧ ଯୋହନ",
+      "abbreviation": "1Jo",
+      "testament": "New",
+      "total_chapters": 5,
+      "order_index": 62
+    },
+    {
+      "id": 63,
+      "name": "2 John",
+      "odiya_name": "୨ ଯୋହନ",
+      "abbreviation": "2Jo",
+      "testament": "New",
+      "total_chapters": 1,
+      "order_index": 63
+    },
+    {
+      "id": 64,
+      "name": "3 John",
+      "odiya_name": "୩ ଯୋହନ",
+      "abbreviation": "3Jo",
+      "testament": "New",
+      "total_chapters": 1,
+      "order_index": 64
+    },
+    {
+      "id": 65,
+      "name": "Jude",
+      "odiya_name": "ଯିହୂଦା",
+      "abbreviation": "Jud",
+      "testament": "New",
+      "total_chapters": 1,
+      "order_index": 65
+    },
+    {
+      "id": 66,
+      "name": "Revelation",
+      "odiya_name": "ପ୍ରକାଶିତ ବାକ୍ୟ",
+      "abbreviation": "Rev",
+      "testament": "New",
+      "total_chapters": 22,
+      "order_index": 66
+    }
+  ],
+  "verses": [
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 1,
+      "odiya_text": "ଆଦିରେ ପରମେଶ୍ୱର ଆକାଶ ଓ ପୃଥିବୀ ସୃଷ୍ଟି କଲେ।",
+      "english_text": "In the beginning God created the heavens and the earth."
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 2,
+      "odiya_text": "ପୃଥିବୀ ନିରାକାର ଓ ଶୂନ୍ୟ ଥିଲା, ଆଉ ଗଭୀର ଜଳ ଉପରେ ଅନ୍ଧକାର ଥିଲା; ପୁଣି ପରମେଶ୍ୱରଙ୍କ ଆତ୍ମା ଜଳ ଉପରେ ବିରାଜ କରୁଥିଲେ।",
+      "english_text": "Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters."
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 3,
+      "odiya_text": "ତହୁଁ ପରମେଶ୍ୱର କହିଲେ, \"ଆଲୋକ ହେଉ;\" ତହିଁରେ ଆଲୋକ ହେଲା।",
+      "english_text": "And God said, \"Let there be light,\" and there was light."
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 4,
+      "odiya_text": "ପରମେଶ୍ୱର ଆଲୋକକୁ ଉତ୍ତମ ଦେଖିଲେ; ଆଉ ପରମେଶ୍ୱର ଆଲୋକ ଓ ଅନ୍ଧକାରକୁ ପୃଥକ କଲେ।",
+      "english_text": "God saw that the light was good, and he separated the light from the darkness."
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 5,
+      "odiya_text": "ପରମେଶ୍ୱର ଆଲୋକର ନାମ ଦିନ ଓ ଅନ୍ଧକାରର ନାମ ରାତ୍ରି ରଖିଲେ। ତହୁଁ ସନ୍ଧ୍ୟା ଓ ପ୍ରଭାତ ହୋଇ ପ୍ରଥମ ଦିନ ହେଲା।",
+      "english_text": "God called the light \"day,\" and the darkness he called \"night.\" And there was evening, and there was morning—the first day."
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 6,
+      "odiya_text": "ପରମେଶ୍ୱର କହିଲେ, \"ଜଳ ମଧ୍ୟରେ ଗଗନ ହେଉ ଓ ଜଳକୁ ଦୁଇ ଭାଗ କରୁ।\"",
+      "english_text": "And God said, \"Let there be a vault between the waters to separate water from water.\""
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 7,
+      "odiya_text": "ତହୁଁ ପରମେଶ୍ୱର ଗଗନ ନିର୍ମାଣ କରି ଗଗନର ତଳସ୍ଥ ଜଳକୁ ଗଗନର ଉପରିସ୍ଥ ଜଳରୁ ପୃଥକ କଲେ; ତହିଁରେ ସେପରି ହେଲା।",
+      "english_text": "So God made the vault and separated the water under the vault from the water above it. And it was so."
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 8,
+      "odiya_text": "ପରମେଶ୍ୱର ଗଗନର ନାମ ଆକାଶ ରଖିଲେ। ତହୁଁ ସନ୍ଧ୍ୟା ଓ ପ୍ରଭାତ ହୋଇ ଦ୍ୱିତୀୟ ଦିନ ହେଲା।",
+      "english_text": "God called the vault \"sky.\" And there was evening, and there was morning—the second day."
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 9,
+      "odiya_text": "ପରମେଶ୍ୱର କହିଲେ, \"ଆକାଶର ତଳସ୍ଥ ଜଳ ଏକ ସ୍ଥାନରେ ସଂଗୃହୀତ ହେଉ ଓ ଶୁଷ୍କ ଭୂମି ଦେଖାଯାଉ;\" ତହିଁରେ ସେପରି ହେଲା।",
+      "english_text": "And God said, \"Let the water under the sky be gathered to one place, and let dry ground appear.\" And it was so."
+    },
+    {
+      "book_id": 1,
+      "chapter": 1,
+      "verse_number": 10,
+      "odiya_text": "ପରମେଶ୍ୱର ଶୁଷ୍କ ଭୂମିର ନାମ ପୃଥିବୀ ଓ ସଂଗୃହୀତ ଜଳର ନାମ ସମୁଦ୍ର ରଖିଲେ। ପରମେଶ୍ୱର ଦେଖିଲେ ଯେ, ତାହା ଉତ୍ତମ।",
+      "english_text": "God called the dry ground \"land,\" and the gathered waters he called \"seas.\" And God saw that it was good."
+    },
+    {
+      "book_id": 19,
+      "chapter": 1,
+      "verse_number": 1,
+      "odiya_text": "ଧନ୍ୟ ସେହି ବ୍ୟକ୍ତି, ଯେ ଦୁଷ୍ଟମାନଙ୍କ ମନ୍ତ୍ରଣାରେ ଚାଲେ ନାହିଁ, ପାପୀମାନଙ୍କ ପଥରେ ଠିଆ ହୁଏ ନାହିଁ, ଓ ନିନ୍ଦକମାନଙ୍କ ଆସନରେ ବସେ ନାହିଁ;",
+      "english_text": "Blessed is the one who does not walk in step with the wicked or stand in the way that sinners take or sit in the company of mockers,"
+    },
+    {
+      "book_id": 19,
+      "chapter": 1,
+      "verse_number": 2,
+      "odiya_text": "ବରଂ ସଦାପ୍ରଭୁଙ୍କ ବ୍ୟବସ୍ଥାରେ ଆନନ୍ଦ କରେ ଓ ଦିବାରାତ୍ର ତାହାଙ୍କ ବ୍ୟବସ୍ଥା ଧ୍ୟାନ କରେ।",
+      "english_text": "but whose delight is in the law of the Lord, and who meditates on his law day and night."
+    },
+    {
+      "book_id": 19,
+      "chapter": 1,
+      "verse_number": 3,
+      "odiya_text": "ସେ ଜଳସ୍ରୋତ ନିକଟରେ ରୋପିତ ବୃକ୍ଷ ତୁଲ୍ୟ, ଯାହା ଯଥା ସମୟରେ ଫଳ ଦିଏ ଓ ଯାହାର ପତ୍ର ଶୁଷ୍କ ହୁଏ ନାହିଁ; ଆଉ ସେ ଯାହା କିଛି କରେ, ତାହାରେ କୃତକାର୍ଯ୍ୟ ହୁଏ।",
+      "english_text": "That person is like a tree planted by streams of water, which yields its fruit in season and whose leaf does not wither—whatever they do prospers."
+    },
+    {
+      "book_id": 19,
+      "chapter": 23,
+      "verse_number": 1,
+      "odiya_text": "ସଦାପ୍ରଭୁ ମୋର ପାଳକ; ମୋର ଅଭାବ ହେବ ନାହିଁ।",
+      "english_text": "The Lord is my shepherd, I lack nothing."
+    },
+    {
+      "book_id": 19,
+      "chapter": 23,
+      "verse_number": 2,
+      "odiya_text": "ସେ ମୋତେ ସବୁଜ ଚରାଣି ଭୂମିରେ ଶୁଆଇ ଦିଅନ୍ତି; ସେ ମୋତେ ଶାନ୍ତ ଜଳ ନିକଟକୁ ନେଇ ଯାଆନ୍ତି।",
+      "english_text": "He makes me lie down in green pastures, he leads me beside quiet waters,"
+    },
+    {
+      "book_id": 19,
+      "chapter": 23,
+      "verse_number": 3,
+      "odiya_text": "ସେ ମୋର ପ୍ରାଣ ସଞ୍ଜୀବିତ କରନ୍ତି; ସେ ଆପଣା ନାମ ସକାଶେ ମୋତେ ଧର୍ମପଥରେ ଗମନ କରାନ୍ତି।",
+      "english_text": "he refreshes my soul. He guides me along the right paths for his name's sake."
+    },
+    {
+      "book_id": 19,
+      "chapter": 23,
+      "verse_number": 4,
+      "odiya_text": "ହଁ, ଯଦ୍ୟପି ମୁଁ ମୃତ୍ୟୁଛାୟା ଉପତ୍ୟକା ଦେଇ ଗମନ କରେ, ତଥାପି ମୁଁ କୌଣସି ଅମଙ୍ଗଳକୁ ଭୟ କରିବି ନାହିଁ; କାରଣ ତୁମ୍ଭେ ମୋ' ସଙ୍ଗରେ ଅଛ; ତୁମ୍ଭର ଯଷ୍ଟି ଓ ତୁମ୍ଭର ଦଣ୍ଡ ମୋତେ ସାନ୍ତ୍ୱନା ଦିଏ।",
+      "english_text": "Even though I walk through the darkest valley, I will fear no evil, for you are with me; your rod and your staff, they comfort me."
+    },
+    {
+      "book_id": 19,
+      "chapter": 23,
+      "verse_number": 5,
+      "odiya_text": "ତୁମ୍ଭେ ମୋ' ଶତ୍ରୁମାନଙ୍କ ସାକ୍ଷାତରେ ମୋ' ନିମନ୍ତେ ମେଜ ପ୍ରସ୍ତୁତ କର; ତୁମ୍ଭେ ମୋ' ମସ୍ତକରେ ତୈଳ ମର୍ଦ୍ଦନ କର; ମୋ' ପାତ୍ର ପରିପୂର୍ଣ୍ଣ।",
+      "english_text": "You prepare a table before me in the presence of my enemies. You anoint my head with oil; my cup overflows."
+    },
+    {
+      "book_id": 19,
+      "chapter": 23,
+      "verse_number": 6,
+      "odiya_text": "ନିଶ୍ଚୟ ମଙ୍ଗଳ ଓ ଦୟା ମୋ' ଜୀବନର ସମସ୍ତ ଦିନ ମୋ' ପଛେ ପଛେ ଆସିବ; ଆଉ ମୁଁ ସଦାପ୍ରଭୁଙ୍କ ଗୃହରେ ଦୀର୍ଘ କାଳ ବାସ କରିବି।",
+      "english_text": "Surely your goodness and love will follow me all the days of my life, and I will dwell in the house of the Lord forever."
+    },
+    {
+      "book_id": 40,
+      "chapter": 5,
+      "verse_number": 3,
+      "odiya_text": "ଆତ୍ମାରେ ଦରିଦ୍ରମାନେ ଧନ୍ୟ, କାରଣ ସ୍ୱର୍ଗରାଜ୍ୟ ସେମାନଙ୍କର।",
+      "english_text": "Blessed are the poor in spirit, for theirs is the kingdom of heaven."
+    },
+    {
+      "book_id": 40,
+      "chapter": 5,
+      "verse_number": 4,
+      "odiya_text": "ଶୋକକାରୀମାନେ ଧନ୍ୟ, କାରଣ ସେମାନେ ସାନ୍ତ୍ୱନା ପାଇବେ।",
+      "english_text": "Blessed are those who mourn, for they will be comforted."
+    },
+    {
+      "book_id": 40,
+      "chapter": 5,
+      "verse_number": 5,
+      "odiya_text": "ନମ୍ରମାନେ ଧନ୍ୟ, କାରଣ ସେମାନେ ପୃଥିବୀର ଅଧିକାରୀ ହେବେ।",
+      "english_text": "Blessed are the meek, for they will inherit the earth."
+    },
+    {
+      "book_id": 40,
+      "chapter": 5,
+      "verse_number": 6,
+      "odiya_text": "ଯେଉଁମାନେ ଧର୍ମର କ୍ଷୁଧା ଓ ତୃଷା କରନ୍ତି, ସେମାନେ ଧନ୍ୟ, କାରଣ ସେମାନେ ତୃପ୍ତ ହେବେ।",
+      "english_text": "Blessed are those who hunger and thirst for righteousness, for they will be filled."
+    },
+    {
+      "book_id": 40,
+      "chapter": 5,
+      "verse_number": 7,
+      "odiya_text": "ଦୟାଳୁମାନେ ଧନ୍ୟ, କାରଣ ସେମାନେ ଦୟା ପାଇବେ।",
+      "english_text": "Blessed are the merciful, for they will be shown mercy."
+    },
+    {
+      "book_id": 40,
+      "chapter": 5,
+      "verse_number": 8,
+      "odiya_text": "ଶୁଦ୍ଧାନ୍ତଃକରଣମାନେ ଧନ୍ୟ, କାରଣ ସେମାନେ ପରମେଶ୍ୱରଙ୍କୁ ଦେଖିବେ।",
+      "english_text": "Blessed are the pure in heart, for they will see God."
+    },
+    {
+      "book_id": 40,
+      "chapter": 6,
+      "verse_number": 9,
+      "odiya_text": "ଅତଏବ ତୁମ୍ଭେମାନେ ଏହିପରି ପ୍ରାର୍ଥନା କର: ହେ ଆମ୍ଭମାନଙ୍କ ସ୍ୱର୍ଗସ୍ଥ ପିତା, ତୁମ୍ଭର ନାମ ପବିତ୍ର ବୋଲି ମାନ୍ୟ ହେଉ।",
+      "english_text": "This, then, is how you should pray: 'Our Father in heaven, hallowed be your name,"
+    },
+    {
+      "book_id": 40,
+      "chapter": 6,
+      "verse_number": 10,
+      "odiya_text": "ତୁମ୍ଭର ରାଜ୍ୟ ଆସୁ। ସ୍ୱର୍ଗରେ ଯେପରି, ସେପରି ପୃଥିବୀରେ ମଧ୍ୟ ତୁମ୍ଭର ଇଚ୍ଛା ସିଦ୍ଧ ହେଉ।",
+      "english_text": "your kingdom come, your will be done, on earth as it is in heaven."
+    },
+    {
+      "book_id": 40,
+      "chapter": 6,
+      "verse_number": 11,
+      "odiya_text": "ଆମ୍ଭମାନଙ୍କର ଦୈନିକ ଆହାର ଆଜି ଆମ୍ଭମାନଙ୍କୁ ଦିଅ।",
+      "english_text": "Give us today our daily bread."
+    },
+    {
+      "book_id": 43,
+      "chapter": 3,
+      "verse_number": 16,
+      "odiya_text": "କାରଣ ପରମେଶ୍ୱର ଜଗତକୁ ଏପରି ପ୍ରେମ କଲେ ଯେ, ସେ ଆପଣାର ଏକଜାତ ପୁତ୍ରଙ୍କୁ ଦାନ କଲେ, ଯେପରି ଯେ କେହି ତାହାଙ୍କଠାରେ ବିଶ୍ୱାସ କରେ, ସେ ବିନଷ୍ଟ ନ ହୋଇ ଅନନ୍ତ ଜୀବନ ପାଏ।",
+      "english_text": "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."
+    },
+    {
+      "book_id": 43,
+      "chapter": 3,
+      "verse_number": 17,
+      "odiya_text": "କାରଣ ପରମେଶ୍ୱର ଜଗତକୁ ଦଣ୍ଡ ଦେବା ନିମନ୍ତେ ଆପଣା ପୁତ୍ରଙ୍କୁ ଜଗତକୁ ପଠାଇଲେ ନାହିଁ, ବରଂ ତାହାଙ୍କ ଦ୍ୱାରା ଯେପରି ଜଗତ ପରିତ୍ରାଣ ପାଏ।",
+      "english_text": "For God did not send his Son into the world to condemn the world, but to save the world through him."
+    },
+    {
+      "book_id": 43,
+      "chapter": 14,
+      "verse_number": 6,
+      "odiya_text": "ଯୀଶୁ ତାହାଙ୍କୁ କହିଲେ, \"ମୁଁ ପଥ, ସତ୍ୟ ଓ ଜୀବନ; ମୋ' ଦ୍ୱାରା ନ ଆସିଲେ କେହି ପିତାଙ୍କ ନିକଟକୁ ଆସେ ନାହିଁ।\"",
+      "english_text": "Jesus answered, 'I am the way and the truth and the life. No one comes to the Father except through me.'"
+    },
+    {
+      "book_id": 45,
+      "chapter": 8,
+      "verse_number": 28,
+      "odiya_text": "ଆଉ ଆମ୍ଭେମାନେ ଜାଣୁ ଯେ, ଯେଉଁମାନେ ପରମେଶ୍ୱରଙ୍କୁ ପ୍ରେମ କରନ୍ତି, ସେମାନଙ୍କ ନିମନ୍ତେ ସମସ୍ତ ବିଷୟ ମଙ୍ଗଳଜନକ, ଅର୍ଥାତ୍‍ ଯେଉଁମାନେ ତାହାଙ୍କ ସଂକଳ୍ପ ଅନୁସାରେ ଆହୂତ।",
+      "english_text": "And we know that in all things God works for the good of those who love him, who have been called according to his purpose."
+    },
+    {
+      "book_id": 50,
+      "chapter": 4,
+      "verse_number": 13,
+      "odiya_text": "ଯେ ମୋତେ ଶକ୍ତି ଦିଅନ୍ତି, ତାହାଙ୍କଠାରେ ମୁଁ ସବୁ କରିପାରେ।",
+      "english_text": "I can do all this through him who gives me strength."
+    },
+    {
+      "book_id": 50,
+      "chapter": 4,
+      "verse_number": 19,
+      "odiya_text": "ଆଉ ମୋ' ପରମେଶ୍ୱର ଖ୍ରୀଷ୍ଟ ଯୀଶୁଙ୍କଠାରେ ଗୌରବ ସହିତ ଆପଣା ଧନ ଅନୁସାରେ ତୁମ୍ଭମାନଙ୍କର ସମସ୍ତ ଆବଶ୍ୟକତା ପୂରଣ କରିବେ।",
+      "english_text": "And my God will meet all your needs according to the riches of his glory in Christ Jesus."
+    },
+    {
+      "book_id": 62,
+      "chapter": 4,
+      "verse_number": 8,
+      "odiya_text": "ପରମେଶ୍ୱର ପ୍ରେମ। ଯେ ପ୍ରେମ କରେ ନାହିଁ, ସେ ପରମେଶ୍ୱରଙ୍କୁ ଜାଣେ ନାହିଁ, କାରଣ ପରମେଶ୍ୱର ପ୍ରେମ।",
+      "english_text": "Whoever does not love does not know God, because God is love."
+    },
+    {
+      "book_id": 62,
+      "chapter": 4,
+      "verse_number": 16,
+      "odiya_text": "ଆଉ ଆମ୍ଭମାନଙ୍କ ପ୍ରତି ପରମେଶ୍ୱରଙ୍କର ଯେଉଁ ପ୍ରେମ ଅଛି, ତାହା ଆମ୍ଭେମାନେ ଜାଣିଅଛୁ ଓ ବିଶ୍ୱାସ କରିଅଛୁ। ପରମେଶ୍ୱର ପ୍ରେମ; ଆଉ ଯେ ପ୍ରେମରେ ଥାଏ, ସେ ପରମେଶ୍ୱରଙ୍କଠାରେ ଥାଏ ଓ ପରମେଶ୍ୱର ତାହାଠାରେ ଥାଆନ୍ତି।",
+      "english_text": "And so we know and rely on the love God has for us. God is love. Whoever lives in love lives in God, and God in them."
+    },
+    {
+      "book_id": 66,
+      "chapter": 21,
+      "verse_number": 4,
+      "odiya_text": "ଆଉ ସେ ସେମାନଙ୍କ ଚକ୍ଷୁରୁ ସମସ୍ତ ଲୋତକ ପୋଛି ଦେବେ; ଆଉ ମୃତ୍ୟୁ ରହିବ ନାହିଁ, ଶୋକ କିମ୍ବା କ୍ରନ୍ଦନ କିମ୍ବା ବେଦନା ରହିବ ନାହିଁ; ପ୍ରଥମ ବିଷୟସବୁ ଅତୀତ ହୋଇଗଲା।",
+      "english_text": "'He will wipe every tear from their eyes. There will be no more death' or mourning or crying or pain, for the old order of things has passed away."
+    }
+  ]
+}

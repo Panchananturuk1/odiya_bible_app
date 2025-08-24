@@ -1,0 +1,54 @@
+{
+  "book_name": "Psalms",
+  "chapter": 23,
+  "verses": [
+    {
+      "book_name": "Psalms",
+      "chapter": 23,
+      "verse": 1,
+      "text": "The LORD <i>is</i> my shepherd; I shall not want.",
+      "header": "¶ A Psalm of David.",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 23,
+      "verse": 2,
+      "text": "He maketh me to lie down in green pastures: he leadeth me beside the still waters.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 23,
+      "verse": 3,
+      "text": "He restoreth my soul: he leadeth me in the paths of righteousness for his name's sake.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 23,
+      "verse": 4,
+      "text": "Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou <i>art</i> with me; thy rod and thy staff they comfort me.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 23,
+      "verse": 5,
+      "text": "Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 23,
+      "verse": 6,
+      "text": "Surely goodness and mercy shall follow me all the days of my life: and I will dwell in the house of the LORD for ever.",
+      "header": "",
+      "footer": ""
+    }
+  ]
+}

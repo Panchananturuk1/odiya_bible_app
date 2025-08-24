@@ -1,0 +1,46 @@
+{
+  "book_name": "Psalms",
+  "chapter": 100,
+  "verses": [
+    {
+      "book_name": "Psalms",
+      "chapter": 100,
+      "verse": 1,
+      "text": "Make a joyful noise unto the LORD, all ye lands.",
+      "header": "¶ A Psalm of praise.",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 100,
+      "verse": 2,
+      "text": "Serve the LORD with gladness: come before his presence with singing.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 100,
+      "verse": 3,
+      "text": "Know ye that the LORD he <i>is</i> God: <i>it is</i> he <i>that</i> hath made us, and not we ourselves; <i>we are</i> his people, and the sheep of his pasture.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 100,
+      "verse": 4,
+      "text": "Enter into his gates with thanksgiving, <i>and</i> into his courts with praise: be thankful unto him, <i>and</i> bless his name.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 100,
+      "verse": 5,
+      "text": "For the LORD <i>is</i> good; his mercy <i>is</i> everlasting; and his truth <i>endureth</i> to all generations.",
+      "header": "",
+      "footer": ""
+    }
+  ]
+}

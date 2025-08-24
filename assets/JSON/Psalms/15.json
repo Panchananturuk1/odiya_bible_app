@@ -1,0 +1,46 @@
+{
+  "book_name": "Psalms",
+  "chapter": 15,
+  "verses": [
+    {
+      "book_name": "Psalms",
+      "chapter": 15,
+      "verse": 1,
+      "text": "LORD, who shall abide in thy tabernacle? who shall dwell in thy holy hill?",
+      "header": "¶ A Psalm of David.",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 15,
+      "verse": 2,
+      "text": "He that walketh uprightly, and worketh righteousness, and speaketh the truth in his heart.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 15,
+      "verse": 3,
+      "text": "<i>He that</i> backbiteth not with his tongue, nor doeth evil to his neighbour, nor taketh up a reproach against his neighbour.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 15,
+      "verse": 4,
+      "text": "In whose eyes a vile person is contemned; but he honoureth them that fear the LORD. <i>He that</i> sweareth to <i>his own</i> hurt, and changeth not.",
+      "header": "",
+      "footer": ""
+    },
+    {
+      "book_name": "Psalms",
+      "chapter": 15,
+      "verse": 5,
+      "text": "<i>He that</i> putteth not out his money to usury, nor taketh reward against the innocent. He that doeth these <i>things</i> shall never be moved.",
+      "header": "",
+      "footer": ""
+    }
+  ]
+}

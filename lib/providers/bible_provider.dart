@@ -38,7 +38,12 @@ class BibleProvider with ChangeNotifier {
     _setLoading(true);
     try {
       await loadBooks();
-      await loadBookmarks();
+      // Attempt to load bookmarks, but don't block initialization on failure (e.g., web without sqflite)
+      try {
+        await loadBookmarks();
+      } catch (e) {
+        debugPrint('Bookmarks not available on this platform: $e');
+      }
       // Load the first book and chapter by default
       if (_books.isNotEmpty) {
         await selectBook(_books.first.id);
@@ -122,7 +127,12 @@ class BibleProvider with ChangeNotifier {
 
     _setLoading(true);
     try {
-      _searchResults = await JsonBibleService.searchVerses(query);
+      // Use JSON-based search on Web where sqflite is not available; use database-backed search on other platforms
+      if (kIsWeb) {
+        _searchResults = await JsonBibleService.searchVerses(query);
+      } else {
+        _searchResults = await _databaseService.searchVerses(query);
+      }
       _searchQuery = query;
       notifyListeners();
     } catch (e) {
@@ -139,37 +149,66 @@ class BibleProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Highlight verse
+  // Helper to update a verse in memory across both current chapter and search results
+  void _updateVerseInMemory(int verseId, {bool? isHighlighted, String? note, bool? isBookmarked}) {
+    final idxCurrent = _currentChapterVerses.indexWhere((v) => v.id == verseId);
+    if (idxCurrent != -1) {
+      final v = _currentChapterVerses[idxCurrent];
+      _currentChapterVerses[idxCurrent] = v.copyWith(
+        isHighlighted: isHighlighted ?? v.isHighlighted,
+        note: note ?? v.note,
+        isBookmarked: isBookmarked ?? v.isBookmarked,
+      );
+    }
+
+    final idxSearch = _searchResults.indexWhere((v) => v.id == verseId);
+    if (idxSearch != -1) {
+      final v = _searchResults[idxSearch];
+      _searchResults[idxSearch] = v.copyWith(
+        isHighlighted: isHighlighted ?? v.isHighlighted,
+        note: note ?? v.note,
+        isBookmarked: isBookmarked ?? v.isBookmarked,
+      );
+    }
+  }
+
+  // Highlight verse (web-safe and updates both current and search lists)
   Future<void> toggleVerseHighlight(int verseId) async {
     try {
-      final verse = _currentChapterVerses.firstWhere((v) => v.id == verseId);
-      final newHighlightState = !verse.isHighlighted;
-      
-      await _databaseService.updateVerseHighlight(verseId, newHighlightState);
-      
-      // Update local state
-      final index = _currentChapterVerses.indexWhere((v) => v.id == verseId);
-      if (index != -1) {
-        _currentChapterVerses[index] = verse.copyWith(isHighlighted: newHighlightState);
-        notifyListeners();
+      // Determine current highlight state from either list
+      bool current = false;
+      final idxCurrent = _currentChapterVerses.indexWhere((v) => v.id == verseId);
+      if (idxCurrent != -1) {
+        current = _currentChapterVerses[idxCurrent].isHighlighted;
+      } else {
+        final idxSearch = _searchResults.indexWhere((v) => v.id == verseId);
+        if (idxSearch != -1) {
+          current = _searchResults[idxSearch].isHighlighted;
+        }
       }
+
+      final newHighlightState = !current;
+
+      if (!kIsWeb) {
+        await _databaseService.updateVerseHighlight(verseId, newHighlightState);
+      }
+
+      _updateVerseInMemory(verseId, isHighlighted: newHighlightState);
+      notifyListeners();
     } catch (e) {
       debugPrint('Error toggling verse highlight: $e');
     }
   }
 
-  // Add/update verse note
+  // Add/update verse note (web-safe and updates both current and search lists)
   Future<void> updateVerseNote(int verseId, String? note) async {
     try {
-      await _databaseService.updateVerseNote(verseId, note);
-      
-      // Update local state
-      final index = _currentChapterVerses.indexWhere((v) => v.id == verseId);
-      if (index != -1) {
-        final verse = _currentChapterVerses[index];
-        _currentChapterVerses[index] = verse.copyWith(note: note);
-        notifyListeners();
+      if (!kIsWeb) {
+        await _databaseService.updateVerseNote(verseId, note);
       }
+
+      _updateVerseInMemory(verseId, note: note);
+      notifyListeners();
     } catch (e) {
       debugPrint('Error updating verse note: $e');
     }
@@ -178,6 +217,11 @@ class BibleProvider with ChangeNotifier {
   // Bookmark operations
   Future<void> loadBookmarks() async {
     try {
+      if (kIsWeb) {
+        // On web, keep in-memory bookmarks as-is
+        notifyListeners();
+        return;
+      }
       _bookmarks = await _databaseService.getAllBookmarks();
       notifyListeners();
     } catch (e) {
@@ -188,6 +232,7 @@ class BibleProvider with ChangeNotifier {
   Future<void> addBookmark(Verse verse, String? note) async {
     try {
       final bookmark = Bookmark(
+        id: kIsWeb ? DateTime.now().millisecondsSinceEpoch : null,
         bookId: verse.bookId,
         chapter: verse.chapter,
         verseNumber: verse.verseNumber,
@@ -195,9 +240,18 @@ class BibleProvider with ChangeNotifier {
         note: note,
         createdAt: DateTime.now(),
       );
-      
-      await _databaseService.insertBookmark(bookmark);
-      await loadBookmarks();
+
+      if (kIsWeb) {
+        _bookmarks.add(bookmark);
+        _updateVerseInMemory(verse.id, isBookmarked: true);
+        notifyListeners();
+      } else {
+        await _databaseService.insertBookmark(bookmark);
+        await loadBookmarks();
+        // Optionally reflect bookmark state in current/search lists
+        _updateVerseInMemory(verse.id, isBookmarked: true);
+        notifyListeners();
+      }
     } catch (e) {
       debugPrint('Error adding bookmark: $e');
     }
@@ -205,6 +259,21 @@ class BibleProvider with ChangeNotifier {
 
   Future<void> removeBookmark(int bookmarkId) async {
     try {
+      if (kIsWeb) {
+        final idx = _bookmarks.indexWhere((b) => (b.id ?? -1) == bookmarkId);
+        if (idx != -1) {
+          final b = _bookmarks[idx];
+          _bookmarks.removeAt(idx);
+          // Update verse state in memory
+          final verseId = _findVerseIdByReference(b.bookId, b.chapter, b.verseNumber);
+          if (verseId != null) {
+            _updateVerseInMemory(verseId, isBookmarked: false);
+          }
+          notifyListeners();
+        }
+        return;
+      }
+
       await _databaseService.deleteBookmark(bookmarkId);
       await loadBookmarks();
     } catch (e) {
@@ -214,6 +283,15 @@ class BibleProvider with ChangeNotifier {
 
   Future<void> updateBookmark(Bookmark bookmark) async {
     try {
+      if (kIsWeb) {
+        final idx = _bookmarks.indexWhere((b) => (b.id ?? -1) == (bookmark.id ?? -2));
+        if (idx != -1) {
+          _bookmarks[idx] = bookmark.copyWith(updatedAt: DateTime.now());
+          notifyListeners();
+        }
+        return;
+      }
+
       final updatedBookmark = bookmark.copyWith(updatedAt: DateTime.now());
       await _databaseService.updateBookmark(updatedBookmark);
       await loadBookmarks();
@@ -227,31 +305,44 @@ class BibleProvider with ChangeNotifier {
     await removeBookmark(bookmarkId);
   }
 
-  // Toggle bookmark for a verse
+  // Toggle bookmark for a verse (web-safe)
   Future<void> toggleBookmark(Verse verse) async {
     try {
       // Check if verse is already bookmarked
-      final existingBookmark = _bookmarks.firstWhere(
-        (bookmark) => bookmark.bookId == verse.bookId && 
-                     bookmark.chapter == verse.chapter && 
-                     bookmark.verseNumber == verse.verseNumber,
-        orElse: () => throw StateError('Not found'),
+      final existingIndex = _bookmarks.indexWhere(
+        (bookmark) => bookmark.bookId == verse.bookId &&
+                      bookmark.chapter == verse.chapter &&
+                      bookmark.verseNumber == verse.verseNumber,
       );
-      
-      // If found, remove it
-      await removeBookmark(existingBookmark.id!);
+
+      if (existingIndex != -1) {
+        // If found, remove it
+        if (kIsWeb) {
+          final existing = _bookmarks[existingIndex];
+          _bookmarks.removeAt(existingIndex);
+          _updateVerseInMemory(verse.id, isBookmarked: false);
+          notifyListeners();
+        } else {
+          final existing = _bookmarks[existingIndex];
+          if (existing.id != null) {
+            await removeBookmark(existing.id!);
+          }
+          // Reflect change in UI
+          _updateVerseInMemory(verse.id, isBookmarked: false);
+          notifyListeners();
+        }
+      } else {
+        await addBookmark(verse, null);
+      }
     } catch (e) {
-      // If not found, add it
-      await addBookmark(verse, null);
+      debugPrint('Error toggling bookmark: $e');
     }
   }
 
   // Update note for a verse (placeholder implementation)
-  Future<void> updateNote(int verseId, String note) async {
+  Future<void> updateNote(int verseId, String? note) async {
     try {
-      // This would need proper implementation to find and update verse notes
-      // For now, just notify listeners
-      notifyListeners();
+      await updateVerseNote(verseId, note);
     } catch (e) {
       debugPrint('Error updating note: $e');
     }
@@ -317,5 +408,38 @@ class BibleProvider with ChangeNotifier {
       testament: 1, totalChapters: 1, order: 0
     ));
     return '${book.odiyaName} ${verse.chapter}:${verse.verseNumber}';
+  }
+
+  // Try to find a verse id by book/chapter/verseNumber in currently loaded data
+  int? _findVerseIdByReference(int bookId, int chapter, int verseNumber) {
+    final inCurrent = _currentChapterVerses.firstWhere(
+      (v) => v.bookId == bookId && v.chapter == chapter && v.verseNumber == verseNumber,
+      orElse: () => Verse(
+        id: -1,
+        bookId: -1,
+        chapter: -1,
+        verseNumber: -1,
+        odiyaText: '',
+        englishText: '',
+        hindiText: '',
+      ),
+    );
+    if (inCurrent.id != -1) return inCurrent.id;
+
+    final inSearch = _searchResults.firstWhere(
+      (v) => v.bookId == bookId && v.chapter == chapter && v.verseNumber == verseNumber,
+      orElse: () => Verse(
+        id: -1,
+        bookId: -1,
+        chapter: -1,
+        verseNumber: -1,
+        odiyaText: '',
+        englishText: '',
+        hindiText: '',
+      ),
+    );
+    if (inSearch.id != -1) return inSearch.id;
+
+    return null;
   }
 }

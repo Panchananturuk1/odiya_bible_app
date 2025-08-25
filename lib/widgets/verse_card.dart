@@ -8,7 +8,8 @@ class VerseCard extends StatefulWidget {
   final double fontSize;
   final VoidCallback onHighlight;
   final VoidCallback onBookmark;
-  final Function(String) onNote;
+  // Update the onNote callback type to accept nullable String
+  final void Function(String?)? onNote;
   final VoidCallback onShare;
   final String? highlightSearchTerm;
   final VoidCallback? onAudioPlay;
@@ -456,7 +457,7 @@ class _VerseCardState extends State<VerseCard>
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              widget.onNote(noteController.text);
+              widget.onNote?.call(noteController.text.isEmpty ? null : noteController.text);
             },
             child: const Text('Save'),
           ),

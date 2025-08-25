@@ -163,7 +163,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                         key: Key(verse.id.toString()), // Convert int to String for Key
                         verse: verse,
                         fontSize: settingsProvider.fontSize,
-                        onHighlight: () => bibleProvider.toggleHighlight(verse.id),
+                        onHighlight: () => bibleProvider.toggleVerseHighlight(verse.id),
                         onBookmark: () => bibleProvider.toggleBookmark(verse),
                         onNote: (note) => bibleProvider.updateNote(verse.id, note),
                         onShare: () => _shareVerse(verse),

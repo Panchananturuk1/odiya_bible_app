@@ -63,7 +63,7 @@ class AppDrawer extends StatelessWidget {
                                   shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                                   ),
-                                  builder: (_) {
+                                  builder: (sheetContext) {
                                     return SafeArea(
                                       child: Padding(
                                         padding: const EdgeInsets.all(16),
@@ -82,8 +82,11 @@ class AppDrawer extends StatelessWidget {
                                               title: const Text('Sync now'),
                                               subtitle: Text(_syncSubtitle(auth.syncStatus)),
                                               onTap: () async {
-                                                Navigator.pop(context);
+                                                // Capture messenger before popping to avoid deactivated context
+                                                final messenger = ScaffoldMessenger.maybeOf(sheetContext);
+                                                Navigator.of(sheetContext).pop();
                                                 await auth.triggerSync();
+                                                messenger?.showSnackBar(const SnackBar(content: Text('Syncing data...')));
                                               },
                                               trailing: _syncTrailing(context, auth.syncStatus),
                                             ),
@@ -92,9 +95,11 @@ class AppDrawer extends StatelessWidget {
                                               leading: const Icon(Icons.logout, color: Colors.red),
                                               title: const Text('Sign out'),
                                               onTap: () async {
-                                                Navigator.pop(context);
+                                                // Capture messenger before popping to avoid using a deactivated context
+                                                final messenger = ScaffoldMessenger.maybeOf(sheetContext);
+                                                // Close the bottom sheet using its own context
+                                                Navigator.of(sheetContext).pop();
                                                 await auth.signOut();
-                                                final messenger = ScaffoldMessenger.maybeOf(context);
                                                 messenger?.showSnackBar(const SnackBar(content: Text('Signed out')));
                                               },
                                             ),
@@ -196,8 +201,10 @@ class AppDrawer extends StatelessWidget {
                               style: const TextStyle(fontSize: 11),
                             ),
                             onTap: () {
-                              Navigator.pop(context);
-                              _showChapterSelector(context, book, bibleProvider);
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                                _showChapterSelector(context, book, bibleProvider);
+                              }
                             },
                           );
                         }).toList(),
@@ -222,8 +229,10 @@ class AppDrawer extends StatelessWidget {
                               style: const TextStyle(fontSize: 11),
                             ),
                             onTap: () {
-                              Navigator.pop(context);
-                              _showChapterSelector(context, book, bibleProvider);
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                                _showChapterSelector(context, book, bibleProvider);
+                              }
                             },
                           );
                         }).toList(),
@@ -238,6 +247,7 @@ class AppDrawer extends StatelessWidget {
                         leading: const Icon(Icons.search),
                         title: const Text('Search Bible', style: TextStyle(fontSize: 14)),
                         onTap: () {
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                           DefaultTabController.of(context)?.animateTo(1);
                         },
@@ -248,6 +258,7 @@ class AppDrawer extends StatelessWidget {
                         title: const Text('My Bookmarks', style: TextStyle(fontSize: 14)),
                         subtitle: Text('${bibleProvider.bookmarks.length} saved', style: const TextStyle(fontSize: 12)),
                         onTap: () {
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                           DefaultTabController.of(context)?.animateTo(2);
                         },
@@ -283,6 +294,7 @@ class AppDrawer extends StatelessWidget {
                           subtitle: Text('Chapter ${bibleProvider.currentChapter}', style: const TextStyle(fontSize: 12)),
                           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                           onTap: () {
+                            if (!context.mounted) return;
                             Navigator.pop(context);
                             DefaultTabController.of(context)?.animateTo(0);
                           },
@@ -296,6 +308,7 @@ class AppDrawer extends StatelessWidget {
                         leading: const Icon(Icons.settings),
                         title: const Text('Settings', style: TextStyle(fontSize: 14)),
                         onTap: () {
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                           DefaultTabController.of(context)?.animateTo(3);
                         },
@@ -308,6 +321,7 @@ class AppDrawer extends StatelessWidget {
                           leading: const Icon(Icons.login),
                           title: const Text('Sign in / Create account', style: TextStyle(fontSize: 14)),
                           onTap: () async {
+                            if (!context.mounted) return;
                             Navigator.pop(context);
                             await Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => const AuthScreen()),
@@ -321,6 +335,7 @@ class AppDrawer extends StatelessWidget {
                           subtitle: Text(auth.email ?? '', style: const TextStyle(fontSize: 12)),
                           trailing: _syncTrailing(context, auth.syncStatus),
                           onTap: () async {
+                            if (!context.mounted) return;
                             Navigator.pop(context);
                             await auth.triggerSync();
                           },

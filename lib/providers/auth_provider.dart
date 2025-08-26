@@ -45,6 +45,8 @@ class AuthProvider with ChangeNotifier {
         // Stop watching when user signs out and clear sync status
         _bibleProvider?.stopWatchingFirestoreBookmarks();
         _bibleProvider?.stopWatchingFirestoreHighlights();
+        // Also clear any auth-scoped local UI state (bookmarks/highlights flags etc.)
+        _bibleProvider?.clearAuthDataOnSignOut();
         _syncStatus = SyncStatus.idle;
       }
       
@@ -104,6 +106,8 @@ class AuthProvider with ChangeNotifier {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
+      // Ensure local state is cleared immediately as well (in addition to the auth listener)
+      _bibleProvider?.clearAuthDataOnSignOut();
       _setError(null);
     } catch (e) {
       _setError('Error signing out. Please try again.');

@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'bible_provider.dart';
 
 enum SyncStatus { idle, syncing, success, error }
 
-class AuthProvider extends ChangeNotifier {
+class AuthProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  BibleProvider? _bibleProvider;
   StreamSubscription<User?>? _authStateSubscription;
   
   bool _isAuthenticated = false;
@@ -33,13 +35,27 @@ class AuthProvider extends ChangeNotifier {
       if (user != null) {
         // Trigger sync when user signs in
         unawaited(triggerSync());
+        // Sync bookmarks to Firestore when user signs in
+        _bibleProvider?.syncLocalBookmarksToFirestore();
+        // Start watching remote bookmarks in real time
+        _bibleProvider?.startWatchingFirestoreBookmarks();
       } else {
-        // Clear sync status when user signs out
+        // Stop watching when user signs out and clear sync status
+        _bibleProvider?.stopWatchingFirestoreBookmarks();
         _syncStatus = SyncStatus.idle;
       }
       
       notifyListeners();
     });
+  }
+
+  // Set BibleProvider reference for bookmark syncing
+  void setBibleProvider(BibleProvider bibleProvider) {
+    _bibleProvider = bibleProvider;
+    // If already authenticated, start watching immediately
+    if (_auth.currentUser != null) {
+      _bibleProvider?.startWatchingFirestoreBookmarks();
+    }
   }
 
   Future<bool> signIn({required String email, required String password}) async {

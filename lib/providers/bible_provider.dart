@@ -1,13 +1,18 @@
 import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/book.dart';
 import '../models/verse.dart';
 import '../models/bookmark.dart';
 import '../services/database_service.dart';
+import '../services/firestore_bookmark_service.dart';
 import '../services/json_bible_service.dart';
 import '../services/usx_parser.dart';
+import 'dart:async'
+    ;
 
 class BibleProvider with ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
+  final FirestoreBookmarkService _firestoreBookmarkService = FirestoreBookmarkService();
   // Using JSON service for Bible data, database for bookmarks only
   
   List<Book> _books = [];
@@ -21,6 +26,8 @@ class BibleProvider with ChangeNotifier {
   List<Verse> _searchResults = [];
   bool _isLoading = false;
   String _searchQuery = '';
+  
+  StreamSubscription<List<Bookmark>>? _firestoreBookmarksSub;
 
   // Getters
   List<Book> get books => _books;
@@ -255,12 +262,17 @@ class BibleProvider with ChangeNotifier {
   // Bookmark operations
   Future<void> loadBookmarks() async {
     try {
-      if (kIsWeb) {
-        // On web, keep in-memory bookmarks as-is
-        notifyListeners();
-        return;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // User is authenticated, use Firestore
+        _bookmarks = await _firestoreBookmarkService.getAllBookmarks();
+      } else if (kIsWeb) {
+        // On web without authentication, keep in-memory bookmarks as-is
+        // No action needed, bookmarks remain in memory
+      } else {
+        // Use local database for non-web platforms when not authenticated
+        _bookmarks = await _databaseService.getAllBookmarks();
       }
-      _bookmarks = await _databaseService.getAllBookmarks();
       notifyListeners();
     } catch (e) {
       debugPrint('Error loading bookmarks: $e');
@@ -269,6 +281,7 @@ class BibleProvider with ChangeNotifier {
 
   Future<void> addBookmark(Verse verse, String? note) async {
     try {
+      final user = FirebaseAuth.instance.currentUser;
       final bookmark = Bookmark(
         id: kIsWeb ? DateTime.now().millisecondsSinceEpoch : null,
         bookId: verse.bookId,
@@ -279,14 +292,25 @@ class BibleProvider with ChangeNotifier {
         createdAt: DateTime.now(),
       );
 
-      if (kIsWeb) {
+      if (user != null) {
+        // User is authenticated, use Firestore
+        final documentId = await _firestoreBookmarkService.addBookmark(bookmark);
+        final firestoreBookmark = bookmark.copyWith(
+          documentId: documentId,
+          id: documentId?.hashCode,
+        );
+        _bookmarks.add(firestoreBookmark);
+        _updateVerseInMemory(verse.id, isBookmarked: true);
+        notifyListeners();
+      } else if (kIsWeb) {
+        // Web without authentication, use in-memory storage
         _bookmarks.add(bookmark);
         _updateVerseInMemory(verse.id, isBookmarked: true);
         notifyListeners();
       } else {
+        // Non-web platform without authentication, use local database
         await _databaseService.insertBookmark(bookmark);
         await loadBookmarks();
-        // Optionally reflect bookmark state in current/search lists
         _updateVerseInMemory(verse.id, isBookmarked: true);
         notifyListeners();
       }
@@ -297,23 +321,35 @@ class BibleProvider with ChangeNotifier {
 
   Future<void> removeBookmark(int bookmarkId) async {
     try {
-      if (kIsWeb) {
-        final idx = _bookmarks.indexWhere((b) => (b.id ?? -1) == bookmarkId);
-        if (idx != -1) {
-          final b = _bookmarks[idx];
-          _bookmarks.removeAt(idx);
-          // Update verse state in memory
-          final verseId = _findVerseIdByReference(b.bookId, b.chapter, b.verseNumber);
-          if (verseId != null) {
-            _updateVerseInMemory(verseId, isBookmarked: false);
-          }
-          notifyListeners();
+      final user = FirebaseAuth.instance.currentUser;
+      final idx = _bookmarks.indexWhere((b) => (b.id ?? -1) == bookmarkId);
+      
+      if (idx == -1) return;
+      
+      final bookmark = _bookmarks[idx];
+      
+      if (user != null && bookmark.documentId != null) {
+        // User is authenticated and bookmark has Firestore document ID
+        await _firestoreBookmarkService.deleteBookmark(bookmark.documentId!);
+        _bookmarks.removeAt(idx);
+        final verseId = _findVerseIdByReference(bookmark.bookId, bookmark.chapter, bookmark.verseNumber);
+        if (verseId != null) {
+          _updateVerseInMemory(verseId, isBookmarked: false);
         }
-        return;
+        notifyListeners();
+      } else if (kIsWeb) {
+        // Web without authentication, remove from memory
+        _bookmarks.removeAt(idx);
+        final verseId = _findVerseIdByReference(bookmark.bookId, bookmark.chapter, bookmark.verseNumber);
+        if (verseId != null) {
+          _updateVerseInMemory(verseId, isBookmarked: false);
+        }
+        notifyListeners();
+      } else {
+        // Non-web platform, use local database
+        await _databaseService.deleteBookmark(bookmarkId);
+        await loadBookmarks();
       }
-
-      await _databaseService.deleteBookmark(bookmarkId);
-      await loadBookmarks();
     } catch (e) {
       debugPrint('Error removing bookmark: $e');
     }
@@ -321,18 +357,29 @@ class BibleProvider with ChangeNotifier {
 
   Future<void> updateBookmark(Bookmark bookmark) async {
     try {
-      if (kIsWeb) {
+      final user = FirebaseAuth.instance.currentUser;
+      final updatedBookmark = bookmark.copyWith(updatedAt: DateTime.now());
+      
+      if (user != null && bookmark.documentId != null) {
+        // User is authenticated and bookmark has Firestore document ID
+        await _firestoreBookmarkService.updateBookmark(bookmark.documentId!, updatedBookmark);
         final idx = _bookmarks.indexWhere((b) => (b.id ?? -1) == (bookmark.id ?? -2));
         if (idx != -1) {
-          _bookmarks[idx] = bookmark.copyWith(updatedAt: DateTime.now());
+          _bookmarks[idx] = updatedBookmark;
           notifyListeners();
         }
-        return;
+      } else if (kIsWeb) {
+        // Web without authentication, update in memory
+        final idx = _bookmarks.indexWhere((b) => (b.id ?? -1) == (bookmark.id ?? -2));
+        if (idx != -1) {
+          _bookmarks[idx] = updatedBookmark;
+          notifyListeners();
+        }
+      } else {
+        // Non-web platform, use local database
+        await _databaseService.updateBookmark(updatedBookmark);
+        await loadBookmarks();
       }
-
-      final updatedBookmark = bookmark.copyWith(updatedAt: DateTime.now());
-      await _databaseService.updateBookmark(updatedBookmark);
-      await loadBookmarks();
     } catch (e) {
       debugPrint('Error updating bookmark: $e');
     }
@@ -341,6 +388,38 @@ class BibleProvider with ChangeNotifier {
   // Alias for removeBookmark to match bookmarks_screen.dart usage
   Future<void> deleteBookmark(int bookmarkId) async {
     await removeBookmark(bookmarkId);
+  }
+
+  // Sync local bookmarks to Firestore when user signs in
+  Future<void> syncLocalBookmarksToFirestore() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      // Get existing local bookmarks
+      List<Bookmark> localBookmarks = [];
+      if (!kIsWeb) {
+        localBookmarks = await _databaseService.getAllBookmarks();
+      } else {
+        localBookmarks = List.from(_bookmarks);
+      }
+
+      if (localBookmarks.isEmpty) return;
+
+      // Check if user already has bookmarks in Firestore
+      final existingFirestoreBookmarks = await _firestoreBookmarkService.getAllBookmarks();
+      
+      // Only sync if Firestore is empty to avoid duplicates
+      if (existingFirestoreBookmarks.isEmpty) {
+        await _firestoreBookmarkService.syncLocalBookmarksToFirestore(localBookmarks);
+        debugPrint('Synced ${localBookmarks.length} local bookmarks to Firestore');
+        
+        // Reload bookmarks from Firestore
+        await loadBookmarks();
+      }
+    } catch (e) {
+      debugPrint('Error syncing local bookmarks to Firestore: $e');
+    }
   }
 
   // Toggle bookmark for a verse (web-safe)
@@ -354,13 +433,27 @@ class BibleProvider with ChangeNotifier {
       );
 
       if (existingIndex != -1) {
-        // If found, remove it
-        if (kIsWeb) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          // Authenticated user: ensure Firestore is updated
+          final existing = _bookmarks[existingIndex];
+          if (existing.id != null) {
+            await removeBookmark(existing.id!);
+          } else if (existing.documentId != null) {
+            await _firestoreBookmarkService.deleteBookmark(existing.documentId!);
+            // Update local state
+            _bookmarks.removeAt(existingIndex);
+            _updateVerseInMemory(verse.id, isBookmarked: false);
+            notifyListeners();
+          }
+        } else if (kIsWeb) {
+          // Web without authentication, remove from memory
           final existing = _bookmarks[existingIndex];
           _bookmarks.removeAt(existingIndex);
           _updateVerseInMemory(verse.id, isBookmarked: false);
           notifyListeners();
         } else {
+          // Non-web platform, use local database
           final existing = _bookmarks[existingIndex];
           if (existing.id != null) {
             await removeBookmark(existing.id!);
@@ -479,5 +572,48 @@ class BibleProvider with ChangeNotifier {
     if (inSearch.id != -1) return inSearch.id;
 
     return null;
+  }
+
+  // Start watching Firestore bookmarks for the authenticated user
+  void startWatchingFirestoreBookmarks() {
+    // Cancel any existing subscription first
+    _firestoreBookmarksSub?.cancel();
+
+    // Only start if a user is authenticated
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    _firestoreBookmarksSub = _firestoreBookmarkService.watchBookmarks().listen((remoteBookmarks) {
+      _bookmarks = remoteBookmarks;
+
+      // Update bookmark flags in currently loaded verses and search results
+      final refs = remoteBookmarks
+          .map((b) => '${b.bookId}:${b.chapter}:${b.verseNumber}')
+          .toSet();
+
+      for (var i = 0; i < _currentChapterVerses.length; i++) {
+        final v = _currentChapterVerses[i];
+        final isBm = refs.contains('${v.bookId}:${v.chapter}:${v.verseNumber}');
+        if (v.isBookmarked != isBm) {
+          _currentChapterVerses[i] = v.copyWith(isBookmarked: isBm);
+        }
+      }
+
+      for (var i = 0; i < _searchResults.length; i++) {
+        final v = _searchResults[i];
+        final isBm = refs.contains('${v.bookId}:${v.chapter}:${v.verseNumber}');
+        if (v.isBookmarked != isBm) {
+          _searchResults[i] = v.copyWith(isBookmarked: isBm);
+        }
+      }
+
+      notifyListeners();
+    });
+  }
+
+  // Stop watching Firestore bookmarks
+  void stopWatchingFirestoreBookmarks() {
+    _firestoreBookmarksSub?.cancel();
+    _firestoreBookmarksSub = null;
   }
 }

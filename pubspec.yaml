@@ -23,6 +23,8 @@ dependencies:
   xml: ^6.5.0
   firebase_core: ^2.24.2
   firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

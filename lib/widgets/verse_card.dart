@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/audio_provider.dart';
+import '../providers/settings_provider.dart';
 
 class VerseCard extends StatefulWidget {
   final dynamic verse;
@@ -198,7 +199,12 @@ class _VerseCardState extends State<VerseCard>
   }
 
   Widget _buildVerseText() {
-    final text = widget.verse.odiyaText;
+    final settings = Provider.of<SettingsProvider>(context);
+    final lang = settings.readingLanguage;
+    final eng = widget.verse.englishText as String?;
+    final text = (lang == 'english' && (eng?.isNotEmpty ?? false))
+        ? eng!
+        : widget.verse.odiyaText;
 
     // Build the superscript verse number as a WidgetSpan
     final numberSpan = WidgetSpan(
@@ -461,7 +467,11 @@ class _VerseCardState extends State<VerseCard>
   }
 
   void _copyToClipboard() {
-    final text = '"${widget.verse.odiyaText}" - ${widget.verse.reference}';
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final lang = settings.readingLanguage;
+    final eng = widget.verse.englishText as String?;
+    final verseText = (lang == 'english' && (eng?.isNotEmpty ?? false)) ? eng! : widget.verse.odiyaText;
+    final text = '"$verseText" - ${widget.verse.reference}';
     Clipboard.setData(ClipboardData(text: text));
     
     ScaffoldMessenger.of(context).showSnackBar(

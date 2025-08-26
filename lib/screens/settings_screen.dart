@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/bible_provider.dart';
+import '../providers/auth_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -127,11 +128,83 @@ class SettingsScreen extends StatelessWidget {
             
             const SizedBox(height: 24),
             
-            // Data & Storage
-            _buildSectionHeader(context, 'Data & Storage'),
+            // Account Settings
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, _) {
+                if (authProvider.isAuthenticated) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionHeader(context, 'Account'),
+                      _buildSettingsCard(
+                        context,
+                        children: [
+                          ListTile(
+                            leading: const CircleAvatar(child: Icon(Icons.person)),
+                            title: Text(authProvider.displayName ?? 'User'),
+                            subtitle: Text(authProvider.email ?? ''),
+                          ),
+                          const Divider(),
+                          _buildActionTile(
+                            context,
+                            title: 'Sync Data',
+                            subtitle: _getSyncStatusText(authProvider.syncStatus),
+                            icon: Icons.sync,
+                            onTap: () async {
+                              await authProvider.triggerSync();
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Syncing data...')),
+                                );
+                              }
+                            },
+                          ),
+                          const Divider(),
+                          _buildActionTile(
+                            context,
+                            title: 'Sign Out',
+                            subtitle: 'Log out from your account',
+                            icon: Icons.logout,
+                            onTap: () async {
+                              await authProvider.signOut();
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Signed out successfully')),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+            
+            // Data Management
+            _buildSectionHeader(context, 'Data Management'),
             _buildSettingsCard(
               context,
               children: [
+                _buildActionTile(
+                  context,
+                  title: 'Export Bookmarks',
+                  subtitle: 'Save your bookmarks to a file',
+                  icon: Icons.upload_file,
+                  onTap: () => _exportBookmarks(context),
+                ),
+                const Divider(),
+                _buildActionTile(
+                  context,
+                  title: 'Import Bookmarks',
+                  subtitle: 'Load bookmarks from a file',
+                  icon: Icons.download,
+                  onTap: () => _importBookmarks(context),
+                ),
+                const Divider(),
                 _buildActionTile(
                   context,
                   title: 'Clear Cache',
@@ -142,18 +215,10 @@ class SettingsScreen extends StatelessWidget {
                 const Divider(),
                 _buildActionTile(
                   context,
-                  title: 'Export Bookmarks',
-                  subtitle: 'Save bookmarks to file',
-                  icon: Icons.file_download,
-                  onTap: () => _exportBookmarks(context),
-                ),
-                const Divider(),
-                _buildActionTile(
-                  context,
-                  title: 'Import Bookmarks',
-                  subtitle: 'Load bookmarks from file',
-                  icon: Icons.file_upload,
-                  onTap: () => _importBookmarks(context),
+                  title: 'Reset Settings',
+                  subtitle: 'Restore default settings',
+                  icon: Icons.restore,
+                  onTap: () => _showResetDialog(context, settingsProvider),
                 ),
               ],
             ),
@@ -167,8 +232,8 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 _buildActionTile(
                   context,
-                  title: 'App Version',
-                  subtitle: '1.0.0',
+                  title: 'About This App',
+                  subtitle: 'Version and information',
                   icon: Icons.info,
                   onTap: () => _showAboutDialog(context),
                 ),
@@ -176,17 +241,9 @@ class SettingsScreen extends StatelessWidget {
                 _buildActionTile(
                   context,
                   title: 'Privacy Policy',
-                  subtitle: 'View our privacy policy',
+                  subtitle: 'How we handle your data',
                   icon: Icons.privacy_tip,
                   onTap: () => _openPrivacyPolicy(context),
-                ),
-                const Divider(),
-                _buildActionTile(
-                  context,
-                  title: 'Reset Settings',
-                  subtitle: 'Reset all settings to default',
-                  icon: Icons.restore,
-                  onTap: () => _showResetDialog(context, settingsProvider),
                 ),
               ],
             ),
@@ -196,6 +253,20 @@ class SettingsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _getSyncStatusText(SyncStatus status) {
+    switch (status) {
+      case SyncStatus.syncing:
+        return 'Syncing in progress...';
+      case SyncStatus.success:
+        return 'Last sync successful';
+      case SyncStatus.error:
+        return 'Last sync failed';
+      case SyncStatus.idle:
+      default:
+        return 'Tap to sync your data';
+    }
   }
 
   Widget _buildSectionHeader(BuildContext context, String title) {

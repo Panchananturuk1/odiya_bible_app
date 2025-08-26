@@ -719,4 +719,57 @@ class BibleProvider with ChangeNotifier {
     _firestoreBookmarksSub?.cancel();
     _firestoreBookmarksSub = null;
   }
+
+  // Clear all authentication-scoped data and flags when user signs out
+  void clearAuthDataOnSignOut() {
+    // Cancel any active subscriptions
+    _firestoreBookmarksSub?.cancel();
+    _firestoreBookmarksSub = null;
+    _firestoreHighlightsSub?.cancel();
+    _firestoreHighlightsSub = null;
+
+    // Clear bookmarks in memory
+    _bookmarks = [];
+
+    // Reset flags in current chapter verses
+    for (var i = 0; i < _currentChapterVerses.length; i++) {
+      final v = _currentChapterVerses[i];
+      if (v.isBookmarked || v.isHighlighted) {
+        _currentChapterVerses[i] = v.copyWith(
+          isBookmarked: false,
+          isHighlighted: false,
+        );
+      }
+    }
+
+    // Reset flags in paragraphs
+    for (int p = 0; p < _currentChapterParagraphs.length; p++) {
+      final para = _currentChapterParagraphs[p];
+      bool changed = false;
+      final updated = para.map((v) {
+        if (v.isBookmarked || v.isHighlighted) {
+          changed = true;
+          return v.copyWith(
+            isBookmarked: false,
+            isHighlighted: false,
+          );
+        }
+        return v;
+      }).toList();
+      if (changed) _currentChapterParagraphs[p] = updated;
+    }
+
+    // Reset flags in search results
+    for (var i = 0; i < _searchResults.length; i++) {
+      final v = _searchResults[i];
+      if (v.isBookmarked || v.isHighlighted) {
+        _searchResults[i] = v.copyWith(
+          isBookmarked: false,
+          isHighlighted: false,
+        );
+      }
+    }
+
+    notifyListeners();
+  }
 }

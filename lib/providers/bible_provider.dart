@@ -7,12 +7,14 @@ import '../services/database_service.dart';
 import '../services/firestore_bookmark_service.dart';
 import '../services/json_bible_service.dart';
 import '../services/usx_parser.dart';
+import '../services/firestore_highlight_service.dart';
 import 'dart:async'
     ;
 
 class BibleProvider with ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
   final FirestoreBookmarkService _firestoreBookmarkService = FirestoreBookmarkService();
+  final FirestoreHighlightService _firestoreHighlightService = FirestoreHighlightService();
   // Using JSON service for Bible data, database for bookmarks only
   
   List<Book> _books = [];
@@ -28,6 +30,55 @@ class BibleProvider with ChangeNotifier {
   String _searchQuery = '';
   
   StreamSubscription<List<Bookmark>>? _firestoreBookmarksSub;
+  StreamSubscription<Set<String>>? _firestoreHighlightsSub;
+  void startWatchingFirestoreHighlights() {
+    _firestoreHighlightsSub?.cancel();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    _firestoreHighlightsSub = _firestoreHighlightService.watchHighlights().listen((refs) {
+      // Update flags for current chapter verses
+      for (var i = 0; i < _currentChapterVerses.length; i++) {
+        final v = _currentChapterVerses[i];
+        final key = '${v.bookId}:${v.chapter}:${v.verseNumber}';
+        final shouldBeHighlighted = refs.contains(key);
+        if (v.isHighlighted != shouldBeHighlighted) {
+          _currentChapterVerses[i] = v.copyWith(isHighlighted: shouldBeHighlighted);
+        }
+      }
+      // Update flags for search results
+      for (var i = 0; i < _searchResults.length; i++) {
+        final v = _searchResults[i];
+        final key = '${v.bookId}:${v.chapter}:${v.verseNumber}';
+        final shouldBeHighlighted = refs.contains(key);
+        if (v.isHighlighted != shouldBeHighlighted) {
+          _searchResults[i] = v.copyWith(isHighlighted: shouldBeHighlighted);
+        }
+      }
+      // Update paragraphs as well
+      for (int p = 0; p < _currentChapterParagraphs.length; p++) {
+        final para = _currentChapterParagraphs[p];
+        bool changed = false;
+        final updated = para.map((v) {
+          final key = '${v.bookId}:${v.chapter}:${v.verseNumber}';
+          final shouldBeHighlighted = refs.contains(key);
+          if (v.isHighlighted != shouldBeHighlighted) {
+            changed = true;
+            return v.copyWith(isHighlighted: shouldBeHighlighted);
+          }
+          return v;
+        }).toList();
+        if (changed) _currentChapterParagraphs[p] = updated;
+      }
+
+      notifyListeners();
+    });
+  }
+
+  void stopWatchingFirestoreHighlights() {
+    _firestoreHighlightsSub?.cancel();
+    _firestoreHighlightsSub = null;
+  }
 
   // Getters
   List<Book> get books => _books;
@@ -55,6 +106,8 @@ class BibleProvider with ChangeNotifier {
       } catch (e) {
         debugPrint('Bookmarks not available on this platform: $e');
       }
+      // Start watching Firestore highlights if a user is logged in
+      startWatchingFirestoreHighlights();
       // Load the first book and chapter by default
       if (_books.isNotEmpty) {
         await selectBook(_books.first.id);
@@ -215,27 +268,72 @@ class BibleProvider with ChangeNotifier {
         isBookmarked: isBookmarked ?? v.isBookmarked,
       );
     }
+
+    // Also update within paragraph groupings so the reading screen reflects changes immediately
+    for (int p = 0; p < _currentChapterParagraphs.length; p++) {
+      final para = _currentChapterParagraphs[p];
+      bool changed = false;
+      final updated = para.map((v) {
+        if (v.id == verseId) {
+          changed = true;
+          return v.copyWith(
+            isHighlighted: isHighlighted ?? v.isHighlighted,
+            note: note ?? v.note,
+            isBookmarked: isBookmarked ?? v.isBookmarked,
+          );
+        }
+        return v;
+      }).toList();
+      if (changed) {
+        _currentChapterParagraphs[p] = updated;
+      }
+    }
   }
 
   // Highlight verse (web-safe and updates both current and search lists)
   Future<void> toggleVerseHighlight(int verseId) async {
     try {
-      // Determine current highlight state from either list
+      // Determine current highlight state and verse reference
       bool current = false;
+      Verse? target;
       final idxCurrent = _currentChapterVerses.indexWhere((v) => v.id == verseId);
       if (idxCurrent != -1) {
-        current = _currentChapterVerses[idxCurrent].isHighlighted;
+        target = _currentChapterVerses[idxCurrent];
+        current = target.isHighlighted;
       } else {
         final idxSearch = _searchResults.indexWhere((v) => v.id == verseId);
         if (idxSearch != -1) {
-          current = _searchResults[idxSearch].isHighlighted;
+          target = _searchResults[idxSearch];
+          current = target.isHighlighted;
         }
       }
 
+      if (target == null) return;
+
       final newHighlightState = !current;
 
+      // Attempt database persistence on non-web, but don't block UI update if it fails
       if (!kIsWeb) {
-        await _databaseService.updateVerseHighlight(verseId, newHighlightState);
+        try {
+          await _databaseService.updateVerseHighlight(verseId, newHighlightState);
+        } catch (e) {
+          debugPrint('DB update for highlight failed (continuing with in-memory): $e');
+        }
+      }
+
+      // Persist per-user highlight to Firestore when user is signed-in
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          if (newHighlightState) {
+            // Save with yellow default color
+            await _firestoreHighlightService.setHighlight(target.bookId, target.chapter, target.verseNumber, '#FFF59D');
+          } else {
+            await _firestoreHighlightService.removeHighlight(target.bookId, target.chapter, target.verseNumber);
+          }
+        }
+      } catch (e) {
+        debugPrint('Firestore highlight sync failed: $e');
       }
 
       _updateVerseInMemory(verseId, isHighlighted: newHighlightState);
@@ -248,8 +346,13 @@ class BibleProvider with ChangeNotifier {
   // Add/update verse note (web-safe and updates both current and search lists)
   Future<void> updateVerseNote(int verseId, String? note) async {
     try {
+      // Attempt database persistence on non-web, but don't block UI update if it fails
       if (!kIsWeb) {
-        await _databaseService.updateVerseNote(verseId, note);
+        try {
+          await _databaseService.updateVerseNote(verseId, note);
+        } catch (e) {
+          debugPrint('DB update for note failed (continuing with in-memory): $e');
+        }
       }
 
       _updateVerseInMemory(verseId, note: note);

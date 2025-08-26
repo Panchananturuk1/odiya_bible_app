@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'
+    ;
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import '../providers/bible_provider.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/verse_card.dart';
@@ -286,7 +288,11 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _shareVerse(verse) {
-    final text = '"${verse.odiyaText}" - ${verse.reference}';
+    final lang = Provider.of<SettingsProvider>(context, listen: false).readingLanguage;
+    final verseText = (lang == 'english' && (verse.englishText?.isNotEmpty ?? false))
+        ? verse.englishText!
+        : verse.odiyaText;
+    final text = '"$verseText" - ${verse.reference}';
     // TODO: Implement share functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -294,7 +300,7 @@ class _SearchScreenState extends State<SearchScreen> {
         action: SnackBarAction(
           label: 'Copy',
           onPressed: () {
-            // TODO: Copy to clipboard
+            Clipboard.setData(ClipboardData(text: text));
           },
         ),
       ),

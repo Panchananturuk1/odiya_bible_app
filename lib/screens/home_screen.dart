@@ -62,10 +62,16 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, bibleProvider, settingsProvider, child) {
         return Scaffold(
           appBar: AppBar(
+            toolbarHeight: 34,
+            titleSpacing: 8,
+            leadingWidth: 40,
+            iconTheme: const IconThemeData(size: 18),
             title: Text(
               _titles[_currentIndex],
               style: const TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                height: 1.0,
               ),
             ),
             elevation: 2,
@@ -77,13 +83,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: const Icon(Icons.text_decrease),
                   onPressed: settingsProvider.decreaseFontSize,
                   tooltip: 'Decrease font size',
+                  iconSize: 18,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                  visualDensity: VisualDensity.compact,
                 ),
                 IconButton(
                   icon: const Icon(Icons.text_increase),
                   onPressed: settingsProvider.increaseFontSize,
                   tooltip: 'Increase font size',
+                  iconSize: 18,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                  visualDensity: VisualDensity.compact,
                 ),
               ],
+              // Language toggle (Odiya/English)
+              IconButton(
+                icon: Icon(
+                  settingsProvider.readingLanguage == 'odiya'
+                      ? Icons.translate
+                      : Icons.translate,
+                ),
+                onPressed: () => settingsProvider.toggleReadingLanguage(),
+                tooltip: settingsProvider.readingLanguage == 'odiya'
+                    ? 'Switch to English'
+                    : 'Switch to Odiya',
+                iconSize: 18,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                visualDensity: VisualDensity.compact,
+              ),
               // Dark mode toggle
               IconButton(
                 icon: Icon(
@@ -95,6 +125,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 tooltip: settingsProvider.isDarkMode 
                     ? 'Switch to light mode' 
                     : 'Switch to dark mode',
+                iconSize: 18,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                visualDensity: VisualDensity.compact,
               ),
             ],
           ),

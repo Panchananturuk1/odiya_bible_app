@@ -208,7 +208,12 @@ class _BookmarksScreenState extends State<BookmarksScreen>
 
   List _getRecentBookmarks(List bookmarks) {
     final sortedBookmarks = List.from(bookmarks);
-    sortedBookmarks.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    // Sort by updatedAt if available, otherwise by createdAt; handle nulls safely
+    sortedBookmarks.sort((a, b) {
+      final DateTime aTime = (a.updatedAt ?? a.createdAt) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final DateTime bTime = (b.updatedAt ?? b.createdAt) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bTime.compareTo(aTime);
+    });
     return sortedBookmarks.take(20).toList(); // Show last 20 recent bookmarks
   }
 

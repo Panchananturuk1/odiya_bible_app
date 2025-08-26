@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/app_settings.dart';
 import '../services/settings_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SettingsProvider with ChangeNotifier {
   final SettingsService _settingsService = SettingsService();
@@ -47,11 +48,13 @@ class SettingsProvider with ChangeNotifier {
         borderRadius: BorderRadius.circular(12),
       ),
     ),
-    textTheme: TextTheme(
-      bodyLarge: TextStyle(fontSize: _settings.fontSize),
-      bodyMedium: TextStyle(fontSize: _settings.fontSize - 2),
-      titleLarge: TextStyle(fontSize: _settings.fontSize + 4),
-      titleMedium: TextStyle(fontSize: _settings.fontSize + 2),
+    textTheme: GoogleFonts.notoSansOriyaTextTheme(
+      ThemeData(brightness: Brightness.light).textTheme.copyWith(
+        bodyLarge: TextStyle(fontSize: _settings.fontSize),
+        bodyMedium: TextStyle(fontSize: _settings.fontSize - 2),
+        titleLarge: TextStyle(fontSize: _settings.fontSize + 4),
+        titleMedium: TextStyle(fontSize: _settings.fontSize + 2),
+      ),
     ),
   );
 
@@ -71,11 +74,13 @@ class SettingsProvider with ChangeNotifier {
         borderRadius: BorderRadius.circular(12),
       ),
     ),
-    textTheme: TextTheme(
-      bodyLarge: TextStyle(fontSize: _settings.fontSize, color: Colors.white),
-      bodyMedium: TextStyle(fontSize: _settings.fontSize - 2, color: Colors.white70),
-      titleLarge: TextStyle(fontSize: _settings.fontSize + 4, color: Colors.white),
-      titleMedium: TextStyle(fontSize: _settings.fontSize + 2, color: Colors.white),
+    textTheme: GoogleFonts.notoSansOriyaTextTheme(
+      ThemeData(brightness: Brightness.dark).textTheme.copyWith(
+        bodyLarge: TextStyle(fontSize: _settings.fontSize, color: Colors.white),
+        bodyMedium: TextStyle(fontSize: _settings.fontSize - 2, color: Colors.white70),
+        titleLarge: TextStyle(fontSize: _settings.fontSize + 4, color: Colors.white),
+        titleMedium: TextStyle(fontSize: _settings.fontSize + 2, color: Colors.white),
+      ),
     ),
   );
 

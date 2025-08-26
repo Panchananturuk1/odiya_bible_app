@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidBookmarkData(data) {
+      return data.keys().hasAll(['book_id', 'chapter', 'verse_number', 'verse_text', 'created_at']) &&
+             data.keys().hasOnly(['book_id', 'chapter', 'verse_number', 'verse_text', 'note', 'created_at', 'updated_at', 'tags']) &&
+             data.book_id is int &&
+             data.chapter is int &&
+             data.verse_number is int &&
+             data.verse_text is string &&
+             data.created_at is string &&
+             (!('note' in data) || data.note is string || data.note == null) &&
+             (!('updated_at' in data) || data.updated_at is string || data.updated_at == null) &&
+             (!('tags' in data) || data.tags is string || data.tags is list || data.tags == null);
+    }
+
+    match /users/{userId} {
+      // Bookmarks subcollection: only the owner can read/write
+      match /bookmarks/{bookmarkId} {
+        allow read: if isOwner(userId);
+
+        allow create: if isOwner(userId) && isValidBookmarkData(request.resource.data);
+
+        allow update: if isOwner(userId) &&
+                       isValidBookmarkData(request.resource.data) &&
+                       request.resource.data.created_at == resource.data.created_at;
+
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Deny everything else by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

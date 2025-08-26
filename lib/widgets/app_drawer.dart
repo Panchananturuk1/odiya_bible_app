@@ -2,14 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/bible_provider.dart';
 import '../providers/settings_provider.dart';
+import '../providers/auth_provider.dart';
+import '../screens/auth_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<BibleProvider, SettingsProvider>(
-      builder: (context, bibleProvider, settingsProvider, child) {
+    return Consumer3<BibleProvider, SettingsProvider, AuthProvider>(
+      builder: (context, bibleProvider, settingsProvider, auth, child) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (auth.syncStatus == SyncStatus.error && auth.errorMessage != null) {
+            final messenger = ScaffoldMessenger.maybeOf(context);
+            if (messenger != null) {
+              messenger.showSnackBar(
+                SnackBar(content: Text(auth.errorMessage!), backgroundColor: Colors.red),
+              );
+              auth.clearError();
+            }
+          }
+        });
+
         return Drawer(
           child: Column(
             children: [
@@ -25,32 +39,126 @@ class AppDrawer extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.menu_book,
-                      size: 48,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'ଓଡିଆ ବାଇବଲ',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.menu_book,
+                            size: 48,
+                            color: Colors.white,
+                          ),
+                          const Spacer(),
+                          // Profile/Login action
+                          InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () async {
+                              Navigator.pop(context);
+                              if (auth.isAuthenticated) {
+                                // Show account sheet with sign out
+                                await showModalBottomSheet(
+                                  context: context,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                                  ),
+                                  builder: (_) {
+                                    return SafeArea(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            ListTile(
+                                              leading: const CircleAvatar(child: Icon(Icons.person)),
+                                              title: Text(auth.displayName ?? 'User', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                              subtitle: Text(auth.email ?? ''),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            ListTile(
+                                              leading: const Icon(Icons.sync),
+                                              title: const Text('Sync now'),
+                                              subtitle: Text(_syncSubtitle(auth.syncStatus)),
+                                              onTap: () async {
+                                                Navigator.pop(context);
+                                                await auth.triggerSync();
+                                              },
+                                              trailing: _syncTrailing(context, auth.syncStatus),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            ListTile(
+                                              leading: const Icon(Icons.logout, color: Colors.red),
+                                              title: const Text('Sign out'),
+                                              onTap: () async {
+                                                Navigator.pop(context);
+                                                await auth.signOut();
+                                                final messenger = ScaffoldMessenger.maybeOf(context);
+                                                messenger?.showSnackBar(const SnackBar(content: Text('Signed out')));
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              } else {
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const AuthScreen()),
+                                );
+                              }
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (auth.isAuthenticated)
+                                  const CircleAvatar(radius: 16, child: Icon(Icons.person, size: 18, color: Colors.white)),
+                                if (!auth.isAuthenticated)
+                                  const Icon(Icons.login, color: Colors.white),
+                                const SizedBox(width: 8),
+                                Text(
+                                  auth.isAuthenticated ? (auth.displayName ?? 'Profile') : 'Sign in',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Odiya Bible',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withOpacity(0.9),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'ଓଡିଆ ବାଇବଲ',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        'Odiya Bible',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      // Sync status chip
+                      if (auth.isAuthenticated)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: ActionChip(
+                            avatar: _syncTrailing(context, auth.syncStatus),
+                            label: Text(_syncChipText(auth.syncStatus)),
+                            onPressed: auth.syncStatus == SyncStatus.syncing ? null : () => auth.triggerSync(),
+                            backgroundColor: Colors.white.withOpacity(0.15),
+                            labelStyle: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
               
@@ -180,6 +288,31 @@ class AppDrawer extends StatelessWidget {
                         DefaultTabController.of(context)?.animateTo(3);
                       },
                     ),
+
+                    // Auth section in list
+                    const SizedBox(height: 8),
+                    if (!auth.isAuthenticated)
+                      ListTile(
+                        leading: const Icon(Icons.login),
+                        title: const Text('Sign in / Create account'),
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const AuthScreen()),
+                          );
+                        },
+                      ),
+                    if (auth.isAuthenticated)
+                      ListTile(
+                        leading: const Icon(Icons.person),
+                        title: Text(auth.displayName ?? 'Profile'),
+                        subtitle: Text(auth.email ?? ''),
+                        trailing: _syncTrailing(context, auth.syncStatus),
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await auth.triggerSync();
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -212,6 +345,52 @@ class AppDrawer extends StatelessWidget {
         );
       },
     );
+  }
+
+  static String _syncChipText(SyncStatus status) {
+    switch (status) {
+      case SyncStatus.syncing:
+        return 'Syncing…';
+      case SyncStatus.success:
+        return 'Synced';
+      case SyncStatus.error:
+        return 'Sync failed';
+      case SyncStatus.idle:
+      default:
+        return 'Sync idle';
+    }
+  }
+
+  static String _syncSubtitle(SyncStatus status) {
+    switch (status) {
+      case SyncStatus.syncing:
+        return 'In progress';
+      case SyncStatus.success:
+        return 'Last sync successful';
+      case SyncStatus.error:
+        return 'Last sync failed';
+      case SyncStatus.idle:
+      default:
+        return 'Tap to sync';
+    }
+  }
+
+  static Widget _syncTrailing(BuildContext context, SyncStatus status) {
+    switch (status) {
+      case SyncStatus.syncing:
+        return const SizedBox(
+          height: 18,
+          width: 18,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+      case SyncStatus.success:
+        return const Icon(Icons.check_circle, color: Colors.green);
+      case SyncStatus.error:
+        return const Icon(Icons.error, color: Colors.red);
+      case SyncStatus.idle:
+      default:
+        return const Icon(Icons.sync);
+    }
   }
 
   Widget _buildSectionHeader(BuildContext context, String title) {

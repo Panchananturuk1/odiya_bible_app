@@ -1,16 +1,45 @@
-# odiya_bible_app
+# Odiya Bible App
 
-A new Flutter project.
+A Flutter-based Bible application with paragraph-style verse rendering, bookmarking, highlighting, and search functionality.
+
+## Live Demo
+
+Explore the live application: [Odiya Bible App](https://odiyabible-6621f.web.app/)
+
+## Features
+
+- Paragraph-style verse rendering for natural reading experience
+- Verse highlighting and bookmarking
+- Search functionality
+- Note-taking capability
+- Responsive design for mobile and web platforms
+
+## Technologies Used
+
+- Flutter for cross-platform development
+- Firebase for web hosting
+- USX parsing for Bible text formatting
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter SDK
+- Dart SDK
+- Firebase CLI (for deployment)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository
+2. Run `flutter pub get` to install dependencies
+3. Run `flutter run` to start the application locally
+
+### Deployment
+
+1. Build the web version: `flutter build web --release`
+2. Deploy to Firebase: `firebase deploy --only hosting`
+
+## Resources
+
+- [Flutter Documentation](https://docs.flutter.dev/)
+- [Firebase Hosting Documentation](https://firebase.google.com/docs/hosting)

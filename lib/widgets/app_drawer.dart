@@ -47,7 +47,7 @@ class AppDrawer extends StatelessWidget {
                         children: [
                           const Icon(
                             Icons.menu_book,
-                            size: 48,
+                            size: 36,
                             color: Colors.white,
                           ),
                           const Spacer(),
@@ -127,20 +127,20 @@ class AppDrawer extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       const Text(
                         'ଓଡିଆ ବାଇବଲ',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         'Odiya Bible',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 13,
                           color: Colors.white.withOpacity(0.9),
                         ),
                       ),
@@ -164,162 +164,175 @@ class AppDrawer extends StatelessWidget {
               
               // Navigation Items
               Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    // Bible Books Section
-                    _buildSectionHeader(context, 'Bible Books'),
-                    
-                    // Old Testament
-                    ExpansionTile(
-                      leading: const Icon(Icons.book),
-                      title: const Text('Old Testament'),
-                      subtitle: Text('${bibleProvider.oldTestamentBooks.length} books'),
-                      children: bibleProvider.oldTestamentBooks.map((book) {
-                        return ListTile(
-                          contentPadding: const EdgeInsets.only(left: 72, right: 16),
-                          title: Text(
-                            book.odiyaName,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          subtitle: Text(
-                            '${book.name} • ${book.totalChapters} chapters',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _showChapterSelector(context, book, bibleProvider);
-                          },
-                        );
-                      }).toList(),
-                    ),
-                    
-                    // New Testament
-                    ExpansionTile(
-                      leading: const Icon(Icons.auto_stories),
-                      title: const Text('New Testament'),
-                      subtitle: Text('${bibleProvider.newTestamentBooks.length} books'),
-                      children: bibleProvider.newTestamentBooks.map((book) {
-                        return ListTile(
-                          contentPadding: const EdgeInsets.only(left: 72, right: 16),
-                          title: Text(
-                            book.odiyaName,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          subtitle: Text(
-                            '${book.name} • ${book.totalChapters} chapters',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _showChapterSelector(context, book, bibleProvider);
-                          },
-                        );
-                      }).toList(),
-                    ),
-                    
-                    const Divider(),
-                    
-                    // Quick Actions
-                    _buildSectionHeader(context, 'Quick Actions'),
-                    
-                    ListTile(
-                      leading: const Icon(Icons.search),
-                      title: const Text('Search Bible'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        DefaultTabController.of(context)?.animateTo(1);
-                      },
-                    ),
-                    
-                    ListTile(
-                      leading: const Icon(Icons.bookmark),
-                      title: const Text('My Bookmarks'),
-                      subtitle: Text('${bibleProvider.bookmarks.length} saved'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        DefaultTabController.of(context)?.animateTo(2);
-                      },
-                    ),
-                    
-                    ListTile(
-                      leading: Icon(
-                        settingsProvider.isDarkMode 
-                            ? Icons.light_mode 
-                            : Icons.dark_mode,
+                child: ListTileTheme(
+                  dense: true,
+                  minLeadingWidth: 28,
+                  horizontalTitleGap: 8,
+                  minVerticalPadding: 4,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  style: ListTileStyle.list,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      // Bible Books Section
+                      _buildSectionHeader(context, 'Bible Books'),
+                      
+                      // Old Testament
+                      ExpansionTile(
+                        tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                        childrenPadding: const EdgeInsets.only(left: 44, right: 8, bottom: 4),
+                        leading: const Icon(Icons.book, size: 20),
+                        title: const Text('Old Testament', style: TextStyle(fontSize: 14)),
+                        subtitle: Text('${bibleProvider.oldTestamentBooks.length} books', style: const TextStyle(fontSize: 12)),
+                        children: bibleProvider.oldTestamentBooks.map((book) {
+                          return ListTile(
+                            contentPadding: const EdgeInsets.only(left: 60, right: 12),
+                            title: Text(
+                              book.odiyaName,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                            subtitle: Text(
+                              '${book.name} • ${book.totalChapters} chapters',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _showChapterSelector(context, book, bibleProvider);
+                            },
+                          );
+                        }).toList(),
                       ),
-                      title: Text(
-                        settingsProvider.isDarkMode 
-                            ? 'Light Mode' 
-                            : 'Dark Mode',
+                      
+                      // New Testament
+                      ExpansionTile(
+                        tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                        childrenPadding: const EdgeInsets.only(left: 44, right: 8, bottom: 4),
+                        leading: const Icon(Icons.auto_stories, size: 20),
+                        title: const Text('New Testament', style: TextStyle(fontSize: 14)),
+                        subtitle: Text('${bibleProvider.newTestamentBooks.length} books', style: const TextStyle(fontSize: 12)),
+                        children: bibleProvider.newTestamentBooks.map((book) {
+                          return ListTile(
+                            contentPadding: const EdgeInsets.only(left: 60, right: 12),
+                            title: Text(
+                              book.odiyaName,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                            subtitle: Text(
+                              '${book.name} • ${book.totalChapters} chapters',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _showChapterSelector(context, book, bibleProvider);
+                            },
+                          );
+                        }).toList(),
                       ),
-                      onTap: () {
-                        settingsProvider.toggleDarkMode();
-                      },
-                    ),
-                    
-                    const Divider(),
-                    
-                    // Reading Progress
-                    if (bibleProvider.currentBook != null) ...
-                    [
-                      _buildSectionHeader(context, 'Current Reading'),
+                      
+                      const Divider(),
+                      
+                      // Quick Actions
+                      _buildSectionHeader(context, 'Quick Actions'),
                       
                       ListTile(
-                        leading: const Icon(Icons.bookmark_border),
-                        title: Text(bibleProvider.currentBook!.odiyaName),
-                        subtitle: Text('Chapter ${bibleProvider.currentChapter}'),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        leading: const Icon(Icons.search),
+                        title: const Text('Search Bible', style: TextStyle(fontSize: 14)),
                         onTap: () {
                           Navigator.pop(context);
-                          DefaultTabController.of(context)?.animateTo(0);
+                          DefaultTabController.of(context)?.animateTo(1);
+                        },
+                      ),
+                      
+                      ListTile(
+                        leading: const Icon(Icons.bookmark),
+                        title: const Text('My Bookmarks', style: TextStyle(fontSize: 14)),
+                        subtitle: Text('${bibleProvider.bookmarks.length} saved', style: const TextStyle(fontSize: 12)),
+                        onTap: () {
+                          Navigator.pop(context);
+                          DefaultTabController.of(context)?.animateTo(2);
+                        },
+                      ),
+                      
+                      ListTile(
+                        leading: Icon(
+                          settingsProvider.isDarkMode 
+                              ? Icons.light_mode 
+                              : Icons.dark_mode,
+                        ),
+                        title: Text(
+                          settingsProvider.isDarkMode 
+                              ? 'Light Mode' 
+                              : 'Dark Mode',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        onTap: () {
+                          settingsProvider.toggleDarkMode();
                         },
                       ),
                       
                       const Divider(),
-                    ],
-                    
-                    // Settings
-                    ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text('Settings'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        DefaultTabController.of(context)?.animateTo(3);
-                      },
-                    ),
+                      
+                      // Reading Progress
+                      if (bibleProvider.currentBook != null) ...
+                      [
+                        _buildSectionHeader(context, 'Current Reading'),
+                        
+                        ListTile(
+                          leading: const Icon(Icons.bookmark_border),
+                          title: Text(bibleProvider.currentBook!.odiyaName, style: const TextStyle(fontSize: 14)),
+                          subtitle: Text('Chapter ${bibleProvider.currentChapter}', style: const TextStyle(fontSize: 12)),
+                          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {
+                            Navigator.pop(context);
+                            DefaultTabController.of(context)?.animateTo(0);
+                          },
+                        ),
+                        
+                        const Divider(),
+                      ],
+                      
+                      // Settings
+                      ListTile(
+                        leading: const Icon(Icons.settings),
+                        title: const Text('Settings', style: TextStyle(fontSize: 14)),
+                        onTap: () {
+                          Navigator.pop(context);
+                          DefaultTabController.of(context)?.animateTo(3);
+                        },
+                      ),
 
-                    // Auth section in list
-                    const SizedBox(height: 8),
-                    if (!auth.isAuthenticated)
-                      ListTile(
-                        leading: const Icon(Icons.login),
-                        title: const Text('Sign in / Create account'),
-                        onTap: () async {
-                          Navigator.pop(context);
-                          await Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const AuthScreen()),
-                          );
-                        },
-                      ),
-                    if (auth.isAuthenticated)
-                      ListTile(
-                        leading: const Icon(Icons.person),
-                        title: Text(auth.displayName ?? 'Profile'),
-                        subtitle: Text(auth.email ?? ''),
-                        trailing: _syncTrailing(context, auth.syncStatus),
-                        onTap: () async {
-                          Navigator.pop(context);
-                          await auth.triggerSync();
-                        },
-                      ),
-                  ],
+                      // Auth section in list
+                      const SizedBox(height: 6),
+                      if (!auth.isAuthenticated)
+                        ListTile(
+                          leading: const Icon(Icons.login),
+                          title: const Text('Sign in / Create account', style: TextStyle(fontSize: 14)),
+                          onTap: () async {
+                            Navigator.pop(context);
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const AuthScreen()),
+                            );
+                          },
+                        ),
+                      if (auth.isAuthenticated)
+                        ListTile(
+                          leading: const Icon(Icons.person),
+                          title: Text(auth.displayName ?? 'Profile', style: const TextStyle(fontSize: 14)),
+                          subtitle: Text(auth.email ?? '', style: const TextStyle(fontSize: 12)),
+                          trailing: _syncTrailing(context, auth.syncStatus),
+                          onTap: () async {
+                            Navigator.pop(context);
+                            await auth.triggerSync();
+                          },
+                        ),
+                    ],
+                  ),
                 ),
               ),
               
               // Footer
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
                     const Divider(),
@@ -329,7 +342,7 @@ class AppDrawer extends StatelessWidget {
                         color: Colors.grey[600],
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       'Made with ❤️ for Odiya Bible readers',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -402,7 +415,7 @@ class AppDrawer extends StatelessWidget {
 
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(

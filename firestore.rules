@@ -22,6 +22,14 @@ service cloud.firestore {
              (!('tags' in data) || data.tags is string || data.tags is list || data.tags == null);
     }
 
+    function isValidHighlightData(data) {
+      return data.keys().hasAll(['book_id', 'chapter', 'verse_number', 'color']) &&
+             data.book_id is int &&
+             data.chapter is int &&
+             data.verse_number is int &&
+             data.color is string;
+    }
+
     match /users/{userId} {
       // Bookmarks subcollection: only the owner can read/write
       match /bookmarks/{bookmarkId} {
@@ -33,6 +41,17 @@ service cloud.firestore {
                        isValidBookmarkData(request.resource.data) &&
                        request.resource.data.created_at == resource.data.created_at;
 
+        allow delete: if isOwner(userId);
+      }
+      
+      // Highlights subcollection: only the owner can read/write
+      match /highlights/{highlightId} {
+        allow read: if isOwner(userId);
+        
+        allow create: if isOwner(userId) && isValidHighlightData(request.resource.data);
+        
+        allow update: if isOwner(userId) && isValidHighlightData(request.resource.data);
+        
         allow delete: if isOwner(userId);
       }
     }

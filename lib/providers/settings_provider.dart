@@ -16,6 +16,8 @@ class SettingsProvider with ChangeNotifier {
   double get fontSize => _settings.fontSize;
   bool get showParallelBible => _settings.showParallelBible;
   String get parallelLanguage => _settings.parallelLanguage;
+  // Primary reading language for verses: 'odiya' or 'english'
+  String get readingLanguage => _settings.readingLanguage;
   bool get autoPlayAudio => _settings.autoPlayAudio;
   double get audioSpeed => _settings.audioSpeed;
   bool get keepScreenOn => _settings.keepScreenOn;
@@ -288,5 +290,22 @@ class SettingsProvider with ChangeNotifier {
            _settings.keepScreenOn == defaultSettings.keepScreenOn &&
            _settings.showVerseNumbers == defaultSettings.showVerseNumbers &&
            _settings.enableSwipeNavigation == defaultSettings.enableSwipeNavigation;
+  }
+
+  // Update primary reading language
+  Future<void> updateReadingLanguage(String language) async {
+    try {
+      _settings = _settings.copyWith(readingLanguage: language);
+      await _settingsService.saveSettings(_settings);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating reading language: $e');
+    }
+  }
+
+  // Toggle reading language between Odiya and English
+  Future<void> toggleReadingLanguage() async {
+    final newLang = _settings.readingLanguage == 'odiya' ? 'english' : 'odiya';
+    await updateReadingLanguage(newLang);
   }
 }

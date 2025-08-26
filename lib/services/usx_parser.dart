@@ -192,4 +192,69 @@ class USXParser {
 
     return _usxCache[fileName]?[chapter] ?? {};
   }
+
+  // ================== Paragraph parsing support ==================
+  // Cache for paragraph groupings: fileName -> chapter -> list of paragraphs (each a list of verse numbers)
+  static final Map<String, Map<int, List<List<int>>>> _paraCache = {};
+
+  static Future<Map<int, List<List<int>>>> _parseParagraphs(String fileName) async {
+    try {
+      final usxContent = await rootBundle.loadString('assets/Odiya_USX/$fileName');
+      final document = XmlDocument.parse(usxContent);
+
+      final Map<int, List<List<int>>> chapterParagraphs = {};
+      int currentChapter = 0;
+
+      // Iterate through nodes in document order so that chapter markers set the context
+      for (final node in document.rootElement.descendants) {
+        if (node is XmlElement) {
+          final name = node.name.local;
+          if (name == 'chapter') {
+            final numStr = node.getAttribute('number');
+            currentChapter = int.tryParse(numStr ?? '0') ?? 0;
+            if (currentChapter > 0) {
+              chapterParagraphs.putIfAbsent(currentChapter, () => []);
+            }
+          } else if (name == 'para') {
+            if (currentChapter == 0) continue; // Skip stray paras before any chapter marker
+
+            // Collect verse numbers within this paragraph element
+            final List<int> verseNumbers = [];
+            for (final v in node.findAllElements('verse')) {
+              final numStr = v.getAttribute('number');
+              if (numStr != null) {
+                final n = int.tryParse(numStr);
+                if (n != null && !verseNumbers.contains(n)) {
+                  verseNumbers.add(n);
+                }
+              }
+            }
+
+            if (verseNumbers.isNotEmpty) {
+              verseNumbers.sort();
+              chapterParagraphs[currentChapter]!.add(verseNumbers);
+            }
+          }
+        }
+      }
+
+      return chapterParagraphs;
+    } catch (e) {
+      print('[USXParser] Error parsing paragraphs for $fileName: $e');
+      return {};
+    }
+  }
+
+  static Future<List<List<int>>> getChapterParagraphs(String bookName, int chapter) async {
+    final String? usxCode = getUSXCodeFromBookName(bookName);
+    if (usxCode == null) return [];
+
+    final String fileName = '$usxCode.usx';
+
+    if (!_paraCache.containsKey(fileName)) {
+      _paraCache[fileName] = await _parseParagraphs(fileName);
+    }
+
+    return _paraCache[fileName]?[chapter] ?? [];
+  }
 }

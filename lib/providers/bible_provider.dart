@@ -4,6 +4,7 @@ import '../models/verse.dart';
 import '../models/bookmark.dart';
 import '../services/database_service.dart';
 import '../services/json_bible_service.dart';
+import '../services/usx_parser.dart';
 
 class BibleProvider with ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
@@ -11,6 +12,8 @@ class BibleProvider with ChangeNotifier {
   
   List<Book> _books = [];
   List<Verse> _currentChapterVerses = [];
+  // Paragraphs: list of paragraphs, each is a list of verses
+  List<List<Verse>> _currentChapterParagraphs = [];
   Book? _currentBook;
   int _currentChapter = 1;
   int _currentVerse = 1;
@@ -22,6 +25,7 @@ class BibleProvider with ChangeNotifier {
   // Getters
   List<Book> get books => _books;
   List<Verse> get currentChapterVerses => _currentChapterVerses;
+  List<List<Verse>> get currentChapterParagraphs => _currentChapterParagraphs;
   Book? get currentBook => _currentBook;
   int get currentChapter => _currentChapter;
   int get currentVerse => _currentVerse;
@@ -84,6 +88,40 @@ class BibleProvider with ChangeNotifier {
     try {
       final book = _books.firstWhere((b) => b.id == bookId);
       _currentChapterVerses = await JsonBibleService.getVersesByChapter(book.name, chapter);
+
+      // Build paragraph groupings from USX paragraph markers
+      try {
+        final paraGroups = await USXParser.getChapterParagraphs(book.name, chapter);
+        final byNumber = {for (final v in _currentChapterVerses) v.verseNumber: v};
+        final List<List<Verse>> paragraphs = [];
+        final Set<int> covered = {};
+
+        for (final group in paraGroups) {
+          final List<Verse> p = [];
+          for (final n in group) {
+            final v = byNumber[n];
+            if (v != null) {
+              p.add(v);
+              covered.add(n);
+            }
+          }
+          if (p.isNotEmpty) paragraphs.add(p);
+        }
+
+        // Add any verses not covered by USX para grouping as single-verse paragraphs, preserving order
+        for (final v in _currentChapterVerses) {
+          if (!covered.contains(v.verseNumber)) {
+            paragraphs.add([v]);
+          }
+        }
+
+        _currentChapterParagraphs = paragraphs;
+      } catch (e) {
+        debugPrint('Paragraph grouping failed: $e');
+        // Fallback: each verse as its own paragraph
+        _currentChapterParagraphs = _currentChapterVerses.map((v) => [v]).toList();
+      }
+
       _currentChapter = chapter;
       _currentVerse = 1;
       notifyListeners();

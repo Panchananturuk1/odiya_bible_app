@@ -71,171 +71,126 @@ class _VerseCardState extends State<VerseCard>
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: widget.verse.isHighlighted ? 4 : 1,
-      color: widget.verse.isHighlighted 
-          ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3)
-          : null,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: _toggleActions,
-        onLongPress: () {
-          HapticFeedback.mediumImpact();
-          _showVerseOptions();
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Verse number and reference
-              Row(
-                children: [
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: widget.verse.isHighlighted
+            ? Theme.of(context)
+                .colorScheme
+                .primaryContainer
+                .withOpacity(0.2)
+            : Colors.transparent,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _toggleActions,
+          onLongPress: () {
+            HapticFeedback.mediumImpact();
+            _showVerseOptions();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Verse text with superscript verse number
+                _buildVerseText(),
+
+                // Note display (unchanged)
+                if (widget.verse.note?.isNotEmpty == true) ...[
+                  const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      widget.verse.verseNumber.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                      color: Colors.orange[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.orange[200]!,
+                        width: 1,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      widget.verse.reference,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  // Bookmark indicator
-                  if (widget.verse.isBookmarked)
-                    Icon(
-                      Icons.bookmark,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  // Note indicator
-                  if (widget.verse.note?.isNotEmpty == true)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Icon(
-                        Icons.note,
-                        size: 16,
-                        color: Colors.orange[600],
-                      ),
-                    ),
-                ],
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Verse text
-              _buildVerseText(),
-              
-              // Note display
-              if (widget.verse.note?.isNotEmpty == true) ...
-              [
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.orange[200]!,
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.note,
-                        size: 16,
-                        color: Colors.orange[600],
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          widget.verse.note!,
-                          style: TextStyle(
-                            fontSize: widget.fontSize - 2,
-                            color: Colors.orange[800],
-                            fontStyle: FontStyle.italic,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.note,
+                          size: 16,
+                          color: Colors.orange[600],
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            widget.verse.note!,
+                            style: TextStyle(
+                              fontSize: widget.fontSize - 2,
+                              color: Colors.orange[800],
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-              
-              // Action buttons
-              if (_showActions)
-                AnimatedBuilder(
-                  animation: _scaleAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _scaleAnimation.value,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildActionButton(
-                              icon: widget.verse.isHighlighted 
-                                  ? Icons.highlight_off 
-                                  : Icons.highlight,
-                              label: widget.verse.isHighlighted 
-                                  ? 'Remove' 
-                                  : 'Highlight',
-                              onPressed: widget.onHighlight,
-                              color: widget.verse.isHighlighted 
-                                  ? Colors.grey 
-                                  : Colors.yellow[700],
-                            ),
-                            _buildActionButton(
-                              icon: widget.verse.isBookmarked 
-                                  ? Icons.bookmark 
-                                  : Icons.bookmark_border,
-                              label: widget.verse.isBookmarked 
-                                  ? 'Saved' 
-                                  : 'Bookmark',
-                              onPressed: widget.onBookmark,
-                              color: widget.verse.isBookmarked 
-                                  ? Theme.of(context).colorScheme.primary 
-                                  : Colors.grey,
-                            ),
-                            _buildActionButton(
-                              icon: Icons.note_add,
-                              label: 'Note',
-                              onPressed: _showNoteDialog,
-                              color: Colors.orange[600],
-                            ),
-                            _buildActionButton(
-                              icon: Icons.share,
-                              label: 'Share',
-                              onPressed: widget.onShare,
-                              color: Colors.blue[600],
-                            ),
-                            _buildAudioButton(),
-                          ],
+                ],
+
+                // Action buttons (unchanged)
+                if (_showActions)
+                  AnimatedBuilder(
+                    animation: _scaleAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _scaleAnimation.value,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildActionButton(
+                                icon: widget.verse.isHighlighted
+                                    ? Icons.highlight_off
+                                    : Icons.highlight,
+                                label: widget.verse.isHighlighted
+                                    ? 'Remove'
+                                    : 'Highlight',
+                                onPressed: widget.onHighlight,
+                                color: widget.verse.isHighlighted
+                                    ? Colors.grey
+                                    : Colors.yellow[700],
+                              ),
+                              _buildActionButton(
+                                icon: widget.verse.isBookmarked
+                                    ? Icons.bookmark
+                                    : Icons.bookmark_border,
+                                label: widget.verse.isBookmarked
+                                    ? 'Saved'
+                                    : 'Bookmark',
+                                onPressed: widget.onBookmark,
+                                color: widget.verse.isBookmarked
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey,
+                              ),
+                              _buildActionButton(
+                                icon: Icons.note_add,
+                                label: 'Note',
+                                onPressed: _showNoteDialog,
+                                color: Colors.orange[600],
+                              ),
+                              _buildActionButton(
+                                icon: Icons.share,
+                                label: 'Share',
+                                onPressed: widget.onShare,
+                                color: Colors.blue[600],
+                              ),
+                              _buildAudioButton(),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-            ],
+                      );
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -244,18 +199,42 @@ class _VerseCardState extends State<VerseCard>
 
   Widget _buildVerseText() {
     final text = widget.verse.odiyaText;
-    
+
+    // Build the superscript verse number as a WidgetSpan
+    final numberSpan = WidgetSpan(
+      child: Transform.translate(
+        offset: const Offset(0, -6),
+        child: Text(
+          widget.verse.verseNumber.toString(),
+          style: TextStyle(
+            fontSize: widget.fontSize * 0.7,
+            color: Colors.red[700],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+
     if (widget.highlightSearchTerm?.isNotEmpty == true) {
       return _buildHighlightedText(text, widget.highlightSearchTerm!);
     }
-    
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: widget.fontSize,
-        height: 1.6,
-        fontWeight: FontWeight.w400,
+
+    return Text.rich(
+      TextSpan(
+        children: [
+          numberSpan,
+          const TextSpan(text: ' '),
+          TextSpan(
+            text: text,
+            style: TextStyle(
+              fontSize: widget.fontSize,
+              height: 1.6,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
       ),
+      textAlign: TextAlign.start,
     );
   }
 
@@ -263,10 +242,10 @@ class _VerseCardState extends State<VerseCard>
     final spans = <TextSpan>[];
     final lowerText = text.toLowerCase();
     final lowerSearchTerm = searchTerm.toLowerCase();
-    
+
     int start = 0;
     int index = lowerText.indexOf(lowerSearchTerm);
-    
+
     while (index != -1) {
       // Add text before the match
       if (index > start) {
@@ -279,7 +258,7 @@ class _VerseCardState extends State<VerseCard>
           ),
         ));
       }
-      
+
       // Add highlighted match
       spans.add(TextSpan(
         text: text.substring(index, index + searchTerm.length),
@@ -291,11 +270,11 @@ class _VerseCardState extends State<VerseCard>
           color: Colors.black,
         ),
       ));
-      
+
       start = index + searchTerm.length;
       index = lowerText.indexOf(lowerSearchTerm, start);
     }
-    
+
     // Add remaining text
     if (start < text.length) {
       spans.add(TextSpan(
@@ -307,9 +286,24 @@ class _VerseCardState extends State<VerseCard>
         ),
       ));
     }
-    
+
+    // Prepend superscript verse number to the highlighted text
+    final numberSpan = WidgetSpan(
+      child: Transform.translate(
+        offset: const Offset(0, -6),
+        child: Text(
+          widget.verse.verseNumber.toString(),
+          style: TextStyle(
+            fontSize: widget.fontSize * 0.7,
+            color: Colors.red[700],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+
     return RichText(
-      text: TextSpan(children: spans),
+      text: TextSpan(children: [numberSpan, const TextSpan(text: ' '), ...spans]),
     );
   }
 

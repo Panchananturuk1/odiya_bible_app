@@ -337,6 +337,13 @@ class AppDrawer extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    Text(
+                      'Developed by MONU',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               ),

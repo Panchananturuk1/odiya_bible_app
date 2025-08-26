@@ -55,11 +55,12 @@ class AppDrawer extends StatelessWidget {
                           InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () async {
-                              Navigator.pop(context);
+                              final navigator = Navigator.of(context);
                               if (auth.isAuthenticated) {
-                                // Show account sheet with sign out
+                                // Close the drawer first, then open the bottom sheet using the navigator's context
+                                navigator.pop();
                                 await showModalBottomSheet(
-                                  context: context,
+                                  context: navigator.context,
                                   shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                                   ),
@@ -110,7 +111,9 @@ class AppDrawer extends StatelessWidget {
                                   },
                                 );
                               } else {
-                                await Navigator.of(context).push(
+                                // Close the drawer and then navigate using the captured navigator
+                                navigator.pop();
+                                await navigator.push(
                                   MaterialPageRoute(builder: (_) => const AuthScreen()),
                                 );
                               }

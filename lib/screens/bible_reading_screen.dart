@@ -66,129 +66,147 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
   void _showVerseOptions(BuildContext context, Verse verse, BibleProvider bibleProvider) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+      builder: (context) => SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 12,
+            bottom: 16 + MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              verse.reference,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 12),
+              Text(
+                verse.reference,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: Icon(
-                verse.isHighlighted ? Icons.highlight_off : Icons.highlight,
-                color: Colors.yellow[700],
+              const SizedBox(height: 12),
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  verse.isHighlighted ? Icons.highlight_off : Icons.highlight,
+                  color: Colors.yellow[700],
+                ),
+                title: Text(
+                  verse.isHighlighted ? 'Remove Highlight' : 'Highlight Verse',
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await bibleProvider.toggleVerseHighlight(verse.id);
+                },
               ),
-              title: Text(
-                verse.isHighlighted ? 'Remove Highlight' : 'Highlight Verse',
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  verse.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                title: Text(
+                  verse.isBookmarked ? 'Remove Bookmark' : 'Add Bookmark',
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await bibleProvider.toggleBookmark(verse);
+                },
               ),
-              onTap: () async {
-                Navigator.pop(context);
-                await bibleProvider.toggleVerseHighlight(verse.id);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                verse.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              title: Text(
-                verse.isBookmarked ? 'Remove Bookmark' : 'Add Bookmark',
-              ),
-              onTap: () async {
-                Navigator.pop(context);
-                await bibleProvider.toggleBookmark(verse);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.note_add,
-                color: Colors.orange[600],
-              ),
-              title: const Text('Add/Edit Note'),
-              onTap: () async {
-                Navigator.pop(context);
-                final noteController = TextEditingController(text: verse.note ?? '');
-                final result = await showDialog<String?>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('Note for ${verse.reference}')
-,                    content: TextField(
-                      controller: noteController,
-                      decoration: const InputDecoration(
-                        hintText: 'Add your personal note...',
-                        border: OutlineInputBorder(),
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  Icons.note_add,
+                  color: Colors.orange[600],
+                ),
+                title: const Text('Add/Edit Note'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final noteController = TextEditingController(text: verse.note ?? '');
+                  final result = await showDialog<String?>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Note for ${verse.reference}'),
+                      content: TextField(
+                        controller: noteController,
+                        decoration: const InputDecoration(
+                          hintText: 'Add your personal note...',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 4,
+                        autofocus: true,
                       ),
-                      maxLines: 4,
-                      autofocus: true,
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context, noteController.text.isEmpty ? null : noteController.text),
+                          child: const Text('Save'),
+                        ),
+                      ],
                     ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pop(context, noteController.text.isEmpty ? null : noteController.text),
-                        child: const Text('Save'),
-                      ),
-                    ],
-                  ),
-                );
-                if (result != null || verse.note?.isNotEmpty == true) {
-                  await bibleProvider.updateNote(verse.id, result);
-                }
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.share,
-                color: Colors.blue[600],
+                  );
+                  if (result != null || verse.note?.isNotEmpty == true) {
+                    await bibleProvider.updateNote(verse.id, result);
+                  }
+                },
               ),
-              title: const Text('Share Verse'),
-              onTap: () {
-                Navigator.pop(context);
-                _shareVerse(verse);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.content_copy,
-                color: Colors.green[600],
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  Icons.share,
+                  color: Colors.blue[600],
+                ),
+                title: const Text('Share Verse'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _shareVerse(verse);
+                },
               ),
-              title: const Text('Copy to Clipboard'),
-              onTap: () {
-                Navigator.pop(context);
-                final lang = Provider.of<SettingsProvider>(context, listen: false).readingLanguage;
-                final verseText = (lang == 'english' && (verse.englishText?.isNotEmpty ?? false))
-                    ? verse.englishText!
-                    : verse.odiyaText;
-                final text = '"$verseText" - ${verse.reference}';
-                Clipboard.setData(ClipboardData(text: text));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Verse copied to clipboard'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
-            ),
-          ],
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  Icons.content_copy,
+                  color: Colors.green[600],
+                ),
+                title: const Text('Copy'),
+                onTap: () {
+                  Navigator.pop(context);
+                  final lang = Provider.of<SettingsProvider>(context, listen: false).readingLanguage;
+                  final verseText = (lang == 'english' && (verse.englishText?.isNotEmpty ?? false))
+                      ? verse.englishText!
+                      : verse.odiyaText;
+                  final text = '"$verseText" - ${verse.reference}';
+                  Clipboard.setData(ClipboardData(text: text));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Verse copied to clipboard'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -244,65 +262,70 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
           children: [
             Column(
               children: [
-                // Chapter header
-                if (currentBook != null)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(16),
-                      ),
-                    ),
-                    child: Column(
+                // Chapter navigation
+                // Combined header and navigation in one compact row
+                // Decorative top strip (header removed as requested)
+                Container(
+                  height: 2,
+                  width: double.infinity,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 6),
+                // Readable chapter header (reintroduced)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(6),
+                    onTap: () => _openChapterSelector(context, bibleProvider),
+                    child: Row(
                       children: [
-                        Text(
-                          (settingsProvider.readingLanguage == 'english'
-                                  ? currentBook.name
-                                  : currentBook.odiyaName),
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        Expanded(
+                          child: Text(
+                            '${(settingsProvider.readingLanguage == 'english' ? currentBook!.name : currentBook!.odiyaName)} • Chapter $currentChapter',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2,
+                                ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        InkWell(
-                          borderRadius: BorderRadius.circular(8),
-                          onTap: () => _openChapterSelector(context, bibleProvider),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            child: Text(
-                              'Chapter $currentChapter',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
+                        Icon(
+                          Icons.unfold_more,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.onSecondaryContainer,
                         ),
                       ],
                     ),
                   ),
-                
-                // Chapter navigation
+                ),
+                const SizedBox(height: 4),
+                // Navigation row: previous / center logo to select / next
                 ChapterNavigation(
                   onPreviousChapter: bibleProvider.canGoToPreviousChapter
-                      ? bibleProvider.goToPreviousChapter
+                      ? () => bibleProvider.goToPreviousChapter()
                       : null,
                   onNextChapter: bibleProvider.canGoNextChapter
-                      ? bibleProvider.goToNextChapter
+                      ? () => bibleProvider.goToNextChapter()
                       : null,
                   onTapChapter: () => _openChapterSelector(context, bibleProvider),
                 ),
+                const SizedBox(height: 6),
                 
                 // Paragraph list
                 Expanded(
                   child: ListView.separated(
                     controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 12),
                     itemCount: paragraphs.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    separatorBuilder: (_, __) => const SizedBox(height: 6),
                     itemBuilder: (context, index) {
                       final para = paragraphs[index];
                       return _ParagraphView(
@@ -400,8 +423,8 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                 Expanded(
                   child: GridView.builder(
                     controller: scrollController,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 6,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).size.width < 500 ? 4 : 6,
                       childAspectRatio: 1.2,
                       crossAxisSpacing: 8,
                       mainAxisSpacing: 8,
@@ -512,10 +535,7 @@ class _ParagraphViewState extends State<_ParagraphView> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: widget.verses[i].isHighlighted
-                          ? Theme.of(context)
-                              .colorScheme
-                              .primaryContainer
-                              .withOpacity(0.25)
+                          ? const Color(0xFFFFF59D) // Yellow highlight
                           : (_hoveredIdx == i
                               ? Theme.of(context)
                                   .colorScheme

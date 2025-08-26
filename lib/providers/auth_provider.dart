@@ -39,9 +39,12 @@ class AuthProvider with ChangeNotifier {
         _bibleProvider?.syncLocalBookmarksToFirestore();
         // Start watching remote bookmarks in real time
         _bibleProvider?.startWatchingFirestoreBookmarks();
+        // Start watching highlights too
+        _bibleProvider?.startWatchingFirestoreHighlights();
       } else {
         // Stop watching when user signs out and clear sync status
         _bibleProvider?.stopWatchingFirestoreBookmarks();
+        _bibleProvider?.stopWatchingFirestoreHighlights();
         _syncStatus = SyncStatus.idle;
       }
       
@@ -55,6 +58,7 @@ class AuthProvider with ChangeNotifier {
     // If already authenticated, start watching immediately
     if (_auth.currentUser != null) {
       _bibleProvider?.startWatchingFirestoreBookmarks();
+      _bibleProvider?.startWatchingFirestoreHighlights();
     }
   }
 

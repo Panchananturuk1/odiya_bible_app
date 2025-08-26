@@ -84,6 +84,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   tooltip: 'Increase font size',
                 ),
               ],
+              // Language toggle (Odiya/English)
+              IconButton(
+                icon: Icon(
+                  settingsProvider.readingLanguage == 'odiya'
+                      ? Icons.translate
+                      : Icons.translate,
+                ),
+                onPressed: () => settingsProvider.toggleReadingLanguage(),
+                tooltip: settingsProvider.readingLanguage == 'odiya'
+                    ? 'Switch to English'
+                    : 'Switch to Odiya',
+              ),
               // Dark mode toggle
               IconButton(
                 icon: Icon(

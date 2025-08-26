@@ -174,7 +174,11 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
               title: const Text('Copy to Clipboard'),
               onTap: () {
                 Navigator.pop(context);
-                final text = '"${verse.odiyaText}" - ${verse.reference}';
+                final lang = Provider.of<SettingsProvider>(context, listen: false).readingLanguage;
+                final verseText = (lang == 'english' && (verse.englishText?.isNotEmpty ?? false))
+                    ? verse.englishText!
+                    : verse.odiyaText;
+                final text = '"$verseText" - ${verse.reference}';
                 Clipboard.setData(ClipboardData(text: text));
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -254,7 +258,9 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                     child: Column(
                       children: [
                         Text(
-                          currentBook.odiyaName,
+                          (settingsProvider.readingLanguage == 'english'
+                                  ? currentBook.name
+                                  : currentBook.odiyaName),
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -303,6 +309,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                         verses: para,
                         fontSize: settingsProvider.fontSize,
                         onTapVerse: (v) => _showVerseOptions(context, v, bibleProvider),
+                        readingLanguage: settingsProvider.readingLanguage,
                       );
                     },
                   ),
@@ -328,7 +335,11 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
   }
 
   void _shareVerse(verse) {
-    final text = '"${verse.odiyaText}" - ${verse.reference}';
+    final lang = Provider.of<SettingsProvider>(context, listen: false).readingLanguage;
+    final verseText = (lang == 'english' && (verse.englishText?.isNotEmpty ?? false))
+        ? verse.englishText!
+        : verse.odiyaText;
+    final text = '"$verseText" - ${verse.reference}';
     // TODO: Implement share functionality
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -443,11 +454,13 @@ class _ParagraphView extends StatefulWidget {
     required this.verses,
     required this.fontSize,
     required this.onTapVerse,
+    required this.readingLanguage,
   });
 
   final List<Verse> verses;
   final double fontSize;
   final void Function(Verse v) onTapVerse;
+  final String readingLanguage;
 
   @override
   State<_ParagraphView> createState() => _ParagraphViewState();
@@ -514,7 +527,11 @@ class _ParagraphViewState extends State<_ParagraphView> {
                     padding: const EdgeInsets.symmetric(horizontal: 0),
                     margin: const EdgeInsets.only(right: 2),
                     child: Text(
-                      ' ${widget.verses[i].odiyaText.trim()} ',
+                      ' ${(() {
+                            final eng = widget.verses[i].englishText;
+                            final useEng = widget.readingLanguage == 'english' && (eng?.isNotEmpty ?? false);
+                            return (useEng ? eng! : widget.verses[i].odiyaText).trim();
+                          })()} ',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontSize: widget.fontSize,
                         height: 1.6,

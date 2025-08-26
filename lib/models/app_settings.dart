@@ -12,6 +12,8 @@ class AppSettings {
   final int lastReadBookId;
   final int lastReadChapter;
   final int lastReadVerse;
+  // Primary reading language for verses: 'odiya' or 'english'
+  final String readingLanguage;
 
   AppSettings({
     this.fontSize = 16.0,
@@ -27,6 +29,7 @@ class AppSettings {
     this.lastReadBookId = 1,
     this.lastReadChapter = 1,
     this.lastReadVerse = 1,
+    this.readingLanguage = 'odiya',
   });
 
   factory AppSettings.fromJson(Map<String, dynamic> json) {
@@ -44,6 +47,7 @@ class AppSettings {
       lastReadBookId: json['last_read_book_id'] ?? 1,
       lastReadChapter: json['last_read_chapter'] ?? 1,
       lastReadVerse: json['last_read_verse'] ?? 1,
+      readingLanguage: json['reading_language'] ?? 'odiya',
     );
   }
 
@@ -62,6 +66,7 @@ class AppSettings {
       'last_read_book_id': lastReadBookId,
       'last_read_chapter': lastReadChapter,
       'last_read_verse': lastReadVerse,
+      'reading_language': readingLanguage,
     };
   }
 
@@ -79,6 +84,7 @@ class AppSettings {
     int? lastReadBookId,
     int? lastReadChapter,
     int? lastReadVerse,
+    String? readingLanguage,
   }) {
     return AppSettings(
       fontSize: fontSize ?? this.fontSize,
@@ -94,11 +100,12 @@ class AppSettings {
       lastReadBookId: lastReadBookId ?? this.lastReadBookId,
       lastReadChapter: lastReadChapter ?? this.lastReadChapter,
       lastReadVerse: lastReadVerse ?? this.lastReadVerse,
+      readingLanguage: readingLanguage ?? this.readingLanguage,
     );
   }
 
   @override
   String toString() {
-    return 'AppSettings{fontSize: $fontSize, isDarkMode: $isDarkMode, lastRead: $lastReadBookId:$lastReadChapter:$lastReadVerse}';
+    return 'AppSettings{fontSize: $fontSize, isDarkMode: $isDarkMode, lastRead: $lastReadBookId:$lastReadChapter:$lastReadVerse, readingLanguage: $readingLanguage}';
   }
 }

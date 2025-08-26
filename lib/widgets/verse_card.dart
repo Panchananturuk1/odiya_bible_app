@@ -76,10 +76,7 @@ class _VerseCardState extends State<VerseCard>
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: widget.verse.isHighlighted
-            ? Theme.of(context)
-                .colorScheme
-                .primaryContainer
-                .withOpacity(0.2)
+            ? const Color(0xFFFFF59D)
             : Colors.transparent,
       ),
       child: Material(
@@ -344,90 +341,108 @@ class _VerseCardState extends State<VerseCard>
   void _showVerseOptions() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+      builder: (context) => SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 12,
+            bottom: 16 + MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              widget.verse.reference,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 12),
+              Text(
+                widget.verse.reference,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: Icon(
-                widget.verse.isHighlighted ? Icons.highlight_off : Icons.highlight,
-                color: Colors.yellow[700],
+              const SizedBox(height: 12),
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  widget.verse.isHighlighted ? Icons.highlight_off : Icons.highlight,
+                  color: Colors.yellow[700],
+                ),
+                title: Text(
+                  widget.verse.isHighlighted ? 'Remove Highlight' : 'Highlight Verse',
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onHighlight();
+                },
               ),
-              title: Text(
-                widget.verse.isHighlighted ? 'Remove Highlight' : 'Highlight Verse',
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  widget.verse.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                title: Text(
+                  widget.verse.isBookmarked ? 'Remove Bookmark' : 'Add Bookmark',
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onBookmark();
+                },
               ),
-              onTap: () {
-                Navigator.pop(context);
-                widget.onHighlight();
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                widget.verse.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: Theme.of(context).colorScheme.primary,
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  Icons.note_add,
+                  color: Colors.orange[600],
+                ),
+                title: const Text('Add/Edit Note'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showNoteDialog();
+                },
               ),
-              title: Text(
-                widget.verse.isBookmarked ? 'Remove Bookmark' : 'Add Bookmark',
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  Icons.share,
+                  color: Colors.blue[600],
+                ),
+                title: const Text('Share Verse'),
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onShare();
+                },
               ),
-              onTap: () {
-                Navigator.pop(context);
-                widget.onBookmark();
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.note_add,
-                color: Colors.orange[600],
+              ListTile(
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                leading: Icon(
+                  Icons.content_copy,
+                  color: Colors.green[600],
+                ),
+                title: const Text('Copy'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _copyToClipboard();
+                },
               ),
-              title: const Text('Add/Edit Note'),
-              onTap: () {
-                Navigator.pop(context);
-                _showNoteDialog();
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.share,
-                color: Colors.blue[600],
-              ),
-              title: const Text('Share Verse'),
-              onTap: () {
-                Navigator.pop(context);
-                widget.onShare();
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.content_copy,
-                color: Colors.green[600],
-              ),
-              title: const Text('Copy to Clipboard'),
-              onTap: () {
-                Navigator.pop(context);
-                _copyToClipboard();
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

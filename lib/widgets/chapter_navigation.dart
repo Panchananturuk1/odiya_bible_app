@@ -15,7 +15,7 @@ class ChapterNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
@@ -25,78 +25,58 @@ class ChapterNavigation extends StatelessWidget {
           ),
         ),
       ),
-      child: Row(
-        children: [
-          // Previous chapter button
-          Expanded(
-            child: ElevatedButton.icon(
+      child: SizedBox(
+        height: 36,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Previous chapter (compact)
+            IconButton(
+              tooltip: 'Previous chapter',
               onPressed: onPreviousChapter,
               icon: const Icon(Icons.chevron_left),
-              label: const Text('Previous'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: onPreviousChapter != null 
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : Colors.grey[300],
-                foregroundColor: onPreviousChapter != null 
-                    ? Theme.of(context).colorScheme.onPrimaryContainer
-                    : Colors.grey[600],
-                elevation: onPreviousChapter != null ? 2 : 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+              iconSize: 20,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              visualDensity: VisualDensity.compact,
             ),
-          ),
-          
-          const SizedBox(width: 16),
-          
-          // Chapter indicator (clickable)
-          Tooltip(
-            message: 'Select chapter',
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: onTapChapter,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+
+            // Chapter selector (compact pill)
+            Tooltip(
+              message: 'Select chapter',
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: onTapChapter,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.menu_book,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 16,
                   ),
                 ),
-                child: Icon(
-                  Icons.menu_book,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 20,
-                ),
               ),
             ),
-          ),
-          
-          const SizedBox(width: 16),
-          
-          // Next chapter button
-          Expanded(
-            child: ElevatedButton.icon(
+
+            // Next chapter (compact)
+            IconButton(
+              tooltip: 'Next chapter',
               onPressed: onNextChapter,
               icon: const Icon(Icons.chevron_right),
-              label: const Text('Next'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: onNextChapter != null 
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : Colors.grey[300],
-                foregroundColor: onNextChapter != null 
-                    ? Theme.of(context).colorScheme.onPrimaryContainer
-                    : Colors.grey[600],
-                elevation: onNextChapter != null ? 2 : 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+              iconSize: 20,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              visualDensity: VisualDensity.compact,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class ChapterNavigation extends StatelessWidget {
   final VoidCallback? onPreviousChapter;
   final VoidCallback? onNextChapter;
+  final VoidCallback? onTapChapter;
 
   const ChapterNavigation({
     super.key,
     this.onPreviousChapter,
     this.onNextChapter,
+    this.onTapChapter,
   });
 
   @override
@@ -48,20 +50,27 @@ class ChapterNavigation extends StatelessWidget {
           
           const SizedBox(width: 16),
           
-          // Chapter indicator
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          // Chapter indicator (clickable)
+          Tooltip(
+            message: 'Select chapter',
+            child: InkWell(
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              onTap: onTapChapter,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                  ),
+                ),
+                child: Icon(
+                  Icons.menu_book,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
               ),
-            ),
-            child: Icon(
-              Icons.menu_book,
-              color: Theme.of(context).colorScheme.primary,
-              size: 20,
             ),
           ),
           

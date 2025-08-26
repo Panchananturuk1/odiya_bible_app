@@ -1,5 +1,6 @@
 class Bookmark {
   final int? id;
+  final String? documentId; // Firestore document ID
   final int bookId;
   final int chapter;
   final int verseNumber;
@@ -11,6 +12,7 @@ class Bookmark {
 
   Bookmark({
     this.id,
+    this.documentId,
     required this.bookId,
     required this.chapter,
     required this.verseNumber,
@@ -24,6 +26,7 @@ class Bookmark {
   factory Bookmark.fromJson(Map<String, dynamic> json) {
     return Bookmark(
       id: json['id'],
+      documentId: json['document_id'],
       bookId: json['book_id'],
       chapter: json['chapter'],
       verseNumber: json['verse_number'],
@@ -40,6 +43,7 @@ class Bookmark {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'document_id': documentId,
       'book_id': bookId,
       'chapter': chapter,
       'verse_number': verseNumber,
@@ -53,6 +57,7 @@ class Bookmark {
 
   Bookmark copyWith({
     int? id,
+    String? documentId,
     int? bookId,
     int? chapter,
     int? verseNumber,
@@ -64,6 +69,7 @@ class Bookmark {
   }) {
     return Bookmark(
       id: id ?? this.id,
+      documentId: documentId ?? this.documentId,
       bookId: bookId ?? this.bookId,
       chapter: chapter ?? this.chapter,
       verseNumber: verseNumber ?? this.verseNumber,

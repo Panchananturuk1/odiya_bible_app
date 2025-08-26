@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../models/book.dart';
 import '../models/verse.dart';
+import './usx_parser.dart';
 
 class JsonBibleService {
   static const Map<String, String> _bookOdiyaNames = {
@@ -178,6 +179,9 @@ class JsonBibleService {
       List<Verse> verses = [];
       List<dynamic> versesData = data['verses'] ?? [];
       
+      // Preload Odia text from USX for this chapter if available
+      final Map<int, String> odiaChapterMap = await USXParser.getOdiyaChapterMap(bookName, chapter);
+      
       // Create a set to track verse numbers we've already processed
       Set<int> processedVerses = {};
       
@@ -199,8 +203,10 @@ class JsonBibleService {
         // Load English text from JSON
         final String english = _cleanText(verseData['text'] ?? '');
         
-        // Try to get Odia translation; if not available, fallback to English
-        final String odia = _getOdiyaTranslation(bookName, chapter, verseNumber) ?? english;
+        // Fetch Odia translation from USX; fallback to English if missing
+        final String odia = (odiaChapterMap[verseNumber] != null && odiaChapterMap[verseNumber]!.trim().isNotEmpty)
+            ? odiaChapterMap[verseNumber]!
+            : ( _getOdiyaTranslation(bookName, chapter, verseNumber) ?? english );
         
         // DEBUG: Log mapping once per verse
         // ignore: avoid_print

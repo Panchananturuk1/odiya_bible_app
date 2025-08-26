@@ -127,7 +127,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           return VerseCard(
                             verse: verse,
                             fontSize: settingsProvider.fontSize,
-                            onHighlight: () => bibleProvider.toggleHighlight(verse.id),
+                            onHighlight: () => bibleProvider.toggleVerseHighlight(verse.id),
                             onBookmark: () => bibleProvider.toggleBookmark(verse),
                             onNote: (note) => bibleProvider.updateNote(verse.id, note),
                             onShare: () => _shareVerse(verse),

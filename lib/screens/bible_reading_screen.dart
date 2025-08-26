@@ -261,10 +261,18 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          'Chapter $currentChapter',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () => _openChapterSelector(context, bibleProvider),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            child: Text(
+                              'Chapter $currentChapter',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -279,6 +287,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                   onNextChapter: bibleProvider.canGoNextChapter
                       ? bibleProvider.goToNextChapter
                       : null,
+                  onTapChapter: () => _openChapterSelector(context, bibleProvider),
                 ),
                 
                 // Paragraph list
@@ -333,9 +342,103 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
       ),
     );
   }
+
+  void _openChapterSelector(BuildContext context, BibleProvider bibleProvider) {
+    final book = bibleProvider.currentBook;
+    if (book == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.8,
+        minChildSize: 0.4,
+        expand: false,
+        builder: (context, scrollController) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  book.odiyaName,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${book.name} • ${book.totalChapters} chapters',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: GridView.builder(
+                    controller: scrollController,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 6,
+                      childAspectRatio: 1.2,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: book.totalChapters,
+                    itemBuilder: (context, index) {
+                      final chapter = index + 1;
+                      final isCurrentChapter = bibleProvider.currentChapter == chapter;
+
+                      return Material(
+                        color: isCurrentChapter
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        elevation: isCurrentChapter ? 4 : 1,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () {
+                            Navigator.pop(context);
+                            bibleProvider.loadChapter(book.id, chapter);
+                          },
+                          child: Center(
+                            child: Text(
+                              chapter.toString(),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: isCurrentChapter
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
-class _ParagraphView extends StatelessWidget {
+class _ParagraphView extends StatefulWidget {
   const _ParagraphView({
     required this.verses,
     required this.fontSize,
@@ -347,27 +450,34 @@ class _ParagraphView extends StatelessWidget {
   final void Function(Verse v) onTapVerse;
 
   @override
+  State<_ParagraphView> createState() => _ParagraphViewState();
+}
+
+class _ParagraphViewState extends State<_ParagraphView> {
+  int? _hoveredIdx;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return SelectableText.rich(
       TextSpan(
         children: [
-          for (int i = 0; i < verses.length; i++) ...[
+          for (int i = 0; i < widget.verses.length; i++) ...[
             // Verse number as superscript red
             WidgetSpan(
               alignment: PlaceholderAlignment.aboveBaseline,
               baseline: TextBaseline.alphabetic,
               child: GestureDetector(
-                onTap: () => onTapVerse(verses[i]),
-                onLongPress: () => onTapVerse(verses[i]),
+                onTap: () => widget.onTapVerse(widget.verses[i]),
+                onLongPress: () => widget.onTapVerse(widget.verses[i]),
                 child: Padding(
                   padding: EdgeInsets.only(right: 4, left: i == 0 ? 0 : 6),
                   child: Text(
-                    '${verses[i].verseNumber}',
+                    '${widget.verses[i].verseNumber}',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.red,
-                      fontSize: fontSize * 0.75,
+                      fontSize: widget.fontSize * 0.75,
                       height: 0.8,
                       fontWeight: FontWeight.bold,
                     ),
@@ -375,14 +485,43 @@ class _ParagraphView extends StatelessWidget {
                 ),
               ),
             ),
-            TextSpan(
-              text: ' ${verses[i].odiyaText.trim()} ',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontSize: fontSize,
-                height: 1.6,
-                backgroundColor: verses[i].isHighlighted
-                    ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2)
-                    : null,
+            // Verse text as widget span to support hover highlight
+            WidgetSpan(
+              alignment: PlaceholderAlignment.baseline,
+              baseline: TextBaseline.alphabetic,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.text,
+                onEnter: (_) => setState(() => _hoveredIdx = i),
+                onExit: (_) => setState(() => _hoveredIdx = null),
+                child: GestureDetector(
+                  onTap: () => widget.onTapVerse(widget.verses[i]),
+                  onLongPress: () => widget.onTapVerse(widget.verses[i]),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: widget.verses[i].isHighlighted
+                          ? Theme.of(context)
+                              .colorScheme
+                              .primaryContainer
+                              .withOpacity(0.25)
+                          : (_hoveredIdx == i
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer
+                                  .withOpacity(0.12)
+                              : Colors.transparent),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    margin: const EdgeInsets.only(right: 2),
+                    child: Text(
+                      ' ${widget.verses[i].odiyaText.trim()} ',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: widget.fontSize,
+                        height: 1.6,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ]

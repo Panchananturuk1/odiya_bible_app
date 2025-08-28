@@ -6,6 +6,8 @@ A Flutter-based Bible application with paragraph-style verse rendering, bookmark
 
 Explore the live application: [Odiya Bible App](https://odiyabible-6621f.web.app/)
 
+![Bible App Preview](http://images-panchanan.s3-website.ap-south-1.amazonaws.com/Bible/Bible_Home.jpg)
+
 ## Features
 
 - Paragraph-style verse rendering for natural reading experience

@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/bible_provider.dart';
 import '../providers/settings_provider.dart';
+import '../providers/audio_streaming_provider.dart';
 import '../models/verse.dart';
 import '../widgets/chapter_navigation.dart';
+import '../widgets/audio_player_widget.dart';
 
 class BibleReadingScreen extends StatefulWidget {
   const BibleReadingScreen({super.key});
@@ -25,9 +27,14 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
     // Load initial chapter after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final bibleProvider = Provider.of<BibleProvider>(context, listen: false);
+      final audioProvider = Provider.of<AudioStreamingProvider>(context, listen: false);
+      
       if (bibleProvider.currentChapterVerses.isEmpty) {
         // Load Genesis 1 by default
-        bibleProvider.loadChapter(1, 1);
+        bibleProvider.loadChapter(1, 1).then((_) {
+          // Load audio for the chapter after text is loaded
+          _loadChapterAudio(audioProvider, bibleProvider);
+        });
       }
     });
   }
@@ -61,6 +68,24 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
+  }
+
+  Future<void> _loadChapterAudio(AudioStreamingProvider audioProvider, BibleProvider bibleProvider) async {
+    final currentBook = bibleProvider.currentBook;
+    final currentChapter = bibleProvider.currentChapter;
+    final verses = bibleProvider.currentChapterVerses;
+    
+    if (currentBook != null && verses.isNotEmpty) {
+      try {
+        await audioProvider.loadChapterAudio(
+          currentBook.id.toString(),
+          currentChapter,
+          verses,
+        );
+      } catch (e) {
+        debugPrint('Error loading chapter audio: $e');
+      }
+    }
   }
 
   void _showVerseOptions(BuildContext context, Verse verse, BibleProvider bibleProvider) {
@@ -125,6 +150,34 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                 onTap: () async {
                   Navigator.pop(context);
                   await bibleProvider.toggleBookmark(verse);
+                },
+              ),
+              Consumer<AudioStreamingProvider>(
+                builder: (context, audioProvider, child) {
+                  return ListTile(
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    leading: Icon(
+                      Icons.play_arrow,
+                      color: Colors.blue[600],
+                    ),
+                    title: const Text('Play Audio'),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      // Load chapter audio if not already loaded
+                      await audioProvider.loadChapterAudio(
+                        bibleProvider.currentBook!.id.toString(),
+                        bibleProvider.currentChapter,
+                        bibleProvider.currentChapterVerses,
+                      );
+                      // Start playing
+                      await audioProvider.play();
+                      // Seek to the specific verse if timings are available
+                      if (audioProvider.verseTimings.containsKey(verse.verseNumber)) {
+                        await audioProvider.seekToVerse(verse.verseNumber);
+                      }
+                    },
+                  );
                 },
               ),
               ListTile(
@@ -310,10 +363,24 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                 // Navigation row: previous / center logo to select / next
                 ChapterNavigation(
                   onPreviousChapter: bibleProvider.canGoToPreviousChapter
-                      ? () => bibleProvider.goToPreviousChapter()
+                      ? () {
+                          bibleProvider.goToPreviousChapter().then((_) {
+                            if (mounted) {
+                              final audioProvider = Provider.of<AudioStreamingProvider>(context, listen: false);
+                              _loadChapterAudio(audioProvider, bibleProvider);
+                            }
+                          });
+                        }
                       : null,
-                  onNextChapter: bibleProvider.canGoNextChapter
-                      ? () => bibleProvider.goToNextChapter()
+                  onNextChapter: bibleProvider.canGoToNextChapter
+                      ? () {
+                          bibleProvider.goToNextChapter().then((_) {
+                            if (mounted) {
+                              final audioProvider = Provider.of<AudioStreamingProvider>(context, listen: false);
+                              _loadChapterAudio(audioProvider, bibleProvider);
+                            }
+                          });
+                        }
                       : null,
                   onTapChapter: () => _openChapterSelector(context, bibleProvider),
                 ),
@@ -323,16 +390,21 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                 Expanded(
                   child: ListView.separated(
                     controller: _scrollController,
-                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 12),
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 240), // Ensure enough space for expanded audio player
                     itemCount: paragraphs.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 6),
                     itemBuilder: (context, index) {
                       final para = paragraphs[index];
-                      return _ParagraphView(
-                        verses: para,
-                        fontSize: settingsProvider.fontSize,
-                        onTapVerse: (v) => _showVerseOptions(context, v, bibleProvider),
-                        readingLanguage: settingsProvider.readingLanguage,
+                      return Consumer<AudioStreamingProvider>(
+                        builder: (context, audioProvider, child) {
+                          return _ParagraphView(
+                            verses: para,
+                            fontSize: settingsProvider.fontSize,
+                            onTapVerse: (v) => _showVerseOptions(context, v, bibleProvider),
+                            readingLanguage: settingsProvider.readingLanguage,
+                            currentPlayingVerse: audioProvider.currentPlayingVerse,
+                          );
+                        },
                       );
                     },
                   ),
@@ -340,10 +412,25 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
               ],
             ),
             
+            // Audio Player Widget
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                bottom: true,
+                child: Container(
+                  // Removed extra bottom margin to prevent minor overflow
+                  margin: EdgeInsets.zero,
+                  child: const AudioPlayerWidget(),
+                ),
+              ),
+            ),
+            
             // Scroll to top button
             if (_showScrollToTop)
               Positioned(
-                bottom: 16,
+                bottom: 240, // Keep above expanded audio player
                 right: 16,
                 child: FloatingActionButton.small(
                   onPressed: _scrollToTop,
@@ -444,7 +531,12 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                           borderRadius: BorderRadius.circular(8),
                           onTap: () {
                             Navigator.pop(context);
-                            bibleProvider.loadChapter(book.id, chapter);
+                            bibleProvider.loadChapter(book.id, chapter).then((_) {
+                              if (mounted) {
+                                final audioProvider = Provider.of<AudioStreamingProvider>(context, listen: false);
+                                _loadChapterAudio(audioProvider, bibleProvider);
+                              }
+                            });
                           },
                           child: Center(
                             child: Text(
@@ -478,12 +570,14 @@ class _ParagraphView extends StatefulWidget {
     required this.fontSize,
     required this.onTapVerse,
     required this.readingLanguage,
+    required this.currentPlayingVerse,
   });
 
   final List<Verse> verses;
   final double fontSize;
   final void Function(Verse v) onTapVerse;
   final String readingLanguage;
+  final int currentPlayingVerse;
 
   @override
   State<_ParagraphView> createState() => _ParagraphViewState();
@@ -535,13 +629,15 @@ class _ParagraphViewState extends State<_ParagraphView> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: widget.verses[i].isHighlighted
-                          ? const Color(0xFFFFF59D) // Yellow highlight
-                          : (_hoveredIdx == i
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer
-                                  .withOpacity(0.12)
-                              : Colors.transparent),
+                          ? const Color(0xFFFFF59D) // Yellow highlight for user highlights
+                          : (widget.verses[i].verseNumber == widget.currentPlayingVerse
+                              ? Theme.of(context).colorScheme.primary.withOpacity(0.2) // Blue highlight for currently playing verse
+                              : (_hoveredIdx == i
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer
+                                      .withOpacity(0.12)
+                                  : Colors.transparent)),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 0),

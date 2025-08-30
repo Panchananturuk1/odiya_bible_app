@@ -16,7 +16,7 @@ jobs:
           channel: stable
       - run: flutter --version
       - run: flutter pub get
-      - run: flutter build web --release
+      - run: flutter build web --release --dart-define=BIBLE_BRAIN_API_KEY=${{ secrets.BIBLE_BRAIN_API_KEY }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

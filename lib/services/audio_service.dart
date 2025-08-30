@@ -118,6 +118,28 @@ class AudioService {
     }
   }
 
+  // Initialize TTS with user interaction (for web platforms)
+  Future<bool> initializeWithUserInteraction() async {
+    if (!kIsWeb) return true;
+    
+    try {
+      debugPrint('Initializing TTS with user interaction for web...');
+      
+      // First, try to speak an empty string to initialize the audio context
+      await _flutterTts.speak('');
+      await Future.delayed(Duration(milliseconds: 100));
+      
+      // Then test with actual speech
+      await _flutterTts.speak('Audio ready');
+      
+      debugPrint('TTS initialized successfully with user interaction');
+      return true;
+    } catch (e) {
+      debugPrint('Failed to initialize TTS with user interaction: $e');
+      return false;
+    }
+  }
+
   // Speak text
   Future<void> speak(String text) async {
     try {
@@ -142,8 +164,12 @@ class AudioService {
           // Test if TTS is available before speaking
           await _flutterTts.awaitSpeakCompletion(false);
           debugPrint('Web TTS: awaitSpeakCompletion set to false');
+          
+          // Try to initialize audio context if not already done
+          await _flutterTts.speak('');
+          await Future.delayed(Duration(milliseconds: 50));
         } catch (e) {
-          debugPrint('Web TTS: Could not set awaitSpeakCompletion: $e');
+          debugPrint('Web TTS: Could not set awaitSpeakCompletion or initialize audio context: $e');
         }
       }
       

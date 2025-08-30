@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/bible_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/audio_provider.dart';
+import '../models/verse.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -122,6 +124,8 @@ class SettingsScreen extends StatelessWidget {
                     divisions: 6,
                     onChanged: settingsProvider.setAudioSpeed,
                   ),
+                  const Divider(),
+                  _buildTestAudioTile(context),
                 ],
               ],
             ),
@@ -338,6 +342,54 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTestAudioTile(BuildContext context) {
+    return Consumer<AudioProvider>(
+      builder: (context, audioProvider, child) {
+        return ListTile(
+          leading: const Icon(Icons.volume_up),
+          title: const Text('Test Audio'),
+          subtitle: const Text('Test if audio is working on your device'),
+          trailing: ElevatedButton(
+            onPressed: () async {
+              try {
+                // Create a test verse
+                 final testVerse = Verse(
+                   id: 0,
+                   bookId: 0,
+                   chapter: 1,
+                   verseNumber: 1,
+                   odiyaText: 'ଅଡିଓ ପରୀକ୍ଷା', // "Audio test" in Odia
+                   englishText: 'Audio test',
+                 );
+                
+                await audioProvider.playVerse(testVerse);
+                
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Audio test started. If you don\'t hear anything, try tapping the button again.'),
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Audio test failed: ${e.toString()}'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Test'),
+          ),
+        );
+      },
     );
   }
 

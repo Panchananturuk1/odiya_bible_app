@@ -55,12 +55,29 @@ class AudioProvider with ChangeNotifier {
       _playlist = [verse];
       _currentIndex = 0;
       
+      // For web platforms, try to initialize with user interaction first
+      if (kIsWeb) {
+        bool webInitialized = await _audioService.initializeWithUserInteraction();
+        if (!webInitialized) {
+          debugPrint('Web TTS initialization failed - audio may not work');
+        }
+      }
+      
       await _audioService.speak(verse.odiyaText);
       _isPlaying = true;
       _isPaused = false;
       notifyListeners();
     } catch (e) {
       debugPrint('Error playing verse: $e');
+      
+      // Show user-friendly error for web audio issues
+      if (kIsWeb && (e.toString().contains('WebAudioError') || e.toString().contains('audio context'))) {
+        debugPrint('Web audio requires user interaction - please tap the audio button again');
+      }
+      
+      _isPlaying = false;
+      _isPaused = false;
+      notifyListeners();
     }
   }
 
@@ -75,6 +92,14 @@ class AudioProvider with ChangeNotifier {
       _currentVerse = _playlist[_currentIndex];
       _isAutoPlay = true;
       
+      // For web platforms, try to initialize with user interaction first
+      if (kIsWeb) {
+        bool webInitialized = await _audioService.initializeWithUserInteraction();
+        if (!webInitialized) {
+          debugPrint('Web TTS initialization failed - audio may not work');
+        }
+      }
+      
       await _audioService.speak(_currentVerse!.odiyaText);
       _isPlaying = true;
       _isPaused = false;
@@ -84,6 +109,16 @@ class AudioProvider with ChangeNotifier {
       _setupAutoPlay();
     } catch (e) {
       debugPrint('Error playing chapter: $e');
+      
+      // Show user-friendly error for web audio issues
+      if (kIsWeb && (e.toString().contains('WebAudioError') || e.toString().contains('audio context'))) {
+        debugPrint('Web audio requires user interaction - please tap the audio button again');
+      }
+      
+      _isPlaying = false;
+      _isPaused = false;
+      _isAutoPlay = false;
+      notifyListeners();
     }
   }
 

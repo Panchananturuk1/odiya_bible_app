@@ -164,31 +164,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           floatingActionButton: _currentIndex == 0 
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FloatingActionButton(
-                      heroTag: "testMark",
-                      onPressed: () {
-                        // Test Mark chapter 1 (New Testament)
-                        bibleProvider.selectBook(41); // Mark
-                        bibleProvider.loadChapter(41, 1);
-                        // print('DEBUG: Navigated to Mark chapter 1 for NT audio test');
-                      },
-                      tooltip: 'Test Mark 1 (NT)',
-                      backgroundColor: Colors.green,
-                      child: const Icon(Icons.play_arrow),
-                    ),
-                    const SizedBox(height: 8),
-                    FloatingActionButton(
-                      heroTag: "chapterSelector",
-                      onPressed: () {
-                        _showBookChapterSelector(context, bibleProvider);
-                      },
-                      tooltip: 'Go to chapter',
-                      child: const Icon(Icons.navigation),
-                    ),
-                  ],
+              ? FloatingActionButton(
+                  heroTag: "chapterSelector",
+                  onPressed: () {
+                    _showBookChapterSelector(context, bibleProvider);
+                  },
+                  tooltip: 'Go to chapter',
+                  child: const Icon(Icons.navigation),
                 )
               : null,
         );

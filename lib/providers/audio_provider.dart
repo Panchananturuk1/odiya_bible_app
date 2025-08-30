@@ -32,28 +32,45 @@ class AudioProvider with ChangeNotifier {
   bool get hasNext => _currentIndex < _playlist.length - 1;
   bool get hasPrevious => _currentIndex > 0;
 
-  // Initialize audio service
-  Future<void> initialize() async {
+  // Initialize audio service with optional settings
+  Future<void> initialize({double? audioSpeed}) async {
     if (_isInitialized) return;
     
     try {
       await _audioService.initialize();
       _isOdiaSupported = await _audioService.isOdiaSupported();
+      
+      // Use provided audio speed or default
+      if (audioSpeed != null) {
+        _speechRate = audioSpeed;
+      }
+      
+      // Apply current settings to audio service
+      await _audioService.setSpeechRate(_speechRate);
+      await _audioService.setVolume(_volume);
+      await _audioService.setPitch(_pitch);
+      
       _isInitialized = true;
+      debugPrint('AudioProvider initialized successfully with settings: rate=$_speechRate, volume=$_volume, pitch=$_pitch');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error initializing audio provider: $e');
+      debugPrint('Error initializing AudioProvider: $e');
     }
   }
 
   // Play a single verse
-  Future<void> playVerse(Verse verse) async {
-    if (!_isInitialized) await initialize();
+  Future<void> playVerse(Verse verse, {double? audioSpeed}) async {
+    if (!_isInitialized) await initialize(audioSpeed: audioSpeed);
     
     try {
       _currentVerse = verse;
       _playlist = [verse];
       _currentIndex = 0;
+      
+      // Update speech rate if provided
+      if (audioSpeed != null && audioSpeed != _speechRate) {
+        await setSpeechRate(audioSpeed);
+      }
       
       // For web platforms, try to initialize with user interaction first
       if (kIsWeb) {
@@ -82,8 +99,8 @@ class AudioProvider with ChangeNotifier {
   }
 
   // Play multiple verses (chapter)
-  Future<void> playChapter(List<Verse> verses, {int startIndex = 0}) async {
-    if (!_isInitialized) await initialize();
+  Future<void> playChapter(List<Verse> verses, {int startIndex = 0, double? audioSpeed}) async {
+    if (!_isInitialized) await initialize(audioSpeed: audioSpeed);
     if (verses.isEmpty) return;
     
     try {
@@ -91,6 +108,11 @@ class AudioProvider with ChangeNotifier {
       _currentIndex = startIndex.clamp(0, verses.length - 1);
       _currentVerse = _playlist[_currentIndex];
       _isAutoPlay = true;
+      
+      // Update speech rate if provided
+      if (audioSpeed != null && audioSpeed != _speechRate) {
+        await setSpeechRate(audioSpeed);
+      }
       
       // For web platforms, try to initialize with user interaction first
       if (kIsWeb) {
@@ -226,7 +248,21 @@ class AudioProvider with ChangeNotifier {
   Future<void> setSpeechRate(double rate) async {
     _speechRate = rate;
     await _audioService.setSpeechRate(rate);
+    debugPrint('AudioProvider: Speech rate updated to $_speechRate');
     notifyListeners();
+  }
+  
+  // Update audio settings from external source (like SettingsProvider)
+  Future<void> updateAudioSettings({double? speechRate, double? volume, double? pitch}) async {
+    if (speechRate != null && speechRate != _speechRate) {
+      await setSpeechRate(speechRate);
+    }
+    if (volume != null && volume != _volume) {
+      await setVolume(volume);
+    }
+    if (pitch != null && pitch != _pitch) {
+      await setPitch(pitch);
+    }
   }
 
   // Set volume

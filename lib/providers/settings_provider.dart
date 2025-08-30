@@ -4,12 +4,14 @@ import '../models/app_settings.dart';
 import '../services/settings_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'audio_provider.dart';
+import 'audio_streaming_provider.dart';
 
 class SettingsProvider with ChangeNotifier {
   final SettingsService _settingsService = SettingsService();
   AppSettings _settings = AppSettings();
   bool _isInitialized = false;
   AudioProvider? _audioProvider;
+  AudioStreamingProvider? _audioStreamingProvider;
 
   // Getters
   AppSettings get settings => _settings;
@@ -152,6 +154,16 @@ class SettingsProvider with ChangeNotifier {
   // Set AudioProvider reference for syncing audio settings
   void setAudioProvider(AudioProvider audioProvider) {
     _audioProvider = audioProvider;
+    // Sync current settings to provider on linkage
+    final mappedTtsRate = _toTtsRate(_settings.audioSpeed);
+    _audioProvider?.updateAudioSettings(speechRate: mappedTtsRate);
+  }
+
+  // Set AudioStreamingProvider reference for syncing audio settings
+  void setAudioStreamingProvider(AudioStreamingProvider audioStreamingProvider) {
+    _audioStreamingProvider = audioStreamingProvider;
+    // Sync current settings to streaming provider on linkage
+    _audioStreamingProvider?.setPlaybackSpeed(_settings.audioSpeed);
   }
   
   // Update audio settings
@@ -163,9 +175,14 @@ class SettingsProvider with ChangeNotifier {
       );
       await _settingsService.saveSettings(_settings);
       
-      // Update AudioProvider if available
+      // Update AudioProvider (TTS) if available with normalized rate
       if (_audioProvider != null) {
-        await _audioProvider!.updateAudioSettings(speechRate: speed);
+        await _audioProvider!.updateAudioSettings(speechRate: _toTtsRate(speed));
+      }
+      
+      // Update AudioStreamingProvider (media playback) if available
+      if (_audioStreamingProvider != null) {
+        await _audioStreamingProvider!.setPlaybackSpeed(speed);
       }
       
       notifyListeners();
@@ -257,9 +274,15 @@ class SettingsProvider with ChangeNotifier {
     updateDisplaySettings(keepScreenOn: enabled);
   }
 
+  // Helper: map UI playback speed (0.5-2.0) to TTS rate (0.0-1.0)
+  double _toTtsRate(double playbackSpeed) {
+    final clamped = playbackSpeed.clamp(0.5, 2.0);
+    return clamped / 2.0; // 1.0x -> 0.5 (TTS default), 2.0x -> 1.0, 0.5x -> 0.25
+  }
+
   // Font size setter for slider
-  void setFontSize(double fontSize) {
-    updateFontSize(fontSize);
+  void setFontSize(double size) {
+    updateFontSize(size);
   }
 
   // Font size helpers

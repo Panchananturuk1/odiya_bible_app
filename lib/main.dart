@@ -43,6 +43,12 @@ class OdiyaBibleApp extends StatelessWidget {
             return null;
           },
         ),
+        ProxyProvider2<SettingsProvider, AudioStreamingProvider, void>(
+          update: (context, settingsProvider, audioStreamingProvider, _) {
+            settingsProvider.setAudioStreamingProvider(audioStreamingProvider);
+            return null;
+          },
+        ),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) {

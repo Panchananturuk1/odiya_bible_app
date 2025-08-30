@@ -25,32 +25,45 @@ class AudioService {
   // Initialize TTS
   Future<void> initialize() async {
     try {
+      debugPrint('Initializing TTS service...');
+      
+      // Check available languages first
+      List<dynamic> languages = await _flutterTts.getLanguages;
+      debugPrint('Available TTS languages: $languages');
+      
       await _flutterTts.setLanguage(_currentLanguage);
       await _flutterTts.setSpeechRate(_speechRate);
       await _flutterTts.setVolume(_volume);
       await _flutterTts.setPitch(_pitch);
+      
+      debugPrint('TTS settings applied: language=$_currentLanguage, rate=$_speechRate, volume=$_volume, pitch=$_pitch');
 
       // Set up handlers
       _flutterTts.setStartHandler(() {
+        debugPrint('TTS started speaking');
         _isPlaying = true;
         _isPaused = false;
       });
 
       _flutterTts.setCompletionHandler(() {
+        debugPrint('TTS completed speaking');
         _isPlaying = false;
         _isPaused = false;
       });
 
       _flutterTts.setCancelHandler(() {
+        debugPrint('TTS cancelled');
         _isPlaying = false;
         _isPaused = false;
       });
 
       _flutterTts.setPauseHandler(() {
+        debugPrint('TTS paused');
         _isPaused = true;
       });
 
       _flutterTts.setContinueHandler(() {
+        debugPrint('TTS resumed');
         _isPaused = false;
       });
 
@@ -59,6 +72,15 @@ class AudioService {
         _isPlaying = false;
         _isPaused = false;
       });
+      
+      debugPrint('TTS service initialized successfully');
+      
+      // Test TTS on web platform
+      if (kIsWeb) {
+        debugPrint('Testing TTS on web platform...');
+        // Note: This test speak might not work due to browser autoplay policy
+        // but it will help us see if TTS is properly initialized
+      }
     } catch (e) {
       debugPrint('Error initializing TTS: $e');
     }
@@ -75,22 +97,69 @@ class AudioService {
     }
   }
 
+  // Test if TTS is working (for web platform user interaction)
+  Future<bool> testTTS() async {
+    try {
+      debugPrint('Testing TTS functionality...');
+      
+      if (kIsWeb) {
+        // On web, test with a very short text and timeout
+        await _flutterTts.speak('').timeout(Duration(seconds: 2));
+        await Future.delayed(Duration(milliseconds: 100));
+        await _flutterTts.speak('Test').timeout(Duration(seconds: 3));
+      } else {
+        await _flutterTts.speak('Test');
+      }
+      
+      return true;
+    } catch (e) {
+      debugPrint('TTS test failed: $e');
+      return false;
+    }
+  }
+
   // Speak text
   Future<void> speak(String text) async {
     try {
+      debugPrint('TTS speak called with text: ${text.substring(0, text.length > 50 ? 50 : text.length)}...');
+      
       if (_isPlaying) {
+        debugPrint('TTS already playing, stopping current speech');
         await stop();
       }
       
       // If Odia is not supported, fallback to English
       bool odiaSupported = await isOdiaSupported();
+      debugPrint('Odia language supported: $odiaSupported');
       if (!odiaSupported) {
+        debugPrint('Falling back to English language');
         await _flutterTts.setLanguage('en-US');
       }
       
+      // On web, add additional error handling for audio context issues
+      if (kIsWeb) {
+        try {
+          // Test if TTS is available before speaking
+          await _flutterTts.awaitSpeakCompletion(false);
+          debugPrint('Web TTS: awaitSpeakCompletion set to false');
+        } catch (e) {
+          debugPrint('Web TTS: Could not set awaitSpeakCompletion: $e');
+        }
+      }
+      
+      debugPrint('Calling _flutterTts.speak()...');
       await _flutterTts.speak(text);
+      debugPrint('_flutterTts.speak() call completed');
     } catch (e) {
       debugPrint('Error speaking text: $e');
+      
+      // On web, if TTS fails due to audio context issues, provide helpful error
+      if (kIsWeb && (e.toString().contains('WebAudioError') || e.toString().contains('Failed to set source'))) {
+        debugPrint('Web TTS failed - likely due to browser audio policy or audio context issues');
+        throw Exception('Web TTS unavailable - browser may require user interaction for audio');
+      }
+      
+      rethrow; // Rethrow to let caller handle the error
     }
   }
 

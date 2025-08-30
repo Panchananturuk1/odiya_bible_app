@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../models/app_settings.dart';
 import '../services/settings_service.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'audio_provider.dart';
 
 class SettingsProvider with ChangeNotifier {
   final SettingsService _settingsService = SettingsService();
   AppSettings _settings = AppSettings();
   bool _isInitialized = false;
+  AudioProvider? _audioProvider;
 
   // Getters
   AppSettings get settings => _settings;
@@ -147,6 +149,11 @@ class SettingsProvider with ChangeNotifier {
     }
   }
 
+  // Set AudioProvider reference for syncing audio settings
+  void setAudioProvider(AudioProvider audioProvider) {
+    _audioProvider = audioProvider;
+  }
+  
   // Update audio settings
   Future<void> updateAudioSettings(bool autoPlay, double speed) async {
     try {
@@ -155,6 +162,12 @@ class SettingsProvider with ChangeNotifier {
         audioSpeed: speed,
       );
       await _settingsService.saveSettings(_settings);
+      
+      // Update AudioProvider if available
+      if (_audioProvider != null) {
+        await _audioProvider!.updateAudioSettings(speechRate: speed);
+      }
+      
       notifyListeners();
     } catch (e) {
       debugPrint('Error updating audio settings: $e');

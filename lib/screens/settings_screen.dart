@@ -365,13 +365,15 @@ class SettingsScreen extends StatelessWidget {
                    englishText: 'Audio test',
                  );
                 
-                await audioProvider.playVerse(testVerse);
+                // Get current audio speed from settings
+                final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+                await audioProvider.playVerse(testVerse, audioSpeed: settingsProvider.audioSpeed);
                 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Audio test started. If you don\'t hear anything, try tapping the button again.'),
-                      duration: Duration(seconds: 3),
+                      content: Text('Test audio played successfully!'),
+                      backgroundColor: Colors.green,
                     ),
                   );
                 }

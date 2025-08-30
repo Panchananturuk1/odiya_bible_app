@@ -210,10 +210,10 @@ class JsonBibleService {
         
         // DEBUG: Log mapping once per verse
         // ignore: avoid_print
-        print('[JsonBibleService] $bookName $chapter:$verseNumber | EN: '
-            '${english.length > 40 ? english.substring(0, 40) + '...' : english}'
-            ' | OD: '
-            '${odia.length > 40 ? odia.substring(0, 40) + '...' : odia}');
+        // print('[JsonBibleService] $bookName $chapter:$verseNumber | EN: '
+        //     '${english.length > 40 ? english.substring(0, 40) + '...' : english}'
+        //     ' | OD: '
+        //     '${odia.length > 40 ? odia.substring(0, 40) + '...' : odia}');
         
         verses.add(Verse(
           id: uniqueId,
@@ -231,7 +231,7 @@ class JsonBibleService {
       
       return verses;
     } catch (e) {
-      print('Error loading verses for $bookName chapter $chapter: $e');
+      // print('Error loading verses for $bookName chapter $chapter: $e');
       return [];
     }
   }

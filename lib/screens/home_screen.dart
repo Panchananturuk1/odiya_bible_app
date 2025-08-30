@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Test Mark chapter 1 (New Testament)
                         bibleProvider.selectBook(41); // Mark
                         bibleProvider.loadChapter(41, 1);
-                        print('DEBUG: Navigated to Mark chapter 1 for NT audio test');
+                        // print('DEBUG: Navigated to Mark chapter 1 for NT audio test');
                       },
                       tooltip: 'Test Mark 1 (NT)',
                       backgroundColor: Colors.green,

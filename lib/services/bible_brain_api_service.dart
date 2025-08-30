@@ -59,10 +59,10 @@ class BibleBrainApiService {
   // Returns candidate fileset IDs in priority order for the given bible/book
   List<String> _getAudioFilesetCandidates(String bibleId, String bookId) {
     final isNT = _isNewTestamentBook(bookId);
-    debugPrint('🔍 OT Debug: Book $bookId is NT: $isNT');
-    
+    // debugPrint('🔍 OT Debug: Book $bookId is NT: $isNT');
+
     if (isNT) {
-      debugPrint('🔍 OT Debug: Using NT filesets for $bookId');
+      // debugPrint('🔍 OT Debug: Using NT filesets for $bookId');
       return <String>[
         _odiaAudioFilesetId,
         _odiaAudioFilesetDramaId,
@@ -72,8 +72,8 @@ class BibleBrainApiService {
         _odiaCompleteCollectionAudioFilesetDramaId,
       ];
     } else {
-      debugPrint('🔍 OT Debug: Using OT filesets for $bookId');
-      debugPrint('🔍 OT Debug: OT candidates: $_odiaOldTestamentAudioFilesetId, $_odiaOldTestamentAudioFilesetDramaId, $_odiaCompleteCollectionAudioFilesetId, $_odiaCompleteCollectionAudioFilesetDramaId');
+      // debugPrint('🔍 OT Debug: Using OT filesets for $bookId');
+      // debugPrint('🔍 OT Debug: OT candidates: $_odiaOldTestamentAudioFilesetId, $_odiaOldTestamentAudioFilesetDramaId, $_odiaCompleteCollectionAudioFilesetId, $_odiaCompleteCollectionAudioFilesetDramaId');
       return <String>[
         _odiaOldTestamentAudioFilesetId,
         _odiaOldTestamentAudioFilesetDramaId,
@@ -361,25 +361,25 @@ class BibleBrainApiService {
   Future<String?> getChapterAudioUrl(String bibleId, String bookId, String chapterId) async {
     return await _retryApiCall(() async {
       try {
-        debugPrint('=== Bible Brain API: Getting Chapter Audio URL (DBP4) ===');
-        debugPrint('Bible ID: $bibleId');
-        debugPrint('Book ID: $bookId');
-        debugPrint('Chapter ID: $chapterId');
-        debugPrint('API Key present: ${_apiKey.isNotEmpty}');
-        debugPrint('🔍 OT AUDIO DEBUG: Checking if $bookId is Old Testament...');
+        // debugPrint('=== Bible Brain API: Getting Chapter Audio URL (DBP4) ===');
+    // debugPrint('Bible ID: $bibleId');
+    // debugPrint('Book ID: $bookId');
+    // debugPrint('Chapter ID: $chapterId');
+    // debugPrint('API Key present: ${_apiKey.isNotEmpty}');
+    // debugPrint('🔍 OT AUDIO DEBUG: Checking if $bookId is Old Testament...');
         
         final candidates = _getAudioFilesetCandidates(bibleId, bookId);
-        debugPrint('Fileset candidates: $candidates');
-        debugPrint('Running on web: $kIsWeb');
-        
-        // Special debug for OT books
-        final isOT = !_isNewTestamentBook(bookId);
-        if (isOT) {
-          debugPrint('🔍 OT AUDIO DEBUG: This is an Old Testament book ($bookId)');
-          debugPrint('🔍 OT AUDIO DEBUG: Will check these OT filesets: $candidates');
-        } else {
-          debugPrint('🔍 OT AUDIO DEBUG: This is a New Testament book ($bookId)');
-        }
+        // debugPrint('Fileset candidates: $candidates');
+    // debugPrint('Running on web: $kIsWeb');
+
+    // Special debug for OT books
+    final isOT = !_isNewTestamentBook(bookId);
+    // if (isOT) {
+    //   debugPrint('🔍 OT AUDIO DEBUG: This is an Old Testament book ($bookId)');
+    //   debugPrint('🔍 OT AUDIO DEBUG: Will check these OT filesets: $candidates');
+    // } else {
+    //   debugPrint('🔍 OT AUDIO DEBUG: This is a New Testament book ($bookId)');
+    // }
 
         for (final filesetId in candidates) {
           // Choose variants (prefer opus16/WebM on web for better compatibility; include MP3 off-web)

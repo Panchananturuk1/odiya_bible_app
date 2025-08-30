@@ -605,7 +605,7 @@ class BibleProvider with ChangeNotifier {
     return _currentChapter > 1;
   }
 
-  bool get canGoNextChapter {
+  bool get canGoToNextChapter {
     if (_currentBook == null) return false;
     return _currentChapter < _currentBook!.totalChapters;
   }
@@ -617,7 +617,7 @@ class BibleProvider with ChangeNotifier {
   }
 
   Future<void> goToNextChapter() async {
-    if (canGoNextChapter) {
+    if (canGoToNextChapter) {
       await loadChapter(_currentBook!.id, _currentChapter + 1);
     }
   }

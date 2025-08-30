@@ -5,6 +5,7 @@ import 'firebase_options.dart';
 import 'providers/settings_provider.dart';
 import 'providers/bible_provider.dart';
 import 'providers/audio_provider.dart';
+import 'providers/audio_streaming_provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
@@ -28,6 +29,7 @@ class OdiyaBibleApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => BibleProvider()),
         ChangeNotifierProvider(create: (_) => AudioProvider()),
+        ChangeNotifierProvider(create: (_) => AudioStreamingProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ProxyProvider2<AuthProvider, BibleProvider, void>(
           update: (context, authProvider, bibleProvider, _) {

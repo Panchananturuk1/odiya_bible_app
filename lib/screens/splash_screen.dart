@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/bible_provider.dart';
+import '../providers/audio_streaming_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -50,20 +51,38 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _initializeApp() async {
     try {
+      // Check if widget is still mounted before accessing context
+      if (!mounted) return;
+      
       // Initialize settings first
       final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
       await settingsProvider.initialize();
 
+      // Check mounted state again after async operation
+      if (!mounted) return;
+      
       // Then initialize Bible data
       final bibleProvider = Provider.of<BibleProvider>(context, listen: false);
       await bibleProvider.initialize();
 
+      // Check mounted state again after async operation
+      if (!mounted) return;
+      
+      // Initialize audio streaming provider
+      final audioStreamingProvider = Provider.of<AudioStreamingProvider>(context, listen: false);
+      await audioStreamingProvider.initialize();
+
+      // Check mounted state before final delay
+      if (!mounted) return;
+      
       // Wait for animations to complete
       await Future.delayed(const Duration(seconds: 3));
     } catch (e) {
       debugPrint('Error during app initialization: $e');
       // Even if there's an error, we should still proceed
-      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
+        await Future.delayed(const Duration(seconds: 2));
+      }
     }
   }
 

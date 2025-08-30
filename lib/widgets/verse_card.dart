@@ -31,43 +31,15 @@ class VerseCard extends StatefulWidget {
   State<VerseCard> createState() => _VerseCardState();
 }
 
-class _VerseCardState extends State<VerseCard>
-    with SingleTickerProviderStateMixin {
-  bool _showActions = false;
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-
+class _VerseCardState extends State<VerseCard> {
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   void _toggleActions() {
-    setState(() {
-      _showActions = !_showActions;
-    });
-    if (_showActions) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
-    }
+    // Show bottom sheet instead of inline actions
+    _showVerseOptions();
   }
 
   @override
@@ -132,61 +104,7 @@ class _VerseCardState extends State<VerseCard>
                   ),
                 ],
 
-                // Action buttons (unchanged)
-                if (_showActions)
-                  AnimatedBuilder(
-                    animation: _scaleAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildActionButton(
-                                icon: widget.verse.isHighlighted
-                                    ? Icons.highlight_off
-                                    : Icons.highlight,
-                                label: widget.verse.isHighlighted
-                                    ? 'Remove'
-                                    : 'Highlight',
-                                onPressed: widget.onHighlight,
-                                color: widget.verse.isHighlighted
-                                    ? Colors.grey
-                                    : Colors.yellow[700],
-                              ),
-                              _buildActionButton(
-                                icon: widget.verse.isBookmarked
-                                    ? Icons.bookmark
-                                    : Icons.bookmark_border,
-                                label: widget.verse.isBookmarked
-                                    ? 'Saved'
-                                    : 'Bookmark',
-                                onPressed: widget.onBookmark,
-                                color: widget.verse.isBookmarked
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Colors.grey,
-                              ),
-                              _buildActionButton(
-                                icon: Icons.note_add,
-                                label: 'Note',
-                                onPressed: _showNoteDialog,
-                                color: Colors.orange[600],
-                              ),
-                              _buildActionButton(
-                                icon: Icons.share,
-                                label: 'Share',
-                                onPressed: widget.onShare,
-                                color: Colors.blue[600],
-                              ),
-                              _buildAudioButton(),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                // Action buttons removed - now shown in bottom sheet
               ],
             ),
           ),
@@ -310,33 +228,7 @@ class _VerseCardState extends State<VerseCard>
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-    required Color? color,
-  }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: onPressed,
-          icon: Icon(icon, color: color),
-          style: IconButton.styleFrom(
-            backgroundColor: color?.withOpacity(0.1),
-          ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            color: color,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
+
 
   void _showVerseOptions() {
     showModalBottomSheet(
@@ -441,6 +333,31 @@ class _VerseCardState extends State<VerseCard>
                   _copyToClipboard();
                 },
               ),
+              if (widget.onAudioPlay != null)
+                Consumer<AudioProvider>(
+                  builder: (context, audioProvider, child) {
+                    final isCurrentVerse = audioProvider.currentVerse?.id == widget.verse.id;
+                    final isPlaying = audioProvider.isPlaying && isCurrentVerse;
+                    
+                    return ListTile(
+                      dense: true,
+                      visualDensity: VisualDensity.compact,
+                      leading: Icon(
+                        isPlaying ? Icons.pause : Icons.play_arrow,
+                        color: isCurrentVerse ? Colors.blue[600] : Colors.grey[600],
+                      ),
+                      title: Text(isPlaying ? 'Pause Audio' : 'Play Audio'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        if (isCurrentVerse && audioProvider.isPlaying) {
+                          audioProvider.pause();
+                        } else if (widget.onAudioPlay != null) {
+                          widget.onAudioPlay!();
+                        }
+                      },
+                    );
+                  },
+                ),
             ],
           ),
         ),
@@ -497,25 +414,5 @@ class _VerseCardState extends State<VerseCard>
     );
   }
 
-  Widget _buildAudioButton() {
-    return Consumer<AudioProvider>(
-      builder: (context, audioProvider, child) {
-        final isCurrentVerse = audioProvider.currentVerse?.id == widget.verse.id;
-        final isPlaying = audioProvider.isPlaying && isCurrentVerse;
-        
-        return _buildActionButton(
-          icon: isPlaying ? Icons.pause : Icons.play_arrow,
-          label: isPlaying ? 'Pause' : 'Play',
-          onPressed: () {
-            if (isCurrentVerse && audioProvider.isPlaying) {
-              audioProvider.pause();
-            } else if (widget.onAudioPlay != null) {
-              widget.onAudioPlay!();
-            }
-          },
-          color: isCurrentVerse ? Colors.blue[600] : Colors.grey[600],
-        );
-      },
-    );
-  }
+
 }

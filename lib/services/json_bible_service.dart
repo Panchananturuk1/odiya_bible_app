@@ -288,10 +288,49 @@ class JsonBibleService {
     
     // Check if the index is valid
     if (index >= 0 && index < allBooks.length) {
-      return allBooks[index];
+      String englishName = allBooks[index];
+      String? odiyaName = _bookOdiyaNames[englishName];
+      
+      // Return Odiya name with English in brackets if available
+      if (odiyaName != null) {
+        return '$odiyaName ($englishName)';
+      }
+      
+      return englishName;
     }
     
     return 'Unknown Book';
+  }
+
+  // Get book abbreviation by ID for API calls
+  static String getBookAbbreviationById(int bookId) {
+    List<String> allBooks = [
+      'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy',
+      'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel',
+      '1 Kings', '2 Kings', '1 Chronicles', '2 Chronicles',
+      'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalms',
+      'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Isaiah', 'Jeremiah',
+      'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel',
+      'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum',
+      'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi',
+      'Matthew', 'Mark', 'Luke', 'John', 'Acts',
+      'Romans', '1 Corinthians', '2 Corinthians', 'Galatians',
+      'Ephesians', 'Philippians', 'Colossians', '1 Thessalonians',
+      '2 Thessalonians', '1 Timothy', '2 Timothy', 'Titus',
+      'Philemon', 'Hebrews', 'James', '1 Peter', '2 Peter',
+      '1 John', '2 John', '3 John', 'Jude', 'Revelation'
+    ];
+    
+    // Adjust for 1-based index
+    int index = bookId - 1;
+    
+    // Check if the index is valid
+    if (index >= 0 && index < allBooks.length) {
+      String englishName = allBooks[index];
+      return _getAbbreviation(englishName);
+    }
+    
+    return 'GEN'; // Default fallback
   }
 
   static String? _getOdiyaTranslation(String bookName, int chapter, int verse) {

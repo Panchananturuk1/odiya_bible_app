@@ -134,7 +134,7 @@ class _SplashScreenState extends State<SplashScreen>
                     const Text(
                       'ଓଡିଆ ବାଇବଲ',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         letterSpacing: 2,
@@ -146,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
                     const Text(
                       'Odiya Bible',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         color: Colors.white70,
                         letterSpacing: 1,
                       ),
@@ -168,7 +168,7 @@ class _SplashScreenState extends State<SplashScreen>
                     const Text(
                       'Loading...',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         color: Colors.white70,
                       ),
                     ),

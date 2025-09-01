@@ -68,17 +68,13 @@ class BibleBrainApiService {
         _odiaAudioFilesetDramaId,
         _odiaCompleteAudioFilesetId,
         _odiaCompleteAudioFilesetDramaId,
-        _odiaCompleteCollectionAudioFilesetId,
-        _odiaCompleteCollectionAudioFilesetDramaId,
       ];
     } else {
       // debugPrint('🔍 OT Debug: Using OT filesets for $bookId');
-      // debugPrint('🔍 OT Debug: OT candidates: $_odiaOldTestamentAudioFilesetId, $_odiaOldTestamentAudioFilesetDramaId, $_odiaCompleteCollectionAudioFilesetId, $_odiaCompleteCollectionAudioFilesetDramaId');
+      // debugPrint('🔍 OT Debug: OT candidates: $_odiaOldTestamentAudioFilesetId, $_odiaOldTestamentAudioFilesetDramaId');
       return <String>[
         _odiaOldTestamentAudioFilesetId,
         _odiaOldTestamentAudioFilesetDramaId,
-        _odiaCompleteCollectionAudioFilesetId,
-        _odiaCompleteCollectionAudioFilesetDramaId,
       ];
     }
   }

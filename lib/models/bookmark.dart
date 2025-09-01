@@ -1,3 +1,5 @@
+import '../services/json_bible_service.dart';
+
 class Bookmark {
   final int? id;
   final String? documentId; // Firestore document ID
@@ -81,7 +83,11 @@ class Bookmark {
     );
   }
 
-  String get reference => '$bookId:$chapter:$verseNumber';
+  String get reference {
+    // Import JsonBibleService to get book name by ID
+    final bookName = JsonBibleService.getBookNameById(bookId);
+    return '$bookName $chapter:$verseNumber';
+  }
 
   @override
   String toString() {

@@ -149,26 +149,32 @@ class BookmarkCard extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: onEdit,
-                    icon: const Icon(Icons.edit, size: 20),
+                    icon: const Icon(Icons.edit, size: 18),
                     tooltip: 'Edit bookmark',
                     style: IconButton.styleFrom(
                       foregroundColor: Colors.orange[600],
+                      minimumSize: const Size(40, 40),
+                      padding: const EdgeInsets.all(8),
                     ),
                   ),
                   IconButton(
                     onPressed: onShare,
-                    icon: const Icon(Icons.share, size: 20),
+                    icon: const Icon(Icons.share, size: 18),
                     tooltip: 'Share bookmark',
                     style: IconButton.styleFrom(
                       foregroundColor: Colors.blue[600],
+                      minimumSize: const Size(40, 40),
+                      padding: const EdgeInsets.all(8),
                     ),
                   ),
                   IconButton(
                     onPressed: onDelete,
-                    icon: const Icon(Icons.delete, size: 20),
+                    icon: const Icon(Icons.delete, size: 18),
                     tooltip: 'Delete bookmark',
                     style: IconButton.styleFrom(
                       foregroundColor: Colors.red[600],
+                      minimumSize: const Size(40, 40),
+                      padding: const EdgeInsets.all(8),
                     ),
                   ),
                 ],

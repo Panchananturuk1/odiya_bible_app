@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../services/audio_streaming_service.dart';
 import '../services/bible_brain_api_service.dart';
+import '../services/json_bible_service.dart';
 import '../models/verse.dart';
 
 class AudioStreamingProvider with ChangeNotifier {
@@ -150,8 +151,13 @@ class AudioStreamingProvider with ChangeNotifier {
     _setLoading(true);
     
     try {
-      // Stop current playback
+      // Stop current playbook
       await stop();
+      
+      // Convert book ID to proper book abbreviation for API calls
+      final bookIdInt = int.tryParse(bookId) ?? 1;
+      final bookAbbreviation = JsonBibleService.getBookAbbreviationById(bookIdInt);
+      debugPrint('Converting book ID $bookId to abbreviation: $bookAbbreviation');
       
       // Update current chapter info
       _currentBookId = bookId;
@@ -162,7 +168,8 @@ class AudioStreamingProvider with ChangeNotifier {
       // Try to load audio using the AudioStreamingService (which has fallback logic)
         try {
           // The AudioStreamingService will try Bible Brain API first, then fallback to TTS
-          await _audioService.loadChapterAudio(bookId, chapter.toString(), mode: AudioPlaybackMode.streaming, verses: verses);
+          // Use the book abbreviation instead of the numeric book ID
+          await _audioService.loadChapterAudio(bookAbbreviation, chapter.toString(), mode: AudioPlaybackMode.streaming, verses: verses);
         
         // Capture the resolved audio URL from the service so UI knows audio is available
         _currentAudioUrl = _audioService.currentAudioUrl;
@@ -181,7 +188,7 @@ class AudioStreamingProvider with ChangeNotifier {
         if (!kIsWeb && _apiService.isInitialized) {
           try {
             final bibleId = _apiService.defaultBibleId;
-            final timings = await _apiService.getVerseTimings(bibleId, bookId, chapter.toString());
+            final timings = await _apiService.getVerseTimings(bibleId, bookAbbreviation, chapter.toString());
             _verseTimings = {};
             
             // Convert timing data to verse number -> duration map

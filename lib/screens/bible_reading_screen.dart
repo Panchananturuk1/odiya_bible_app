@@ -296,7 +296,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                 Text(
                   'Select a book and chapter to start reading',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 10,
                     color: Colors.grey,
                   ),
                   textAlign: TextAlign.center,
@@ -340,7 +340,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            '${(settingsProvider.readingLanguage == 'english' ? currentBook!.name : currentBook!.odiyaName)} • Chapter $currentChapter',
+                            '${(settingsProvider.readingLanguage == 'english' ? (currentBook?.name ?? 'Unknown') : (currentBook?.odiyaName ?? 'Unknown'))} • Chapter $currentChapter',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSecondaryContainer,
                                   fontWeight: FontWeight.w600,
@@ -542,7 +542,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                             child: Text(
                               chapter.toString(),
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: isCurrentChapter
                                     ? Colors.white

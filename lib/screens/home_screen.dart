@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _titles[_currentIndex],
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize: 18,
+                fontSize: 16,
                 height: 1.0,
               ),
             ),

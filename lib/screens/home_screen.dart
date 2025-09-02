@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/bible_provider.dart';
 import '../providers/settings_provider.dart';
+import 'testament_selection_screen.dart';
 import 'bible_reading_screen.dart';
 import 'search_screen.dart';
 import 'bookmarks_screen.dart';
@@ -19,15 +20,25 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
 
-  final List<Widget> _screens = [
+  List<Widget> get _screens => [
+    TestamentSelectionScreen(
+      onNavigateToReading: () {
+        _onTabTapped(1); // Navigate to reading tab
+      },
+    ),
     const BibleReadingScreen(),
     const SearchScreen(),
-    const BookmarksScreen(),
+    BookmarksScreen(
+      onNavigateToReading: () {
+        _onTabTapped(1); // Navigate to reading tab
+      },
+    ),
     const SettingsScreen(),
   ];
 
   final List<String> _titles = [
     'ଓଡିଆ ବାଇବଲ', // Odiya Bible
+    'ପଢନ୍ତୁ', // Read
     'ଖୋଜନ୍ତୁ', // Search
     'ବୁକମାର୍କ', // Bookmarks
     'ସେଟିଂସ', // Settings
@@ -77,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
             elevation: 2,
             actions: [
               // Font size controls
-              if (_currentIndex == 0) ...
+              if (_currentIndex == 1) ...
               [
                 IconButton(
                   icon: const Icon(Icons.text_decrease),
@@ -146,8 +157,12 @@ class _HomeScreenState extends State<HomeScreen> {
             unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             items: const [
               BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
                 icon: Icon(Icons.menu_book),
-                label: 'Bible',
+                label: 'Read',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.search),
@@ -163,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          floatingActionButton: _currentIndex == 0 
+          floatingActionButton: _currentIndex == 1 
               ? FloatingActionButton(
                   heroTag: "chapterSelector",
                   onPressed: () {

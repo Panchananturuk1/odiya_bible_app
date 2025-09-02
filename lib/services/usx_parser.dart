@@ -308,10 +308,11 @@ class USXParser {
                  'text': headingText,
                });
              }
-           } else if (style == 'p') {
-             // This is a paragraph with verses - extract verse numbers
-             final verseElements = currentElement.findAllElements('verse')
-                 .where((v) => v.getAttribute('style') == 'v')
+           } else {
+             // Any paragraph style may contain verse start markers; extract by presence of a verse number attribute
+             final verseElements = currentElement
+                 .findAllElements('verse')
+                 .where((v) => v.getAttribute('number') != null)
                  .toList();
              
              for (final verseElement in verseElements) {

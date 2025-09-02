@@ -232,7 +232,7 @@ class BibleProvider with ChangeNotifier {
           // Fallback: just verses without headings
           _currentChapterContent = _currentChapterVerses.map((v) => {
             'type': 'verse',
-            'data': v,
+            'verse': v,
           }).toList();
         }
       } catch (e) {
@@ -240,7 +240,7 @@ class BibleProvider with ChangeNotifier {
         // Fallback: just verses without headings
         _currentChapterContent = _currentChapterVerses.map((v) => {
           'type': 'verse',
-          'data': v,
+          'verse': v,
         }).toList();
       }
 

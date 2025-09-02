@@ -1,5 +1,5 @@
 name: odiya_bible_app
-description: "Odiya Bible App - Read and meditate the WORD of GOD in Odiya"
+description: "Odiya Bible (ଓଡିଆ ବାଇବଲ) - Read and meditate the WORD of GOD in Odiya"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -34,6 +34,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -108,3 +109,21 @@ flutter:
     - assets/JSON/Jude/
     - assets/JSON/Revelation/
     - assets/Odiya_USX/
+    - assets/Logo/
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  web:
+    generate: true
+    image_path: "assets/Logo/Bible_Image_Logo.jpg"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/Logo/Bible_Image_Logo.jpg"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/Logo/Bible_Image_Logo.jpg"
+  image_path: "assets/Logo/Bible_Image_Logo.jpg"

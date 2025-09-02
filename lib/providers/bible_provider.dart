@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/book.dart';
 import '../models/verse.dart';
 import '../models/bookmark.dart';
+import '../models/chapter_heading.dart';
 import '../services/database_service.dart';
 import '../services/firestore_bookmark_service.dart';
 import '../services/json_bible_service.dart';
@@ -24,6 +25,7 @@ class BibleProvider with ChangeNotifier {
   Book? _currentBook;
   int _currentChapter = 1;
   int _currentVerse = 1;
+  List<Map<String, dynamic>> _currentChapterContent = [];
   List<Bookmark> _bookmarks = [];
   List<Verse> _searchResults = [];
   bool _isLoading = false;
@@ -80,6 +82,74 @@ class BibleProvider with ChangeNotifier {
     _firestoreHighlightsSub = null;
   }
 
+  // Apply existing highlights and bookmarks to newly loaded verses
+  Future<void> _applyExistingFlagsToVerses() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      // Get current highlights from Firestore
+      final highlightRefs = await _firestoreHighlightService.watchHighlights().first;
+      
+      // Get current bookmarks
+      final bookmarkRefs = _bookmarks
+          .map((b) => '${b.bookId}:${b.chapter}:${b.verseNumber}')
+          .toSet();
+
+      // Apply flags to current chapter verses
+      for (var i = 0; i < _currentChapterVerses.length; i++) {
+        final v = _currentChapterVerses[i];
+        final key = '${v.bookId}:${v.chapter}:${v.verseNumber}';
+        
+        final shouldBeHighlighted = highlightRefs.contains(key);
+        final shouldBeBookmarked = bookmarkRefs.contains(key);
+        
+        if (v.isHighlighted != shouldBeHighlighted || v.isBookmarked != shouldBeBookmarked) {
+          _currentChapterVerses[i] = v.copyWith(
+            isHighlighted: shouldBeHighlighted,
+            isBookmarked: shouldBeBookmarked,
+          );
+        }
+      }
+    } catch (e) {
+       debugPrint('Error applying existing flags to verses: $e');
+     }
+   }
+
+   // Apply existing highlights and bookmarks to search results
+   Future<void> _applyExistingFlagsToSearchResults() async {
+     final user = FirebaseAuth.instance.currentUser;
+     if (user == null) return;
+
+     try {
+       // Get current highlights from Firestore
+       final highlightRefs = await _firestoreHighlightService.watchHighlights().first;
+       
+       // Get current bookmarks
+       final bookmarkRefs = _bookmarks
+           .map((b) => '${b.bookId}:${b.chapter}:${b.verseNumber}')
+           .toSet();
+
+       // Apply flags to search results
+       for (var i = 0; i < _searchResults.length; i++) {
+         final v = _searchResults[i];
+         final key = '${v.bookId}:${v.chapter}:${v.verseNumber}';
+         
+         final shouldBeHighlighted = highlightRefs.contains(key);
+         final shouldBeBookmarked = bookmarkRefs.contains(key);
+         
+         if (v.isHighlighted != shouldBeHighlighted || v.isBookmarked != shouldBeBookmarked) {
+           _searchResults[i] = v.copyWith(
+             isHighlighted: shouldBeHighlighted,
+             isBookmarked: shouldBeBookmarked,
+           );
+         }
+       }
+     } catch (e) {
+       debugPrint('Error applying existing flags to search results: $e');
+     }
+   }
+
   // Getters
   List<Book> get books => _books;
   List<Verse> get currentChapterVerses => _currentChapterVerses;
@@ -87,6 +157,7 @@ class BibleProvider with ChangeNotifier {
   Book? get currentBook => _currentBook;
   int get currentChapter => _currentChapter;
   int get currentVerse => _currentVerse;
+  List<Map<String, dynamic>> get currentChapterContent => _currentChapterContent;
   List<Bookmark> get bookmarks => _bookmarks;
   List<Verse> get searchResults => _searchResults;
   bool get isLoading => _isLoading;
@@ -148,6 +219,30 @@ class BibleProvider with ChangeNotifier {
     try {
       final book = _books.firstWhere((b) => b.id == bookId);
       _currentChapterVerses = await JsonBibleService.getVersesByChapter(book.name, chapter);
+
+      // Apply existing highlights and bookmarks to newly loaded verses
+      await _applyExistingFlagsToVerses();
+
+      // Load chapter content with inline headings from USX
+      try {
+        final usxCode = USXParser.getUSXCodeFromBookName(book.name);
+        if (usxCode != null) {
+          _currentChapterContent = await USXParser.parseChapterWithHeadings('$usxCode.usx', chapter, _currentChapterVerses);
+        } else {
+          // Fallback: just verses without headings
+          _currentChapterContent = _currentChapterVerses.map((v) => {
+            'type': 'verse',
+            'data': v,
+          }).toList();
+        }
+      } catch (e) {
+        debugPrint('Error loading chapter content: $e');
+        // Fallback: just verses without headings
+        _currentChapterContent = _currentChapterVerses.map((v) => {
+          'type': 'verse',
+          'data': v,
+        }).toList();
+      }
 
       // Build paragraph groupings from USX paragraph markers
       try {
@@ -231,6 +326,10 @@ class BibleProvider with ChangeNotifier {
       } else {
         _searchResults = await _databaseService.searchVerses(query);
       }
+      
+      // Apply existing highlights and bookmarks to search results
+      await _applyExistingFlagsToSearchResults();
+      
       _searchQuery = query;
       notifyListeners();
     } catch (e) {

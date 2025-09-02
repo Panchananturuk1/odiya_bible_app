@@ -415,6 +415,9 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                       } else {
                         // Display verse
                         final verse = content['verse'];
+                        if (verse == null) {
+                          return const SizedBox.shrink();
+                        }
                         return Consumer<AudioStreamingProvider>(
                           builder: (context, audioProvider, child) {
                             return _VerseView(

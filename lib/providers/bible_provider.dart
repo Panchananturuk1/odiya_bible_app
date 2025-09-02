@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/book.dart';
 import '../models/verse.dart';
 import '../models/bookmark.dart';
+import '../models/chapter_heading.dart';
 import '../services/database_service.dart';
 import '../services/firestore_bookmark_service.dart';
 import '../services/json_bible_service.dart';
@@ -24,6 +25,7 @@ class BibleProvider with ChangeNotifier {
   Book? _currentBook;
   int _currentChapter = 1;
   int _currentVerse = 1;
+  List<Map<String, dynamic>> _currentChapterContent = [];
   List<Bookmark> _bookmarks = [];
   List<Verse> _searchResults = [];
   bool _isLoading = false;
@@ -155,6 +157,7 @@ class BibleProvider with ChangeNotifier {
   Book? get currentBook => _currentBook;
   int get currentChapter => _currentChapter;
   int get currentVerse => _currentVerse;
+  List<Map<String, dynamic>> get currentChapterContent => _currentChapterContent;
   List<Bookmark> get bookmarks => _bookmarks;
   List<Verse> get searchResults => _searchResults;
   bool get isLoading => _isLoading;
@@ -219,6 +222,27 @@ class BibleProvider with ChangeNotifier {
 
       // Apply existing highlights and bookmarks to newly loaded verses
       await _applyExistingFlagsToVerses();
+
+      // Load chapter content with inline headings from USX
+      try {
+        final usxCode = USXParser.getUSXCodeFromBookName(book.name);
+        if (usxCode != null) {
+          _currentChapterContent = await USXParser.parseChapterWithHeadings('$usxCode.usx', chapter, _currentChapterVerses);
+        } else {
+          // Fallback: just verses without headings
+          _currentChapterContent = _currentChapterVerses.map((v) => {
+            'type': 'verse',
+            'data': v,
+          }).toList();
+        }
+      } catch (e) {
+        debugPrint('Error loading chapter content: $e');
+        // Fallback: just verses without headings
+        _currentChapterContent = _currentChapterVerses.map((v) => {
+          'type': 'verse',
+          'data': v,
+        }).toList();
+      }
 
       // Build paragraph groupings from USX paragraph markers
       try {

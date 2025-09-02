@@ -386,26 +386,47 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                 ),
                 const SizedBox(height: 6),
                 
-                // Paragraph list
+
+                
+                // Content list (verses and headings)
                 Expanded(
                   child: ListView.separated(
                     controller: _scrollController,
-                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 240), // Ensure enough space for expanded audio player
-                    itemCount: paragraphs.length,
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 119), // Fixed bottom overflow by reducing padding by 121 pixels
+                    itemCount: bibleProvider.currentChapterContent?.length ?? 0,
                     separatorBuilder: (_, __) => const SizedBox(height: 6),
                     itemBuilder: (context, index) {
-                      final para = paragraphs[index];
-                      return Consumer<AudioStreamingProvider>(
-                        builder: (context, audioProvider, child) {
-                          return _ParagraphView(
-                            verses: para,
-                            fontSize: settingsProvider.fontSize,
-                            onTapVerse: (v) => _showVerseOptions(context, v, bibleProvider),
-                            readingLanguage: settingsProvider.readingLanguage,
-                            currentPlayingVerse: audioProvider.currentPlayingVerse,
-                          );
-                        },
-                      );
+                      final content = bibleProvider.currentChapterContent![index];
+                      
+                      if (content['type'] == 'heading') {
+                        // Display heading without background card
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          child: Text(
+                            content['text'],
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              height: 1.3,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      } else {
+                        // Display verse
+                        final verse = content['verse'];
+                        return Consumer<AudioStreamingProvider>(
+                          builder: (context, audioProvider, child) {
+                            return _VerseView(
+                              verse: verse,
+                              fontSize: settingsProvider.fontSize,
+                              onTapVerse: (v) => _showVerseOptions(context, v, bibleProvider),
+                              readingLanguage: settingsProvider.readingLanguage,
+                              currentPlayingVerse: audioProvider.currentPlayingVerse,
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                 ),
@@ -560,6 +581,105 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
           );
         },
       ),
+    );
+  }
+}
+
+class _VerseView extends StatefulWidget {
+  const _VerseView({
+    required this.verse,
+    required this.fontSize,
+    required this.onTapVerse,
+    required this.readingLanguage,
+    required this.currentPlayingVerse,
+  });
+
+  final Verse verse;
+  final double fontSize;
+  final void Function(Verse v) onTapVerse;
+  final String readingLanguage;
+  final int currentPlayingVerse;
+
+  @override
+  State<_VerseView> createState() => _VerseViewState();
+}
+
+class _VerseViewState extends State<_VerseView> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SelectableText.rich(
+      TextSpan(
+        children: [
+          // Verse number as superscript red
+          WidgetSpan(
+            alignment: PlaceholderAlignment.aboveBaseline,
+            baseline: TextBaseline.alphabetic,
+            child: GestureDetector(
+              onTap: () => widget.onTapVerse(widget.verse),
+              onLongPress: () => widget.onTapVerse(widget.verse),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: Text(
+                  '${widget.verse.verseNumber}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.red,
+                    fontSize: widget.fontSize * 0.75,
+                    height: 0.8,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Verse text as widget span to support hover highlight
+          WidgetSpan(
+            alignment: PlaceholderAlignment.baseline,
+            baseline: TextBaseline.alphabetic,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.text,
+              onEnter: (_) => setState(() => _isHovered = true),
+              onExit: (_) => setState(() => _isHovered = false),
+              child: GestureDetector(
+                onTap: () => widget.onTapVerse(widget.verse),
+                onLongPress: () => widget.onTapVerse(widget.verse),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: widget.verse.isHighlighted
+                        ? const Color(0xFFFFF59D) // Yellow highlight for user highlights
+                        : (widget.verse.verseNumber == widget.currentPlayingVerse
+                            ? Theme.of(context).colorScheme.primary.withOpacity(0.2) // Blue highlight for currently playing verse
+                            : (_isHovered
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer
+                                    .withOpacity(0.12)
+                                : Colors.transparent)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  margin: const EdgeInsets.only(right: 2),
+                  child: Text(
+                    ' ${(() {
+                          final eng = widget.verse.englishText;
+                          final useEng = widget.readingLanguage == 'english' && (eng?.isNotEmpty ?? false);
+                          return (useEng ? eng! : widget.verse.odiyaText).trim();
+                        })()} ',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: widget.fontSize,
+                      height: 1.6,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      textAlign: TextAlign.start,
     );
   }
 }

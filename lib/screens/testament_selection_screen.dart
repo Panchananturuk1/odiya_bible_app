@@ -236,22 +236,96 @@ class TestamentSelectionScreen extends StatelessWidget {
   }
 
   void _navigateToFirstChapter(BuildContext context, BibleProvider bibleProvider, int testament) async {
-    // Get the first book of the selected testament
+    // Show book and chapter selector for the selected testament
+    _showTestamentBookSelector(context, bibleProvider, testament);
+  }
+
+  void _showTestamentBookSelector(BuildContext context, BibleProvider bibleProvider, int testament) {
     final books = testament == 1 
         ? bibleProvider.oldTestamentBooks 
         : bibleProvider.newTestamentBooks;
-    
-    if (books.isNotEmpty) {
-      final firstBook = books.first;
-      
-      // Navigate to the first chapter of the first book
-      await bibleProvider.selectBook(firstBook.id);
-      await bibleProvider.loadChapter(firstBook.id, 1);
-      
-      // Switch to the Bible reading tab
-      if (context.mounted && onNavigateToReading != null) {
-        onNavigateToReading!();
-      }
-    }
+    final testamentName = testament == 1 ? 'Old Testament' : 'New Testament';
+    final testamentOdiyaName = testament == 1 ? 'ପୁରାତନ ନିୟମ' : 'ନୂତନ ନିୟମ';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        expand: false,
+        builder: (context, scrollController) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  testamentOdiyaName,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$testamentName • ${books.length} books',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: _buildBooksList(books, bibleProvider),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBooksList(List books, BibleProvider bibleProvider) {
+    return ListView.builder(
+      itemCount: books.length,
+      itemBuilder: (context, index) {
+        final book = books[index];
+        return ExpansionTile(
+          title: Text(
+            '${book.odiyaName} (${book.name})',
+            style: const TextStyle(fontWeight: FontWeight.w500),
+          ),
+          children: List.generate(
+            book.totalChapters,
+            (chapterIndex) => ListTile(
+              title: Text('Chapter ${chapterIndex + 1}'),
+              onTap: () async {
+                Navigator.pop(context);
+                await bibleProvider.selectBook(book.id);
+                await bibleProvider.loadChapter(book.id, chapterIndex + 1);
+                
+                // Switch to the Bible reading tab
+                if (context.mounted && onNavigateToReading != null) {
+                  onNavigateToReading!();
+                }
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 }

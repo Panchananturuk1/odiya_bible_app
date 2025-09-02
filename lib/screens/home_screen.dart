@@ -38,10 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<String> _titles = [
     'ଓଡିଆ ବାଇବଲ', // Odiya Bible
-    'ପଢନ୍ତୁ', // Read
-    'ଖୋଜନ୍ତୁ', // Search
-    'ବୁକମାର୍କ', // Bookmarks
-    'ସେଟିଂସ', // Settings
+    'ଓଡିଆ ବାଇବଲ', // Odiya Bible (Read tab)
+    'ଓଡିଆ ବାଇବଲ', // Odiya Bible (Search tab)
+    'ଓଡିଆ ବାଇବଲ', // Odiya Bible (Bookmarks tab)
+    'ଓଡିଆ ବାଇବଲ', // Odiya Bible (Settings tab)
   ];
 
   @override

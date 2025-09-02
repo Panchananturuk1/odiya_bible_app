@@ -51,38 +51,39 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _initializeApp() async {
     try {
-      // Check if widget is still mounted before accessing context
-      if (!mounted) return;
+      debugPrint('SplashScreen: Starting app initialization');
+      
+      // Store context reference before async operations
+      final currentContext = context;
       
       // Initialize settings first
-      final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+      debugPrint('SplashScreen: Initializing settings provider');
+      final settingsProvider = Provider.of<SettingsProvider>(currentContext, listen: false);
       await settingsProvider.initialize();
-
-      // Check mounted state again after async operation
-      if (!mounted) return;
+      debugPrint('SplashScreen: Settings provider initialized');
       
       // Then initialize Bible data
-      final bibleProvider = Provider.of<BibleProvider>(context, listen: false);
+      debugPrint('SplashScreen: Initializing bible provider');
+      final bibleProvider = Provider.of<BibleProvider>(currentContext, listen: false);
       await bibleProvider.initialize();
-
-      // Check mounted state again after async operation
-      if (!mounted) return;
+      debugPrint('SplashScreen: Bible provider initialized');
       
-      // Initialize audio streaming provider
-      final audioStreamingProvider = Provider.of<AudioStreamingProvider>(context, listen: false);
-      await audioStreamingProvider.initialize();
-
-      // Check mounted state before final delay
-      if (!mounted) return;
+      // Initialize audio streaming provider (skip if context is no longer valid)
+      if (mounted) {
+        debugPrint('SplashScreen: Initializing audio streaming provider');
+        final audioStreamingProvider = Provider.of<AudioStreamingProvider>(currentContext, listen: false);
+        await audioStreamingProvider.initialize();
+        debugPrint('SplashScreen: Audio streaming provider initialized');
+      }
       
       // Wait for animations to complete
-      await Future.delayed(const Duration(seconds: 3));
+      debugPrint('SplashScreen: Waiting for animations to complete');
+      await Future.delayed(const Duration(seconds: 2));
+      debugPrint('SplashScreen: App initialization completed');
     } catch (e) {
       debugPrint('Error during app initialization: $e');
       // Even if there's an error, we should still proceed
-      if (mounted) {
-        await Future.delayed(const Duration(seconds: 2));
-      }
+      await Future.delayed(const Duration(seconds: 2));
     }
   }
 

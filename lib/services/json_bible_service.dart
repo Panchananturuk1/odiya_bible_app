@@ -182,19 +182,8 @@ class JsonBibleService {
       // Preload Odia text from USX for this chapter if available
       final Map<int, String> odiaChapterMap = await USXParser.getOdiyaChapterMap(bookName, chapter);
       
-      // Create a set to track verse numbers we've already processed
-      Set<int> processedVerses = {};
-      
       for (var verseData in versesData) {
         int verseNumber = verseData['verse'];
-        
-        // Skip if we've already processed this verse number
-        if (processedVerses.contains(verseNumber)) {
-          continue;
-        }
-        
-        // Add to processed set
-        processedVerses.add(verseNumber);
         
         // Create a unique ID based on book, chapter, and verse
         int bookId = _getBookId(bookName);

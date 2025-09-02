@@ -5,7 +5,9 @@ import '../providers/settings_provider.dart';
 import '../widgets/bookmark_card.dart';
 
 class BookmarksScreen extends StatefulWidget {
-  const BookmarksScreen({super.key});
+  final VoidCallback? onNavigateToReading;
+  
+  const BookmarksScreen({super.key, this.onNavigateToReading});
 
   @override
   State<BookmarksScreen> createState() => _BookmarksScreenState();
@@ -182,7 +184,9 @@ class _BookmarksScreenState extends State<BookmarksScreen>
             ElevatedButton.icon(
               onPressed: () {
                 // Navigate to Bible reading screen
-                DefaultTabController.of(context)?.animateTo(0);
+                if (widget.onNavigateToReading != null) {
+                  widget.onNavigateToReading!();
+                }
               },
               icon: const Icon(Icons.menu_book),
               label: const Text('Start Reading'),
@@ -223,7 +227,9 @@ class _BookmarksScreenState extends State<BookmarksScreen>
     bibleProvider.loadChapter(bookmark.bookId, bookmark.chapter);
     
     // Switch to Bible reading tab
-    DefaultTabController.of(context)?.animateTo(0);
+    if (widget.onNavigateToReading != null) {
+      widget.onNavigateToReading!();
+    }
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

@@ -172,10 +172,8 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                       );
                       // Start playing
                       await audioProvider.play();
-                      // Seek to the specific verse if timings are available
-                      if (audioProvider.verseTimings.containsKey(verse.verseNumber)) {
-                        await audioProvider.seekToVerse(verse.verseNumber);
-                      }
+                      // Seek to the specific verse (service manages timings internally)
+                      await audioProvider.seekToVerse(verse.verseNumber);
                     },
                   );
                 },

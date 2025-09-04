@@ -37,6 +37,14 @@ class AudioStreamingService {
   Duration _totalDuration = Duration.zero;
   double _playbackSpeed = 1.0;
   double _volume = 1.0;
+
+  // Small delay (ms) to keep visual highlight slightly behind audio speech
+  int _highlightDelayMs = 250;
+  void setHighlightDelayMs(int ms) {
+    if (ms < 0) ms = 0;
+    if (ms > 2000) ms = 2000;
+    _highlightDelayMs = ms;
+  }
   
   // Current playing content
   String? _currentBookName;
@@ -190,9 +198,9 @@ class AudioStreamingService {
             await _audioPlayer.setSource(DeviceFileSource(audioSource));
             _currentAudioUrl = audioSource;
           }
-          debugPrint('Loading verse timings...');
-          await _loadVerseTimings(bookName, chapterNumber);
-          _updatePlayerState(AudioPlayerState.paused); // Ready to play
+          _updatePlayerState(AudioPlayerState.paused); // Ready to play UI immediately
+          debugPrint('Starting async verse timings load...');
+          unawaited(_loadVerseTimings(bookName, chapterNumber));
           debugPrint('Audio loaded successfully for $bookName chapter $chapterNumber');
         } catch (e) {
           debugPrint('Error setting audio source: $e - falling back to TTS');
@@ -334,6 +342,9 @@ class AudioStreamingService {
   void _updateCurrentVerse(Duration position) {
     if (_verseTimings.isEmpty) return;
     
+    final adjusted = position - Duration(milliseconds: _highlightDelayMs);
+    final effectivePosition = adjusted.isNegative ? Duration.zero : adjusted;
+    
     for (int i = 0; i < _verseTimings.length; i++) {
       final timing = _verseTimings[i];
       final num startSec = (timing['start_time'] ?? 0) as num;
@@ -341,7 +352,7 @@ class AudioStreamingService {
       final startTime = Duration(milliseconds: (startSec * 1000).round());
       final endTime = Duration(milliseconds: (endSec * 1000).round());
       
-      if (position >= startTime && position <= endTime) {
+      if (effectivePosition >= startTime && effectivePosition <= endTime) {
         if (_currentVerseIndex != i) {
           _currentVerseIndex = i;
           _currentVerseController.add(_currentVerseIndex);
@@ -411,30 +422,7 @@ class AudioStreamingService {
                 }
               }
               
-              // Test the URL first on web to avoid format errors
-              debugPrint('Web: testing audio URL before playing...');
-              final isPlayable = await _testWebAudioUrl(_currentAudioUrl!);
-              if (!isPlayable && _currentVerses.isNotEmpty) {
-                debugPrint('Web: audio URL test failed, switching to TTS fallback');
-                try {
-                  _playbackMode = AudioPlaybackMode.tts;
-                  _currentAudioUrl = null;
-                  String allText = _currentVerses.map((v) => v.odiyaText).join(' ');
-                  _totalDuration = _calculateTtsDuration(allText);
-                  _durationController.add(_totalDuration);
-                  _updatePlayerState(AudioPlayerState.paused);
-                  await _playTTS();
-                  return;
-                } catch (e3) {
-                  debugPrint('TTS fallback failed after URL test: $e3');
-                  if (e3.toString().contains('autoplay')) {
-                    _updatePlayerState(AudioPlayerState.paused);
-                    return;
-                  }
-                  rethrow;
-                }
-              }
-              
+              // Directly attempt playback; rely on error handling to fallback if unsupported
               debugPrint('Web: playing via UrlSource');
               final _mime = _guessMimeType(_currentAudioUrl!);
               await _audioPlayer.play(UrlSource(_currentAudioUrl!, mimeType: _mime));

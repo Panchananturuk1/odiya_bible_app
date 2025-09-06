@@ -24,3 +24,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ODIYABIBLE_6621F }}
           projectId: odiyabible-6621f
+          target: odiya-bible-app

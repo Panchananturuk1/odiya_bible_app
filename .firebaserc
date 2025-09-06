@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "odiyabible-6621f"
-  }
+  },
+  "targets": {
+    "odiyabible-6621f": {
+      "hosting": {
+        "odiya-bible-app": [
+          "odiya-bible-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

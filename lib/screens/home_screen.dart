@@ -38,11 +38,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<String> _titles = [
     'ଓଡିଆ ବାଇବଲ', // Odiya Bible
-    'ଓଡିଆ ବାଇବଲ', // Odiya Bible (Read tab)
+    '', // Will be dynamically set for Bible reading
     'ଓଡିଆ ବାଇବଲ', // Odiya Bible (Search tab)
     'ଓଡିଆ ବାଇବଲ', // Odiya Bible (Bookmarks tab)
     'ଓଡିଆ ବାଇବଲ', // Odiya Bible (Settings tab)
   ];
+
+  String _getTitle(int index, BibleProvider bibleProvider, SettingsProvider settingsProvider) {
+    if (index == 1) {
+      // Bible reading screen - show chapter name
+      final currentBook = bibleProvider.currentBook;
+      final currentChapter = bibleProvider.currentChapter;
+      if (currentBook != null) {
+        final bookName = settingsProvider.readingLanguage == 'english' 
+            ? currentBook.name 
+            : currentBook.odiyaName;
+        return '$bookName $currentChapter';
+      }
+      return 'ଓଡିଆ ବାଇବଲ';
+    }
+    return _titles[index];
+  }
 
   @override
   void dispose() {
@@ -140,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _titles[_currentIndex],
+                          _getTitle(_currentIndex, bibleProvider, settingsProvider),
                           style: (isCompact
                                   ? Theme.of(context).textTheme.headlineSmall
                                   : Theme.of(context).textTheme.headlineMedium)
@@ -198,8 +214,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () => _showAppBarActionsSheet(context, settingsProvider),
                 )
               else ...[
-                // Font size controls for reading screen
+                // Chapter selector and font size controls for reading screen
                 if (_currentIndex == 1) ...[
+                  IconButton(
+                    icon: const Icon(Icons.menu_book_outlined),
+                    onPressed: () => _openChapterSelector(context, bibleProvider),
+                    tooltip: 'Select Chapter',
+                    iconSize: 20,
+                  ),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
@@ -575,6 +597,100 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+    );
+  }
+
+  void _openChapterSelector(BuildContext context, BibleProvider bibleProvider) {
+    final book = bibleProvider.currentBook;
+    if (book == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.8,
+        minChildSize: 0.4,
+        expand: false,
+        builder: (context, scrollController) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  book.odiyaName,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${book.name} • ${book.totalChapters} chapters',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: GridView.builder(
+                    controller: scrollController,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).size.width < 500 ? 4 : 6,
+                      childAspectRatio: 1.2,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: book.totalChapters,
+                    itemBuilder: (context, index) {
+                      final chapter = index + 1;
+                      final isCurrentChapter = bibleProvider.currentChapter == chapter;
+
+                      return Material(
+                        color: isCurrentChapter
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        elevation: isCurrentChapter ? 4 : 1,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () {
+                            Navigator.pop(context);
+                            bibleProvider.loadChapter(book.id, chapter);
+                          },
+                          child: Center(
+                            child: Text(
+                              chapter.toString(),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isCurrentChapter
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

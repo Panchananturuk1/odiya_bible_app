@@ -41,25 +41,152 @@ class SettingsProvider with ChangeNotifier {
   ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF6B4E3D), // Brown color for Bible theme
+      seedColor: const Color(0xFF4A90E2), // Modern blue for spiritual theme
       brightness: Brightness.light,
+      primary: const Color(0xFF4A90E2),
+      secondary: const Color(0xFF7B68EE),
+      tertiary: const Color(0xFF50C878),
+      surface: const Color(0xFFFAFBFF),
+      background: const Color(0xFFF8F9FA),
     ),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       centerTitle: true,
-      elevation: 2,
-    ),
-    cardTheme: CardThemeData(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      foregroundColor: const Color(0xFF2C3E50),
+      titleTextStyle: GoogleFonts.inter(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFF2C3E50),
       ),
     ),
-    textTheme: GoogleFonts.notoSansOriyaTextTheme(
+    cardTheme: CardThemeData(
+      elevation: 8,
+      shadowColor: Colors.black.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      ),
+    ),
+    textTheme: GoogleFonts.interTextTheme(
       ThemeData(brightness: Brightness.light).textTheme.copyWith(
-        bodyLarge: TextStyle(fontSize: _settings.fontSize),
-        bodyMedium: TextStyle(fontSize: _settings.fontSize - 2),
-        titleLarge: TextStyle(fontSize: _settings.fontSize + 4),
-        titleMedium: TextStyle(fontSize: _settings.fontSize + 2),
+        // Display styles for large headings
+        displayLarge: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 16,
+          fontWeight: FontWeight.w800,
+          height: 1.2,
+          letterSpacing: -0.5,
+          color: const Color(0xFF1A202C),
+        ),
+        displayMedium: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 12,
+          fontWeight: FontWeight.w700,
+          height: 1.3,
+          letterSpacing: -0.25,
+          color: const Color(0xFF2D3748),
+        ),
+        displaySmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 8,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          color: const Color(0xFF2D3748),
+        ),
+        // Headline styles
+        headlineLarge: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 10,
+          fontWeight: FontWeight.w700,
+          height: 1.3,
+          letterSpacing: -0.25,
+          color: const Color(0xFF2C3E50),
+        ),
+        headlineMedium: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 6,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          color: const Color(0xFF2C3E50),
+        ),
+        headlineSmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 4,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          color: const Color(0xFF4A90E2),
+        ),
+        // Title styles
+        titleLarge: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 6,
+          fontWeight: FontWeight.w700,
+          height: 1.3,
+          letterSpacing: 0.15,
+          color: const Color(0xFF2C3E50),
+        ),
+        titleMedium: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 2,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          letterSpacing: 0.1,
+          color: const Color(0xFF34495E),
+        ),
+        titleSmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize,
+          fontWeight: FontWeight.w500,
+          height: 1.4,
+          letterSpacing: 0.1,
+          color: const Color(0xFF4A5568),
+        ),
+        // Body styles for main content
+        bodyLarge: GoogleFonts.notoSansOriya(
+          fontSize: _settings.fontSize,
+          fontWeight: FontWeight.w400,
+          height: 1.7,
+          letterSpacing: 0.25,
+          color: const Color(0xFF2C3E50),
+        ),
+        bodyMedium: GoogleFonts.notoSansOriya(
+          fontSize: _settings.fontSize - 2,
+          fontWeight: FontWeight.w400,
+          height: 1.6,
+          letterSpacing: 0.25,
+          color: const Color(0xFF34495E),
+        ),
+        bodySmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize - 4,
+          fontWeight: FontWeight.w400,
+          height: 1.5,
+          letterSpacing: 0.4,
+          color: const Color(0xFF718096),
+        ),
+        // Label styles for UI elements
+        labelLarge: GoogleFonts.inter(
+          fontSize: _settings.fontSize - 2,
+          fontWeight: FontWeight.w500,
+          height: 1.4,
+          letterSpacing: 0.1,
+          color: const Color(0xFF4A5568),
+        ),
+        labelMedium: GoogleFonts.inter(
+          fontSize: _settings.fontSize - 4,
+          fontWeight: FontWeight.w500,
+          height: 1.3,
+          letterSpacing: 0.5,
+          color: const Color(0xFF718096),
+        ),
+        labelSmall: GoogleFonts.inter(
+           fontSize: _settings.fontSize - 6,
+           fontWeight: FontWeight.w500,
+           height: 1.3,
+           letterSpacing: 0.5,
+           color: const Color(0xFFA0AEC0),
+         ),
       ),
     ),
   );
@@ -67,25 +194,157 @@ class SettingsProvider with ChangeNotifier {
   ThemeData get darkTheme => ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF8D6E63), // Lighter brown for dark theme
+      seedColor: const Color(0xFF6366F1), // Modern indigo for dark theme
       brightness: Brightness.dark,
+      primary: const Color(0xFF6366F1),
+      secondary: const Color(0xFF8B5CF6),
+      tertiary: const Color(0xFF06D6A0),
+      surface: const Color(0xFF1E1E2E),
+      background: const Color(0xFF181825),
+      onSurface: const Color(0xFFE5E7EB),
+      onBackground: const Color(0xFFF3F4F6),
     ),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       centerTitle: true,
-      elevation: 2,
-    ),
-    cardTheme: CardThemeData(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      foregroundColor: const Color(0xFFF3F4F6),
+      titleTextStyle: GoogleFonts.inter(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFFF3F4F6),
       ),
     ),
-    textTheme: GoogleFonts.notoSansOriyaTextTheme(
+    cardTheme: CardThemeData(
+      elevation: 8,
+      shadowColor: Colors.black.withOpacity(0.3),
+      color: const Color(0xFF2A2A3E),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.4),
+        backgroundColor: const Color(0xFF6366F1),
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      ),
+    ),
+    textTheme: GoogleFonts.interTextTheme(
       ThemeData(brightness: Brightness.dark).textTheme.copyWith(
-        bodyLarge: TextStyle(fontSize: _settings.fontSize, color: Colors.white),
-        bodyMedium: TextStyle(fontSize: _settings.fontSize - 2, color: Colors.white70),
-        titleLarge: TextStyle(fontSize: _settings.fontSize + 4, color: Colors.white),
-        titleMedium: TextStyle(fontSize: _settings.fontSize + 2, color: Colors.white),
+        // Display styles for large headings
+        displayLarge: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 16,
+          fontWeight: FontWeight.w800,
+          height: 1.2,
+          letterSpacing: -0.5,
+          color: const Color(0xFFF9FAFB),
+        ),
+        displayMedium: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 12,
+          fontWeight: FontWeight.w700,
+          height: 1.3,
+          letterSpacing: -0.25,
+          color: const Color(0xFFF3F4F6),
+        ),
+        displaySmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 8,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          color: const Color(0xFFE5E7EB),
+        ),
+        // Headline styles
+        headlineLarge: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 10,
+          fontWeight: FontWeight.w700,
+          height: 1.3,
+          letterSpacing: -0.25,
+          color: const Color(0xFFF3F4F6),
+        ),
+        headlineMedium: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 6,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          color: const Color(0xFFE5E7EB),
+        ),
+        headlineSmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 4,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          color: const Color(0xFF6366F1),
+        ),
+        // Title styles
+        titleLarge: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 6,
+          fontWeight: FontWeight.w700,
+          height: 1.3,
+          letterSpacing: 0.15,
+          color: const Color(0xFFF3F4F6),
+        ),
+        titleMedium: GoogleFonts.inter(
+          fontSize: _settings.fontSize + 2,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          letterSpacing: 0.1,
+          color: const Color(0xFFE5E7EB),
+        ),
+        titleSmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize,
+          fontWeight: FontWeight.w500,
+          height: 1.4,
+          letterSpacing: 0.1,
+          color: const Color(0xFFD1D5DB),
+        ),
+        // Body styles for main content
+        bodyLarge: GoogleFonts.notoSansOriya(
+          fontSize: _settings.fontSize,
+          fontWeight: FontWeight.w400,
+          height: 1.7,
+          letterSpacing: 0.25,
+          color: const Color(0xFFE5E7EB),
+        ),
+        bodyMedium: GoogleFonts.notoSansOriya(
+          fontSize: _settings.fontSize - 2,
+          fontWeight: FontWeight.w400,
+          height: 1.6,
+          letterSpacing: 0.25,
+          color: const Color(0xFFD1D5DB),
+        ),
+        bodySmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize - 4,
+          fontWeight: FontWeight.w400,
+          height: 1.5,
+          letterSpacing: 0.4,
+          color: const Color(0xFF9CA3AF),
+        ),
+        // Label styles for UI elements
+        labelLarge: GoogleFonts.inter(
+          fontSize: _settings.fontSize - 2,
+          fontWeight: FontWeight.w500,
+          height: 1.4,
+          letterSpacing: 0.1,
+          color: const Color(0xFFD1D5DB),
+        ),
+        labelMedium: GoogleFonts.inter(
+          fontSize: _settings.fontSize - 4,
+          fontWeight: FontWeight.w500,
+          height: 1.3,
+          letterSpacing: 0.5,
+          color: const Color(0xFF9CA3AF),
+        ),
+        labelSmall: GoogleFonts.inter(
+          fontSize: _settings.fontSize - 6,
+          fontWeight: FontWeight.w500,
+          height: 1.3,
+          letterSpacing: 0.5,
+          color: const Color(0xFF6B7280),
+        ),
       ),
     ),
   );

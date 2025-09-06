@@ -3,6 +3,7 @@ import '../services/audio_streaming_service.dart';
 import '../services/bible_brain_api_service.dart';
 import '../services/json_bible_service.dart';
 import '../models/verse.dart';
+import 'dart:async';
 
 class AudioStreamingProvider with ChangeNotifier {
   final AudioStreamingService _audioService = AudioStreamingService();
@@ -29,8 +30,19 @@ class AudioStreamingProvider with ChangeNotifier {
   double _playbackSpeed = 1.0;
   double _volume = 1.0;
   
-  // Verse timing data for synchronization
-  Map<int, Duration> _verseTimings = {};
+  // Removed: provider-level verse timings; AudioStreamingService manages timings internally
+
+  // Small delay to better sync visual highlight with perceived audio speech
+  // Positive value means the highlight will switch a bit later (prevents being ahead of audio)
+  int _highlightDelayMs = 250; // default ~250ms visual delay
+  int get highlightDelayMs => _highlightDelayMs;
+  void setHighlightDelay(int milliseconds) {
+    final clamped = milliseconds < 0 ? 0 : (milliseconds > 2000 ? 2000 : milliseconds);
+    _highlightDelayMs = clamped;
+    // Also inform the service so its internal verse index (fallback path) stays consistent
+    _audioService.setHighlightDelayMs(_highlightDelayMs);
+    notifyListeners();
+  }
   
   // Download progress
   double _downloadProgress = 0.0;
@@ -57,7 +69,7 @@ class AudioStreamingProvider with ChangeNotifier {
   double get playbackSpeed => _playbackSpeed;
   double get volume => _volume;
   
-  Map<int, Duration> get verseTimings => _verseTimings;
+  // Removed verseTimings getter; timings handled by AudioStreamingService
   
   double get downloadProgress => _downloadProgress;
   bool get isDownloading => _isDownloading;
@@ -68,21 +80,15 @@ class AudioStreamingProvider with ChangeNotifier {
       ? _currentPosition.inMilliseconds / _totalDuration.inMilliseconds 
       : 0.0;
   
-  // Get currently playing verse based on position
+  // Get currently playing verse for UI highlight
+  // Prefer the AudioStreamingService's verse index (already adjusted with highlight delay and end-time windows)
   int get currentPlayingVerse {
-    if (_verseTimings.isEmpty || _currentPosition == Duration.zero) {
-      return 0;
+    if (_currentVerse != null) {
+      // Service emits 0-based index; verse numbers are 1-based
+      return (_currentVerse! + 1).clamp(1, _currentChapterVerses.isNotEmpty ? _currentChapterVerses.length : _currentVerse! + 1);
     }
-    
-    int playingVerse = 0;
-    for (final entry in _verseTimings.entries) {
-      if (_currentPosition >= entry.value) {
-        playingVerse = entry.key;
-      } else {
-        break;
-      }
-    }
-    return playingVerse;
+    // Nothing to highlight yet
+    return 0;
   }
   
   // Initialize the audio streaming service
@@ -92,6 +98,8 @@ class AudioStreamingProvider with ChangeNotifier {
     try {
       // Initialize audio service
       await _audioService.initialize();
+      // Keep service delay in sync with provider setting
+      _audioService.setHighlightDelayMs(_highlightDelayMs);
       
       // Initialize Bible Brain API service with error handling (skip on web)
       if (!kIsWeb) {
@@ -184,64 +192,18 @@ class AudioStreamingProvider with ChangeNotifier {
           notifyListeners();
         }
         
-        // If API service is available, try to get verse timings (skip on web)
-        if (!kIsWeb && _apiService.isInitialized) {
-          try {
-            final bibleId = _apiService.defaultBibleId;
-            final timings = await _apiService.getVerseTimings(bibleId, bookAbbreviation, chapter.toString());
-            _verseTimings = {};
-            
-            // Convert timing data to verse number -> duration map
-            for (final timing in timings) {
-              // Handle both string and int types for verse_number
-              final verseNumberRaw = timing['verse_number'];
-              final startTimeRaw = timing['start_time'];
-              
-              int? verseNumber;
-              double? startTime;
-              
-              // Parse verse number (could be string or int)
-              if (verseNumberRaw is int) {
-                verseNumber = verseNumberRaw;
-              } else if (verseNumberRaw is String) {
-                verseNumber = int.tryParse(verseNumberRaw);
-              }
-              
-              // Parse start time (could be string or double)
-              if (startTimeRaw is double) {
-                startTime = startTimeRaw;
-              } else if (startTimeRaw is String) {
-                startTime = double.tryParse(startTimeRaw);
-              } else if (startTimeRaw is int) {
-                startTime = startTimeRaw.toDouble();
-              }
-              
-              if (verseNumber != null && startTime != null) {
-                _verseTimings[verseNumber] = Duration(milliseconds: (startTime * 1000).round());
-              }
-            }
-            
-            debugPrint('Loaded ${_verseTimings.length} verse timings');
-          } catch (e) {
-            debugPrint('Failed to load verse timings: $e');
-            _verseTimings = {};
-          }
-        } else {
-          debugPrint('Bible Brain API not available on web or not initialized, using fallback audio without verse timings');
-          _verseTimings = {};
-        }
-        
-        debugPrint('Audio loaded successfully for $bookId chapter $chapter');
+        // Verse timings are handled by AudioStreamingService; avoid duplicate fetching here
+        // (no-op)
       } catch (e) {
         debugPrint('Failed to load audio for $bookId chapter $chapter: $e');
         _currentAudioUrl = null;
-        _verseTimings = {};
+        // no-op for verse timings
       }
       
     } catch (e) {
       debugPrint('Error loading chapter audio: $e');
       _currentAudioUrl = null;
-      _verseTimings = {};
+      // no-op for verse timings
       
       // Show user-friendly error message based on exception type
       if (e.toString().contains('Authentication failed')) {
@@ -333,8 +295,19 @@ class AudioStreamingProvider with ChangeNotifier {
   
   // Seek to specific verse
   Future<void> seekToVerse(int verseNumber) async {
-    if (_verseTimings.containsKey(verseNumber)) {
-      await seek(_verseTimings[verseNumber]!);
+    if (verseNumber <= 0) return;
+    try {
+      // If the service hasn't emitted any verse index yet, wait briefly for it.
+      if (_currentVerse == null) {
+        try {
+          await _audioService.currentVerseStream.first.timeout(const Duration(seconds: 3));
+        } catch (_) {
+          // Timeout or stream error; proceed to attempt jump anyway
+        }
+      }
+      await _audioService.jumpToVerse(verseNumber - 1);
+    } catch (e) {
+      debugPrint('Error seeking to verse $verseNumber: $e');
     }
   }
   

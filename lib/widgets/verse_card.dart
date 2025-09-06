@@ -44,8 +44,10 @@ class _VerseCardState extends State<VerseCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
         color: widget.verse.isHighlighted
             ? const Color(0xFFFFF59D)
@@ -60,7 +62,7 @@ class _VerseCardState extends State<VerseCard> {
             _showVerseOptions();
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -123,8 +125,10 @@ class _VerseCardState extends State<VerseCard> {
 
     // Build the superscript verse number as a WidgetSpan
     final numberSpan = WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
       child: Transform.translate(
-        offset: const Offset(0, -6),
+        offset: const Offset(0, -4),
         child: Text(
           widget.verse.verseNumber.toString(),
           style: TextStyle(
@@ -210,8 +214,10 @@ class _VerseCardState extends State<VerseCard> {
 
     // Prepend superscript verse number to the highlighted text
     final numberSpan = WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
       child: Transform.translate(
-        offset: const Offset(0, -6),
+        offset: const Offset(0, -4),
         child: Text(
           widget.verse.verseNumber.toString(),
           style: TextStyle(

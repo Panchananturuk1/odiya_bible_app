@@ -37,6 +37,14 @@ class AudioStreamingService {
   Duration _totalDuration = Duration.zero;
   double _playbackSpeed = 1.0;
   double _volume = 1.0;
+
+  // Small delay (ms) to keep visual highlight slightly behind audio speech
+  int _highlightDelayMs = 250;
+  void setHighlightDelayMs(int ms) {
+    if (ms < 0) ms = 0;
+    if (ms > 2000) ms = 2000;
+    _highlightDelayMs = ms;
+  }
   
   // Current playing content
   String? _currentBookName;
@@ -190,9 +198,9 @@ class AudioStreamingService {
             await _audioPlayer.setSource(DeviceFileSource(audioSource));
             _currentAudioUrl = audioSource;
           }
-          debugPrint('Loading verse timings...');
-          await _loadVerseTimings(bookName, chapterNumber);
-          _updatePlayerState(AudioPlayerState.paused); // Ready to play
+          _updatePlayerState(AudioPlayerState.paused); // Ready to play UI immediately
+          debugPrint('Starting async verse timings load...');
+          unawaited(_loadVerseTimings(bookName, chapterNumber));
           debugPrint('Audio loaded successfully for $bookName chapter $chapterNumber');
         } catch (e) {
           debugPrint('Error setting audio source: $e - falling back to TTS');
@@ -333,21 +341,58 @@ class AudioStreamingService {
   // Update current verse based on playback position
   void _updateCurrentVerse(Duration position) {
     if (_verseTimings.isEmpty) return;
-    
-    for (int i = 0; i < _verseTimings.length; i++) {
-      final timing = _verseTimings[i];
-      final num startSec = (timing['start_time'] ?? 0) as num;
-      final num endSec = (timing['end_time'] ?? 0) as num;
-      final startTime = Duration(milliseconds: (startSec * 1000).round());
-      final endTime = Duration(milliseconds: (endSec * 1000).round());
-      
-      if (position >= startTime && position <= endTime) {
-        if (_currentVerseIndex != i) {
-          _currentVerseIndex = i;
-          _currentVerseController.add(_currentVerseIndex);
-        }
-        break;
+
+    // Apply configurable highlight delay (positive values advance highlight earlier)
+    final adjusted = position - Duration(milliseconds: _highlightDelayMs);
+    final int effectiveMs = adjusted.isNegative ? 0 : adjusted.inMilliseconds;
+
+    // Binary search for the last verse whose start_time <= effectiveMs
+    int n = _verseTimings.length;
+    int lo = 0, hi = n - 1, ans = 0;
+
+    int startMsAt(int idx) {
+      final dynamic raw = _verseTimings[idx]['start_time'];
+      double s;
+      if (raw is num) {
+        s = raw.toDouble();
+      } else {
+        s = double.tryParse('$raw') ?? 0.0;
       }
+      return (s * 1000).round();
+    }
+
+    while (lo <= hi) {
+      final int mid = (lo + hi) >> 1;
+      final int midStart = startMsAt(mid);
+      if (midStart <= effectiveMs) {
+        ans = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
+      }
+    }
+
+    int computedIndex = ans;
+
+    // Prefer verse_number field if provided by API to avoid mismatches
+    final dynamic verseNumRaw = _verseTimings[ans]['verse_number'];
+    if (verseNumRaw != null) {
+      int? v;
+      if (verseNumRaw is int) {
+        v = verseNumRaw;
+      } else if (verseNumRaw is String) {
+        v = int.tryParse(verseNumRaw);
+      } else if (verseNumRaw is num) {
+        v = verseNumRaw.toInt();
+      }
+      if (v != null && v > 0) {
+        computedIndex = ((v - 1).clamp(0, n - 1)) as int;
+      }
+    }
+
+    if (_currentVerseIndex != computedIndex) {
+      _currentVerseIndex = computedIndex;
+      _currentVerseController.add(_currentVerseIndex);
     }
   }
   
@@ -411,30 +456,7 @@ class AudioStreamingService {
                 }
               }
               
-              // Test the URL first on web to avoid format errors
-              debugPrint('Web: testing audio URL before playing...');
-              final isPlayable = await _testWebAudioUrl(_currentAudioUrl!);
-              if (!isPlayable && _currentVerses.isNotEmpty) {
-                debugPrint('Web: audio URL test failed, switching to TTS fallback');
-                try {
-                  _playbackMode = AudioPlaybackMode.tts;
-                  _currentAudioUrl = null;
-                  String allText = _currentVerses.map((v) => v.odiyaText).join(' ');
-                  _totalDuration = _calculateTtsDuration(allText);
-                  _durationController.add(_totalDuration);
-                  _updatePlayerState(AudioPlayerState.paused);
-                  await _playTTS();
-                  return;
-                } catch (e3) {
-                  debugPrint('TTS fallback failed after URL test: $e3');
-                  if (e3.toString().contains('autoplay')) {
-                    _updatePlayerState(AudioPlayerState.paused);
-                    return;
-                  }
-                  rethrow;
-                }
-              }
-              
+              // Directly attempt playback; rely on error handling to fallback if unsupported
               debugPrint('Web: playing via UrlSource');
               final _mime = _guessMimeType(_currentAudioUrl!);
               await _audioPlayer.play(UrlSource(_currentAudioUrl!, mimeType: _mime));
@@ -699,7 +721,26 @@ class AudioStreamingService {
       final String bookIdForApi = USXParser.getUSXCodeFromBookName(bookName) ?? bookName;
       final timings = await _bibleBrainApi.getVerseTimings(_bibleBrainApi.defaultBibleId, bookIdForApi, chapterNumber);
       if (timings.isNotEmpty) {
-        _verseTimings = timings;
+        // Ensure timings are in chronological order by start_time
+        final List<Map<String, dynamic>> sorted = List<Map<String, dynamic>>.from(timings);
+        sorted.sort((a, b) {
+          final dynamic aRaw = a['start_time'];
+          final dynamic bRaw = b['start_time'];
+          num aStart;
+          num bStart;
+          if (aRaw is num) {
+            aStart = aRaw;
+          } else {
+            aStart = num.tryParse('$aRaw') ?? 0;
+          }
+          if (bRaw is num) {
+            bStart = bRaw;
+          } else {
+            bStart = num.tryParse('$bRaw') ?? 0;
+          }
+          return aStart.compareTo(bStart);
+        });
+        _verseTimings = sorted;
         _currentVerseIndex = 0;
         _currentVerseController.add(_currentVerseIndex);
         return;

@@ -67,127 +67,424 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  IconData _getScreenIcon(int index) {
+    switch (index) {
+      case 0:
+        return Icons.home_rounded;
+      case 1:
+        return Icons.menu_book_rounded;
+      case 2:
+        return Icons.search_rounded;
+      case 3:
+        return Icons.bookmark_rounded;
+      case 4:
+        return Icons.settings_rounded;
+      default:
+        return Icons.home_rounded;
+    }
+  }
+
+  String _getScreenSubtitle(int index) {
+    switch (index) {
+      case 0:
+        return 'Welcome to Bible reading';
+      case 1:
+        return 'Read God\'s word';
+      case 2:
+        return 'Find verses and passages';
+      case 3:
+        return 'Your saved verses';
+      case 4:
+        return 'App preferences';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<BibleProvider, SettingsProvider>(
       builder: (context, bibleProvider, settingsProvider, child) {
+        final width = MediaQuery.of(context).size.width;
+        final isCompact = width < 420;
         return Scaffold(
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
-            toolbarHeight: 34,
-            titleSpacing: 8,
-            leadingWidth: 40,
-            iconTheme: const IconThemeData(size: 18),
-            title: Text(
-              _titles[_currentIndex],
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-                height: 1.0,
+            toolbarHeight: isCompact ? 60 : 70,
+            titleSpacing: isCompact ? 12 : 20,
+            leadingWidth: isCompact ? 52 : 60,
+            iconTheme: IconThemeData(
+              size: isCompact ? 22 : 24,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            title: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(isCompact ? 6 : 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      _getScreenIcon(_currentIndex),
+                      color: Theme.of(context).colorScheme.primary,
+                      size: isCompact ? 18 : 20,
+                    ),
+                  ),
+                  SizedBox(width: isCompact ? 10 : 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _titles[_currentIndex],
+                          style: (isCompact
+                                  ? Theme.of(context).textTheme.headlineSmall
+                                  : Theme.of(context).textTheme.headlineMedium)
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (!isCompact)
+                          Text(
+                            _getScreenSubtitle(_currentIndex),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            elevation: 2,
-            actions: [
-              // Font size controls
-              if (_currentIndex == 1) ...
-              [
-                IconButton(
-                  icon: const Icon(Icons.text_decrease),
-                  onPressed: settingsProvider.decreaseFontSize,
-                  tooltip: 'Decrease font size',
-                  iconSize: 18,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                  visualDensity: VisualDensity.compact,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: settingsProvider.isDarkMode
+                      ? [
+                          const Color(0xFF1E1E2E).withOpacity(0.95),
+                          const Color(0xFF2A2A3E).withOpacity(0.95),
+                        ]
+                      : [
+                          const Color(0xFFFAFBFF).withOpacity(0.95),
+                          const Color(0xFFF0F4FF).withOpacity(0.95),
+                        ],
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              if (isCompact)
                 IconButton(
-                  icon: const Icon(Icons.text_increase),
-                  onPressed: settingsProvider.increaseFontSize,
-                  tooltip: 'Increase font size',
-                  iconSize: 18,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.more_vert_rounded),
+                  tooltip: 'More',
+                  onPressed: () => _showAppBarActionsSheet(context, settingsProvider),
+                )
+              else ...[
+                // Font size controls for reading screen
+                if (_currentIndex == 1) ...[
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    margin: const EdgeInsets.only(right: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.text_decrease_rounded),
+                          onPressed: settingsProvider.decreaseFontSize,
+                          tooltip: 'Decrease font size',
+                          iconSize: 18,
+                          padding: const EdgeInsets.all(8),
+                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        Container(
+                          width: 1,
+                          height: 16,
+                          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.text_increase_rounded),
+                          onPressed: settingsProvider.increaseFontSize,
+                          tooltip: 'Increase font size',
+                          iconSize: 18,
+                          padding: const EdgeInsets.all(8),
+                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                // Language toggle
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  margin: const EdgeInsets.only(right: 4),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      settingsProvider.readingLanguage == 'odiya'
+                          ? Icons.translate_rounded
+                          : Icons.translate_rounded,
+                    ),
+                    onPressed: () => settingsProvider.toggleReadingLanguage(),
+                    tooltip: settingsProvider.readingLanguage == 'odiya'
+                        ? 'Switch to English'
+                        : 'Switch to Odiya',
+                    iconSize: 20,
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                // Dark mode toggle
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      settingsProvider.isDarkMode 
+                          ? Icons.light_mode_rounded 
+                          : Icons.dark_mode_rounded,
+                    ),
+                    onPressed: settingsProvider.toggleDarkMode,
+                    tooltip: settingsProvider.isDarkMode 
+                        ? 'Switch to light mode' 
+                        : 'Switch to dark mode',
+                    iconSize: 20,
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                 ),
               ],
-              // Language toggle (Odiya/English)
-              IconButton(
-                icon: Icon(
-                  settingsProvider.readingLanguage == 'odiya'
-                      ? Icons.translate
-                      : Icons.translate,
-                ),
-                onPressed: () => settingsProvider.toggleReadingLanguage(),
-                tooltip: settingsProvider.readingLanguage == 'odiya'
-                    ? 'Switch to English'
-                    : 'Switch to Odiya',
-                iconSize: 18,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                visualDensity: VisualDensity.compact,
-              ),
-              // Dark mode toggle
-              IconButton(
-                icon: Icon(
-                  settingsProvider.isDarkMode 
-                      ? Icons.light_mode 
-                      : Icons.dark_mode,
-                ),
-                onPressed: settingsProvider.toggleDarkMode,
-                tooltip: settingsProvider.isDarkMode 
-                    ? 'Switch to light mode' 
-                    : 'Switch to dark mode',
-                iconSize: 18,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                visualDensity: VisualDensity.compact,
-              ),
             ],
           ),
           drawer: const AppDrawer(),
-          body: PageView(
-            controller: _pageController,
-            onPageChanged: _onPageChanged,
-            children: _screens,
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: settingsProvider.isDarkMode
+                    ? [
+                        const Color(0xFF181825),
+                        const Color(0xFF1E1E2E),
+                        const Color(0xFF2A2A3E),
+                      ]
+                    : [
+                        const Color(0xFFF8F9FA),
+                        const Color(0xFFFAFBFF),
+                        const Color(0xFFF0F4FF),
+                      ],
+              ),
+            ),
+            child: SafeArea(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: _onPageChanged,
+                children: _screens,
+              ),
+            ),
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _currentIndex,
-            onTap: _onTabTapped,
-            selectedItemColor: Theme.of(context).colorScheme.primary,
-            unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
+          bottomNavigationBar: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: settingsProvider.isDarkMode
+                    ? [
+                        const Color(0xFF2A2A3E).withOpacity(0.95),
+                        const Color(0xFF1E1E2E).withOpacity(0.98),
+                      ]
+                    : [
+                        const Color(0xFFFAFBFF).withOpacity(0.95),
+                        const Color(0xFFFFFFFF).withOpacity(0.98),
+                      ],
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.menu_book),
-                label: 'Read',
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _currentIndex,
+              onTap: _onTabTapped,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedItemColor: Theme.of(context).colorScheme.primary,
+              unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              selectedLabelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'Search',
+              unselectedLabelStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w500,
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.bookmark),
-                label: 'Bookmarks',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: 'Settings',
-              ),
-            ],
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_rounded),
+                  activeIcon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.menu_book_rounded),
+                  activeIcon: Icon(Icons.menu_book),
+                  label: 'Read',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search_rounded),
+                  activeIcon: Icon(Icons.search),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.bookmark_border_rounded),
+                  activeIcon: Icon(Icons.bookmark),
+                  label: 'Bookmarks',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings_rounded),
+                  activeIcon: Icon(Icons.settings),
+                  label: 'Settings',
+                ),
+              ],
+            ),
           ),
           floatingActionButton: _currentIndex == 1 
-              ? FloatingActionButton(
-                  heroTag: "chapterSelector",
-                  onPressed: () {
-                    _showBookChapterSelector(context, bibleProvider);
-                  },
-                  tooltip: 'Go to chapter',
-                  child: const Icon(Icons.navigation),
+              ? AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.secondary,
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: FloatingActionButton(
+                    heroTag: "chapterSelector",
+                    onPressed: () {
+                      _showBookChapterSelector(context, bibleProvider);
+                    },
+                    tooltip: 'Go to chapter',
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    child: const Icon(
+                      Icons.navigation_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
                 )
               : null,
+        );
+      },
+    );
+  }
+
+  void _showAppBarActionsSheet(BuildContext context, SettingsProvider settingsProvider) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_currentIndex == 1) ...[
+                ListTile(
+                  leading: const Icon(Icons.text_decrease_rounded),
+                  title: const Text('Decrease font size'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    settingsProvider.decreaseFontSize();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.text_increase_rounded),
+                  title: const Text('Increase font size'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    settingsProvider.increaseFontSize();
+                  },
+                ),
+                const Divider(height: 0),
+              ],
+              ListTile(
+                leading: const Icon(Icons.translate_rounded),
+                title: Text(
+                  settingsProvider.readingLanguage == 'odiya'
+                      ? 'Switch to English'
+                      : 'Switch to Odiya',
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  settingsProvider.toggleReadingLanguage();
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  settingsProvider.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                ),
+                title: Text(settingsProvider.isDarkMode ? 'Light mode' : 'Dark mode'),
+                onTap: () {
+                  Navigator.pop(context);
+                  settingsProvider.toggleDarkMode();
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         );
       },
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import '../providers/bible_provider.dart';
 import '../providers/settings_provider.dart';
@@ -308,6 +309,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
         final currentChapter = bibleProvider.currentChapter;
 
         final paragraphs = bibleProvider.currentChapterParagraphs;
+        final bool isCompact = MediaQuery.of(context).size.width < 420;
 
         return Stack(
           children: [
@@ -316,7 +318,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                 // Modern chapter header with gradient
                 Container(
                   width: double.infinity,
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: isCompact ? 6 : 8),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -326,26 +328,26 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                         Theme.of(context).colorScheme.secondary.withOpacity(0.6),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                   borderRadius: BorderRadius.circular(isCompact ? 12 : 16),
                     boxShadow: [
                       BoxShadow(
                         color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
+                       blurRadius: isCompact ? 6 : 8,
+                      offset: Offset(0, isCompact ? 3 : 4),
                       ),
                     ],
                   ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
+                     borderRadius: BorderRadius.circular(isCompact ? 12 : 16),
                       onTap: () => _openChapterSelector(context, bibleProvider),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                       padding: EdgeInsets.symmetric(horizontal: isCompact ? 14 : 16, vertical: isCompact ? 8 : 12),
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(8),
+                             padding: EdgeInsets.all(isCompact ? 6 : 8),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
@@ -353,7 +355,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                               child: Icon(
                                 Icons.menu_book_rounded,
                                 color: Colors.white,
-                                size: 20,
+                               size: isCompact ? 18 : 20,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -365,16 +367,23 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                                     settingsProvider.readingLanguage == 'english' 
                                         ? (currentBook?.name ?? 'Unknown')
                                         : (currentBook?.odiyaName ?? 'Unknown'),
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                   style: (isCompact
+                                           ? Theme.of(context).textTheme.titleMedium
+                                           : Theme.of(context).textTheme.titleLarge)
+                                       ?.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,
+                                     height: 1.1,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
                                     'Chapter $currentChapter',
-                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                   style: (isCompact
+                                           ? Theme.of(context).textTheme.labelMedium
+                                           : Theme.of(context).textTheme.labelLarge)
+                                       ?.copyWith(
                                       color: Colors.white.withOpacity(0.9),
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -384,7 +393,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                             ),
                             Icon(
                               Icons.unfold_more,
-                              size: 18,
+                             size: isCompact ? 16 : 18,
                               color: Colors.white.withOpacity(0.8),
                             ),
                           ],
@@ -393,7 +402,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
+               SizedBox(height: isCompact ? 2 : 4),
                 // Navigation row: previous / center logo to select / next
                 ChapterNavigation(
                   onPreviousChapter: bibleProvider.canGoToPreviousChapter
@@ -418,7 +427,7 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                       : null,
                   onTapChapter: () => _openChapterSelector(context, bibleProvider),
                 ),
-                const SizedBox(height: 6),
+               SizedBox(height: isCompact ? 4 : 6),
                 
 
                 
@@ -664,65 +673,85 @@ class _VerseViewState extends State<_VerseView> {
         children: [
           // Verse number as superscript red
           WidgetSpan(
-            alignment: PlaceholderAlignment.aboveBaseline,
+            alignment: PlaceholderAlignment.baseline,
             baseline: TextBaseline.alphabetic,
             child: GestureDetector(
               onTap: () => widget.onTapVerse(widget.verse),
               onLongPress: () => widget.onTapVerse(widget.verse),
               child: Padding(
                 padding: const EdgeInsets.only(right: 4),
-                child: Text(
-                  '${widget.verse.verseNumber}',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: Colors.red,
-                    fontSize: widget.fontSize * 0.75,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // Verse text as widget span to support hover highlight
-          WidgetSpan(
-            alignment: PlaceholderAlignment.baseline,
-            baseline: TextBaseline.alphabetic,
-            child: MouseRegion(
-              cursor: SystemMouseCursors.text,
-              onEnter: (_) => setState(() => _isHovered = true),
-              onExit: (_) => setState(() => _isHovered = false),
-              child: GestureDetector(
-                onTap: () => widget.onTapVerse(widget.verse),
-                onLongPress: () => widget.onTapVerse(widget.verse),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: widget.verse.isHighlighted
-                        ? const Color(0xFFFFF59D) // Yellow highlight for user highlights
-                        : (widget.verse.verseNumber == widget.currentPlayingVerse
-                            ? Theme.of(context).colorScheme.primary.withOpacity(0.2) // Blue highlight for currently playing verse
-                            : (_isHovered
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer
-                                    .withOpacity(0.12)
-                                : Colors.transparent)),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  margin: const EdgeInsets.only(right: 2),
+                child: Transform.translate(
+                  offset: const Offset(0, -4),
                   child: Text(
-                    ' ${(() {
-                          final eng = widget.verse.englishText;
-                          final useEng = widget.readingLanguage == 'english' && (eng?.isNotEmpty ?? false);
-                          return (useEng ? eng! : widget.verse.odiyaText).trim();
-                        })()} ',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: widget.fontSize,
+                    '${widget.verse.verseNumber}',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: Colors.red,
+                      fontSize: widget.fontSize * 0.75,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
             ),
           ),
+          // Verse text: use TextSpan on narrow/mobile screens to keep number and text inline
+          ...(() {
+            final isNarrow = MediaQuery.of(context).size.width < 600;
+            final verseText = (() {
+              final eng = widget.verse.englishText;
+              final useEng = widget.readingLanguage == 'english' && (eng?.isNotEmpty ?? false);
+              return (useEng ? eng! : widget.verse.odiyaText).trim();
+            })();
+            final highlightColor = widget.verse.isHighlighted
+                ? const Color(0xFFFFF59D)
+                : (widget.verse.verseNumber == widget.currentPlayingVerse
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                    : (_isHovered
+                        ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.12)
+                        : Colors.transparent));
+            if (isNarrow) {
+              return <InlineSpan>[
+                TextSpan(
+                  text: ' ' + verseText + ' ',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: widget.fontSize,
+                    backgroundColor: highlightColor,
+                  ),
+                  recognizer: TapGestureRecognizer()..onTap = () => widget.onTapVerse(widget.verse),
+                ),
+              ];
+            } else {
+              return <InlineSpan>[
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.baseline,
+                  baseline: TextBaseline.alphabetic,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.text,
+                    onEnter: (_) => setState(() => _isHovered = true),
+                    onExit: (_) => setState(() => _isHovered = false),
+                    child: GestureDetector(
+                      onTap: () => widget.onTapVerse(widget.verse),
+                      onLongPress: () => widget.onTapVerse(widget.verse),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: highlightColor,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        margin: const EdgeInsets.only(right: 2),
+                        child: Text(
+                          ' ' + verseText + ' ',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontSize: widget.fontSize,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ];
+            }
+          })(),
         ],
       ),
       textAlign: TextAlign.start,
@@ -762,65 +791,85 @@ class _ParagraphViewState extends State<_ParagraphView> {
           for (int i = 0; i < widget.verses.length; i++) ...[
             // Verse number as superscript red
             WidgetSpan(
-              alignment: PlaceholderAlignment.aboveBaseline,
+              alignment: PlaceholderAlignment.baseline,
               baseline: TextBaseline.alphabetic,
               child: GestureDetector(
                 onTap: () => widget.onTapVerse(widget.verses[i]),
                 onLongPress: () => widget.onTapVerse(widget.verses[i]),
                 child: Padding(
                   padding: EdgeInsets.only(right: 4, left: i == 0 ? 0 : 6),
-                  child: Text(
-                    '${widget.verses[i].verseNumber}',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: Colors.red,
-                      fontSize: widget.fontSize * 0.75,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Verse text as widget span to support hover highlight
-            WidgetSpan(
-              alignment: PlaceholderAlignment.baseline,
-              baseline: TextBaseline.alphabetic,
-              child: MouseRegion(
-                cursor: SystemMouseCursors.text,
-                onEnter: (_) => setState(() => _hoveredIdx = i),
-                onExit: (_) => setState(() => _hoveredIdx = null),
-                child: GestureDetector(
-                  onTap: () => widget.onTapVerse(widget.verses[i]),
-                  onLongPress: () => widget.onTapVerse(widget.verses[i]),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: widget.verses[i].isHighlighted
-                          ? const Color(0xFFFFF59D) // Yellow highlight for user highlights
-                          : (widget.verses[i].verseNumber == widget.currentPlayingVerse
-                              ? Theme.of(context).colorScheme.primary.withOpacity(0.2) // Blue highlight for currently playing verse
-                              : (_hoveredIdx == i
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                      .withOpacity(0.12)
-                                  : Colors.transparent)),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    margin: const EdgeInsets.only(right: 2),
+                  child: Transform.translate(
+                    offset: const Offset(0, -4),
                     child: Text(
-                      ' ${(() {
-                            final eng = widget.verses[i].englishText;
-                            final useEng = widget.readingLanguage == 'english' && (eng?.isNotEmpty ?? false);
-                            return (useEng ? eng! : widget.verses[i].odiyaText).trim();
-                          })()} ',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontSize: widget.fontSize,
+                      '${widget.verses[i].verseNumber}',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: Colors.red,
+                        fontSize: widget.fontSize * 0.75,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
               ),
             ),
+            // Verse text: use TextSpan on narrow/mobile screens to keep number and text inline
+            ...(() {
+              final isNarrow = MediaQuery.of(context).size.width < 600;
+              final verseText = (() {
+                final eng = widget.verses[i].englishText;
+                final useEng = widget.readingLanguage == 'english' && (eng?.isNotEmpty ?? false);
+                return (useEng ? eng! : widget.verses[i].odiyaText).trim();
+              })();
+              final highlightColor = widget.verses[i].isHighlighted
+                  ? const Color(0xFFFFF59D)
+                  : (widget.verses[i].verseNumber == widget.currentPlayingVerse
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                      : (_hoveredIdx == i
+                          ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.12)
+                          : Colors.transparent));
+              if (isNarrow) {
+                return <InlineSpan>[
+                  TextSpan(
+                    text: ' ' + verseText + ' ',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontSize: widget.fontSize,
+                      backgroundColor: highlightColor,
+                    ),
+                    recognizer: TapGestureRecognizer()..onTap = () => widget.onTapVerse(widget.verses[i]),
+                  ),
+                ];
+              } else {
+                return <InlineSpan>[
+                  WidgetSpan(
+                    alignment: PlaceholderAlignment.baseline,
+                    baseline: TextBaseline.alphabetic,
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.text,
+                      onEnter: (_) => setState(() => _hoveredIdx = i),
+                      onExit: (_) => setState(() => _hoveredIdx = null),
+                      child: GestureDetector(
+                        onTap: () => widget.onTapVerse(widget.verses[i]),
+                        onLongPress: () => widget.onTapVerse(widget.verses[i]),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: highlightColor,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
+                          margin: const EdgeInsets.only(right: 2),
+                          child: Text(
+                            ' ' + verseText + ' ',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontSize: widget.fontSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ];
+              }
+            })(),
           ]
         ],
       ),

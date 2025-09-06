@@ -105,14 +105,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Consumer2<BibleProvider, SettingsProvider>(
       builder: (context, bibleProvider, settingsProvider, child) {
+        final width = MediaQuery.of(context).size.width;
+        final isCompact = width < 420;
         return Scaffold(
           extendBodyBehindAppBar: true,
           appBar: AppBar(
-            toolbarHeight: 70,
-            titleSpacing: 20,
-            leadingWidth: 60,
+            toolbarHeight: isCompact ? 60 : 70,
+            titleSpacing: isCompact ? 12 : 20,
+            leadingWidth: isCompact ? 52 : 60,
             iconTheme: IconThemeData(
-              size: 24,
+              size: isCompact ? 22 : 24,
               color: Theme.of(context).colorScheme.onSurface,
             ),
             title: Container(
@@ -120,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(isCompact ? 6 : 8),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
@@ -128,10 +130,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Icon(
                       _getScreenIcon(_currentIndex),
                       color: Theme.of(context).colorScheme.primary,
-                      size: 20,
+                      size: isCompact ? 18 : 20,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: isCompact ? 10 : 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,16 +141,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           _titles[_currentIndex],
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: (isCompact
+                                  ? Theme.of(context).textTheme.headlineSmall
+                                  : Theme.of(context).textTheme.headlineMedium)
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          _getScreenSubtitle(_currentIndex),
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        if (!isCompact)
+                          Text(
+                            _getScreenSubtitle(_currentIndex),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -182,97 +191,104 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             actions: [
-              // Font size controls for reading screen
-              if (_currentIndex == 1) ...
-              [
+              if (isCompact)
+                IconButton(
+                  icon: const Icon(Icons.more_vert_rounded),
+                  tooltip: 'More',
+                  onPressed: () => _showAppBarActionsSheet(context, settingsProvider),
+                )
+              else ...[
+                // Font size controls for reading screen
+                if (_currentIndex == 1) ...[
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    margin: const EdgeInsets.only(right: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.text_decrease_rounded),
+                          onPressed: settingsProvider.decreaseFontSize,
+                          tooltip: 'Decrease font size',
+                          iconSize: 18,
+                          padding: const EdgeInsets.all(8),
+                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        Container(
+                          width: 1,
+                          height: 16,
+                          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.text_increase_rounded),
+                          onPressed: settingsProvider.increaseFontSize,
+                          tooltip: 'Increase font size',
+                          iconSize: 18,
+                          padding: const EdgeInsets.all(8),
+                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                // Language toggle
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeInOut,
                   margin: const EdgeInsets.only(right: 4),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.text_decrease_rounded),
-                        onPressed: settingsProvider.decreaseFontSize,
-                        tooltip: 'Decrease font size',
-                        iconSize: 18,
-                        padding: const EdgeInsets.all(8),
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      Container(
-                        width: 1,
-                        height: 16,
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.text_increase_rounded),
-                        onPressed: settingsProvider.increaseFontSize,
-                        tooltip: 'Increase font size',
-                        iconSize: 18,
-                        padding: const EdgeInsets.all(8),
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
+                  child: IconButton(
+                    icon: Icon(
+                      settingsProvider.readingLanguage == 'odiya'
+                          ? Icons.translate_rounded
+                          : Icons.translate_rounded,
+                    ),
+                    onPressed: () => settingsProvider.toggleReadingLanguage(),
+                    tooltip: settingsProvider.readingLanguage == 'odiya'
+                        ? 'Switch to English'
+                        : 'Switch to Odiya',
+                    iconSize: 20,
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                // Dark mode toggle
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      settingsProvider.isDarkMode 
+                          ? Icons.light_mode_rounded 
+                          : Icons.dark_mode_rounded,
+                    ),
+                    onPressed: settingsProvider.toggleDarkMode,
+                    tooltip: settingsProvider.isDarkMode 
+                        ? 'Switch to light mode' 
+                        : 'Switch to dark mode',
+                    iconSize: 20,
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               ],
-              // Language toggle
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                margin: const EdgeInsets.only(right: 4),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    settingsProvider.readingLanguage == 'odiya'
-                        ? Icons.translate_rounded
-                        : Icons.translate_rounded,
-                  ),
-                  onPressed: () => settingsProvider.toggleReadingLanguage(),
-                  tooltip: settingsProvider.readingLanguage == 'odiya'
-                      ? 'Switch to English'
-                      : 'Switch to Odiya',
-                  iconSize: 20,
-                  padding: const EdgeInsets.all(8),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              // Dark mode toggle
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    settingsProvider.isDarkMode 
-                        ? Icons.light_mode_rounded 
-                        : Icons.dark_mode_rounded,
-                  ),
-                  onPressed: settingsProvider.toggleDarkMode,
-                  tooltip: settingsProvider.isDarkMode 
-                      ? 'Switch to light mode' 
-                      : 'Switch to dark mode',
-                  iconSize: 20,
-                  padding: const EdgeInsets.all(8),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
             ],
           ),
           drawer: const AppDrawer(),
@@ -408,6 +424,67 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 )
               : null,
+        );
+      },
+    );
+  }
+
+  void _showAppBarActionsSheet(BuildContext context, SettingsProvider settingsProvider) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_currentIndex == 1) ...[
+                ListTile(
+                  leading: const Icon(Icons.text_decrease_rounded),
+                  title: const Text('Decrease font size'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    settingsProvider.decreaseFontSize();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.text_increase_rounded),
+                  title: const Text('Increase font size'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    settingsProvider.increaseFontSize();
+                  },
+                ),
+                const Divider(height: 0),
+              ],
+              ListTile(
+                leading: const Icon(Icons.translate_rounded),
+                title: Text(
+                  settingsProvider.readingLanguage == 'odiya'
+                      ? 'Switch to English'
+                      : 'Switch to Odiya',
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  settingsProvider.toggleReadingLanguage();
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  settingsProvider.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                ),
+                title: Text(settingsProvider.isDarkMode ? 'Light mode' : 'Dark mode'),
+                onTap: () {
+                  Navigator.pop(context);
+                  settingsProvider.toggleDarkMode();
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         );
       },
     );

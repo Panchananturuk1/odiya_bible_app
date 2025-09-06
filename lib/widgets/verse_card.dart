@@ -125,8 +125,10 @@ class _VerseCardState extends State<VerseCard> {
 
     // Build the superscript verse number as a WidgetSpan
     final numberSpan = WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
       child: Transform.translate(
-        offset: const Offset(0, -6),
+        offset: const Offset(0, -4),
         child: Text(
           widget.verse.verseNumber.toString(),
           style: TextStyle(
@@ -212,8 +214,10 @@ class _VerseCardState extends State<VerseCard> {
 
     // Prepend superscript verse number to the highlighted text
     final numberSpan = WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
       child: Transform.translate(
-        offset: const Offset(0, -6),
+        offset: const Offset(0, -4),
         child: Text(
           widget.verse.verseNumber.toString(),
           style: TextStyle(

@@ -69,7 +69,77 @@ class _AuthScreenState extends State<AuthScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isLogin ? 'Sign in' : 'Create account'),
+        toolbarHeight: 70,
+        titleSpacing: 20,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isDark
+                  ? [
+                      const Color(0xFF1E1E2E).withOpacity(0.95),
+                      const Color(0xFF2A2A3E).withOpacity(0.95),
+                    ]
+                  : [
+                      const Color(0xFFFAFBFF).withOpacity(0.95),
+                      const Color(0xFFF0F4FF).withOpacity(0.95),
+                    ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+        ),
+        title: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  _isLogin ? Icons.login_rounded : Icons.person_add_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _isLogin ? 'Sign in' : 'Create account',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
+                        height: 1.1,
+                      ),
+                    ),
+                    Text(
+                      _isLogin ? 'Welcome back to Bible reading' : 'Join our Bible reading community',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       body: Center(
         child: ConstrainedBox(

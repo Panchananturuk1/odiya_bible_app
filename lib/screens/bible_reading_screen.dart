@@ -313,47 +313,83 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
           children: [
             Column(
               children: [
-                // Chapter navigation
-                // Combined header and navigation in one compact row
-                // Decorative top strip (header removed as requested)
-                Container(
-                  height: 2,
-                  width: double.infinity,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: 6),
-                // Readable chapter header (reintroduced)
+                // Modern chapter header with gradient
                 Container(
                   width: double.infinity,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(6),
-                    onTap: () => _openChapterSelector(context, bibleProvider),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${(settingsProvider.readingLanguage == 'english' ? (currentBook?.name ?? 'Unknown') : (currentBook?.odiyaName ?? 'Unknown'))} • Chapter $currentChapter',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.2,
-                                ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Icon(
-                          Icons.unfold_more,
-                          size: 18,
-                          color: Theme.of(context).colorScheme.onSecondaryContainer,
-                        ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                        Theme.of(context).colorScheme.secondary.withOpacity(0.6),
                       ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => _openChapterSelector(context, bibleProvider),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.menu_book_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    settingsProvider.readingLanguage == 'english' 
+                                        ? (currentBook?.name ?? 'Unknown')
+                                        : (currentBook?.odiyaName ?? 'Unknown'),
+                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    'Chapter $currentChapter',
+                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                      color: Colors.white.withOpacity(0.9),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.unfold_more,
+                              size: 18,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -388,47 +424,74 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                 
                 // Content list (verses and headings)
                 Expanded(
-                  child: ListView.separated(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 119), // Fixed bottom overflow by reducing padding by 121 pixels
-                    itemCount: bibleProvider.currentChapterContent?.length ?? 0,
-                    separatorBuilder: (_, __) => const SizedBox(height: 6),
-                    itemBuilder: (context, index) {
-                      final content = bibleProvider.currentChapterContent![index];
-                      
-                      if (content['type'] == 'heading') {
-                        // Display heading without background card
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          child: Text(
-                            content['text'],
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              height: 1.3,
-                              color: Theme.of(context).colorScheme.primary,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Theme.of(context).colorScheme.surface,
+                          Theme.of(context).colorScheme.surface.withOpacity(0.95),
+                        ],
+                      ),
+                    ),
+                    child: ListView.separated(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 119), // Fixed bottom overflow by reducing padding by 121 pixels
+                      itemCount: bibleProvider.currentChapterContent?.length ?? 0,
+                      separatorBuilder: (_, __) => const SizedBox(height: 2),
+                      itemBuilder: (context, index) {
+                        final content = bibleProvider.currentChapterContent![index];
+                        
+                        if (content['type'] == 'heading') {
+                          // Display heading with modern styling
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                                  Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                width: 1,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      } else {
-                        // Display verse
-                        final verse = content['verse'];
-                        if (verse == null) {
-                          return const SizedBox.shrink();
+                            child: Text(
+                              content['text'],
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        } else {
+                          // Display verse with enhanced styling
+                          final verse = content['verse'];
+                          if (verse == null) {
+                            return const SizedBox.shrink();
+                          }
+                          return Consumer<AudioStreamingProvider>(
+                            builder: (context, audioProvider, child) {
+                              return _VerseView(
+                                verse: verse,
+                                fontSize: settingsProvider.fontSize,
+                                onTapVerse: (v) => _showVerseOptions(context, v, bibleProvider),
+                                readingLanguage: settingsProvider.readingLanguage,
+                                currentPlayingVerse: audioProvider.currentPlayingVerse,
+                              );
+                            },
+                          );
                         }
-                        return Consumer<AudioStreamingProvider>(
-                          builder: (context, audioProvider, child) {
-                            return _VerseView(
-                              verse: verse,
-                              fontSize: settingsProvider.fontSize,
-                              onTapVerse: (v) => _showVerseOptions(context, v, bibleProvider),
-                              readingLanguage: settingsProvider.readingLanguage,
-                              currentPlayingVerse: audioProvider.currentPlayingVerse,
-                            );
-                          },
-                        );
-                      }
-                    },
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -626,11 +689,10 @@ class _VerseViewState extends State<_VerseView> {
                 padding: const EdgeInsets.only(right: 4),
                 child: Text(
                   '${widget.verse.verseNumber}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     color: Colors.red,
                     fontSize: widget.fontSize * 0.75,
-                    height: 0.8,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -669,9 +731,8 @@ class _VerseViewState extends State<_VerseView> {
                           final useEng = widget.readingLanguage == 'english' && (eng?.isNotEmpty ?? false);
                           return (useEng ? eng! : widget.verse.odiyaText).trim();
                         })()} ',
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: widget.fontSize,
-                      height: 1.6,
                     ),
                   ),
                 ),
@@ -726,11 +787,10 @@ class _ParagraphViewState extends State<_ParagraphView> {
                   padding: EdgeInsets.only(right: 4, left: i == 0 ? 0 : 6),
                   child: Text(
                     '${widget.verses[i].verseNumber}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: theme.textTheme.labelMedium?.copyWith(
                       color: Colors.red,
                       fontSize: widget.fontSize * 0.75,
-                      height: 0.8,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -769,9 +829,8 @@ class _ParagraphViewState extends State<_ParagraphView> {
                             final useEng = widget.readingLanguage == 'english' && (eng?.isNotEmpty ?? false);
                             return (useEng ? eng! : widget.verses[i].odiyaText).trim();
                           })()} ',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         fontSize: widget.fontSize,
-                        height: 1.6,
                       ),
                     ),
                   ),

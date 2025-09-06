@@ -444,29 +444,13 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                         final content = bibleProvider.currentChapterContent![index];
                         
                         if (content['type'] == 'heading') {
-                          // Display heading with modern styling
-                          return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 16),
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                                colors: [
-                                  Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-                                  Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                                width: 1,
-                              ),
-                            ),
+                          // Display heading as plain text without card background
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                             child: Text(
                               content['text'],
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
                               textAlign: TextAlign.center,

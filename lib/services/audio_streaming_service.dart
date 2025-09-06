@@ -341,24 +341,58 @@ class AudioStreamingService {
   // Update current verse based on playback position
   void _updateCurrentVerse(Duration position) {
     if (_verseTimings.isEmpty) return;
-    
+
+    // Apply configurable highlight delay (positive values advance highlight earlier)
     final adjusted = position - Duration(milliseconds: _highlightDelayMs);
-    final effectivePosition = adjusted.isNegative ? Duration.zero : adjusted;
-    
-    for (int i = 0; i < _verseTimings.length; i++) {
-      final timing = _verseTimings[i];
-      final num startSec = (timing['start_time'] ?? 0) as num;
-      final num endSec = (timing['end_time'] ?? 0) as num;
-      final startTime = Duration(milliseconds: (startSec * 1000).round());
-      final endTime = Duration(milliseconds: (endSec * 1000).round());
-      
-      if (effectivePosition >= startTime && effectivePosition <= endTime) {
-        if (_currentVerseIndex != i) {
-          _currentVerseIndex = i;
-          _currentVerseController.add(_currentVerseIndex);
-        }
-        break;
+    final int effectiveMs = adjusted.isNegative ? 0 : adjusted.inMilliseconds;
+
+    // Binary search for the last verse whose start_time <= effectiveMs
+    int n = _verseTimings.length;
+    int lo = 0, hi = n - 1, ans = 0;
+
+    int startMsAt(int idx) {
+      final dynamic raw = _verseTimings[idx]['start_time'];
+      double s;
+      if (raw is num) {
+        s = raw.toDouble();
+      } else {
+        s = double.tryParse('$raw') ?? 0.0;
       }
+      return (s * 1000).round();
+    }
+
+    while (lo <= hi) {
+      final int mid = (lo + hi) >> 1;
+      final int midStart = startMsAt(mid);
+      if (midStart <= effectiveMs) {
+        ans = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
+      }
+    }
+
+    int computedIndex = ans;
+
+    // Prefer verse_number field if provided by API to avoid mismatches
+    final dynamic verseNumRaw = _verseTimings[ans]['verse_number'];
+    if (verseNumRaw != null) {
+      int? v;
+      if (verseNumRaw is int) {
+        v = verseNumRaw;
+      } else if (verseNumRaw is String) {
+        v = int.tryParse(verseNumRaw);
+      } else if (verseNumRaw is num) {
+        v = verseNumRaw.toInt();
+      }
+      if (v != null && v > 0) {
+        computedIndex = ((v - 1).clamp(0, n - 1)) as int;
+      }
+    }
+
+    if (_currentVerseIndex != computedIndex) {
+      _currentVerseIndex = computedIndex;
+      _currentVerseController.add(_currentVerseIndex);
     }
   }
   
@@ -687,7 +721,26 @@ class AudioStreamingService {
       final String bookIdForApi = USXParser.getUSXCodeFromBookName(bookName) ?? bookName;
       final timings = await _bibleBrainApi.getVerseTimings(_bibleBrainApi.defaultBibleId, bookIdForApi, chapterNumber);
       if (timings.isNotEmpty) {
-        _verseTimings = timings;
+        // Ensure timings are in chronological order by start_time
+        final List<Map<String, dynamic>> sorted = List<Map<String, dynamic>>.from(timings);
+        sorted.sort((a, b) {
+          final dynamic aRaw = a['start_time'];
+          final dynamic bRaw = b['start_time'];
+          num aStart;
+          num bStart;
+          if (aRaw is num) {
+            aStart = aRaw;
+          } else {
+            aStart = num.tryParse('$aRaw') ?? 0;
+          }
+          if (bRaw is num) {
+            bStart = bRaw;
+          } else {
+            bStart = num.tryParse('$bRaw') ?? 0;
+          }
+          return aStart.compareTo(bStart);
+        });
+        _verseTimings = sorted;
         _currentVerseIndex = 0;
         _currentVerseController.add(_currentVerseIndex);
         return;

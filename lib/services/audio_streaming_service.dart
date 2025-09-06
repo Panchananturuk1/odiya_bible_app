@@ -50,6 +50,7 @@ class AudioStreamingService {
   String? _currentBookName;
   String? _currentChapter;
   String? _currentAudioUrl;
+  DateTime? _audioUrlFetchTime;
   List<Map<String, dynamic>> _verseTimings = [];
   int _currentVerseIndex = 0;
   List<Verse> _currentVerses = [];
@@ -188,15 +189,18 @@ class AudioStreamingService {
             // On web, defer setting the source until play() to avoid long load timeouts
             debugPrint('Web detected: deferring setting source until play()');
             _currentAudioUrl = audioSource;
+            _audioUrlFetchTime = DateTime.now();
           } else if (audioSource.startsWith('http')) {
             debugPrint('Loading URL source...');
             final _mime = _guessMimeType(audioSource);
             await _audioPlayer.setSource(UrlSource(audioSource, mimeType: _mime));
             _currentAudioUrl = audioSource;
+            _audioUrlFetchTime = DateTime.now();
           } else {
             debugPrint('Loading device file source...');
             await _audioPlayer.setSource(DeviceFileSource(audioSource));
             _currentAudioUrl = audioSource;
+            _audioUrlFetchTime = DateTime.now();
           }
           _updatePlayerState(AudioPlayerState.paused); // Ready to play UI immediately
           debugPrint('Starting async verse timings load...');
@@ -396,12 +400,85 @@ class AudioStreamingService {
     }
   }
   
+  // Check if current audio URL has expired (CloudFront URLs typically expire after 1 hour)
+  bool _isAudioUrlExpired() {
+    if (_audioUrlFetchTime == null || _currentAudioUrl == null) return false;
+    
+    // Check if URL is older than 50 minutes (safe margin before 1-hour expiration)
+    final age = DateTime.now().difference(_audioUrlFetchTime!);
+    final isExpired = age.inMinutes > 50;
+    
+    if (isExpired) {
+      debugPrint('Audio URL expired (age: ${age.inMinutes} minutes), will refresh');
+    }
+    
+    return isExpired;
+  }
+  
+  // Refresh expired audio URL
+  Future<void> _refreshAudioUrlIfNeeded() async {
+    if (!_isAudioUrlExpired()) return;
+    
+    debugPrint('Refreshing expired audio URL...');
+    
+    if (_currentBookName != null && _currentChapter != null) {
+      try {
+        final newAudioSource = await _getStreamingAudioSource(_currentBookName!, _currentChapter!);
+        if (newAudioSource != null) {
+          _currentAudioUrl = newAudioSource;
+          _audioUrlFetchTime = DateTime.now();
+          debugPrint('Audio URL refreshed successfully');
+          
+          // Update the audio player source
+          final _mime = _guessMimeType(newAudioSource);
+          await _audioPlayer.setSource(UrlSource(newAudioSource, mimeType: _mime));
+        } else {
+          debugPrint('Failed to refresh audio URL, falling back to TTS');
+          _playbackMode = AudioPlaybackMode.tts;
+        }
+      } catch (e) {
+        debugPrint('Error refreshing audio URL: $e, falling back to TTS');
+        _playbackMode = AudioPlaybackMode.tts;
+      }
+    }
+  }
+
   // Playback controls
   Future<void> play() async {
     try {
       debugPrint('Play method called. hasAudio: ${_currentAudioUrl != null}, currentAudioUrl: $_currentAudioUrl');
       debugPrint('Current playback mode: $_playbackMode');
       debugPrint('Current verses count: ${_currentVerses.length}');
+      
+      // Check and refresh expired URLs before playing
+      if (_playbackMode == AudioPlaybackMode.streaming && _currentAudioUrl != null) {
+        await _refreshAudioUrlIfNeeded();
+        
+        // Validate URL before attempting to play
+        final isValid = await _validateAudioUrl(_currentAudioUrl!);
+        if (!isValid) {
+          debugPrint('Audio URL validation failed, refreshing...');
+          await _refreshAudioUrlIfNeeded();
+          
+          // Try validation again after refresh
+          if (_currentAudioUrl != null) {
+            final isValidAfterRefresh = await _validateAudioUrl(_currentAudioUrl!);
+            if (!isValidAfterRefresh) {
+              debugPrint('Audio URL still invalid after refresh, falling back to TTS');
+              if (_currentVerses.isNotEmpty) {
+                _playbackMode = AudioPlaybackMode.tts;
+                _currentAudioUrl = null;
+                String allText = _currentVerses.map((v) => v.odiyaText).join(' ');
+                _totalDuration = _calculateTtsDuration(allText);
+                _durationController.add(_totalDuration);
+                _updatePlayerState(AudioPlayerState.paused);
+                await _playTTS();
+                return;
+              }
+            }
+          }
+        }
+      }
       
       // Allow Bible Brain API on web platform since it's working correctly
       // if (kIsWeb) {
@@ -453,6 +530,26 @@ class AudioStreamingService {
                   }
                 } else {
                   throw Exception('HLS source not supported on web and no verses available for TTS');
+                }
+              }
+              
+              // Additional validation for web URLs before playing
+              final isUrlValid = await _validateAudioUrl(_currentAudioUrl!);
+              if (!isUrlValid) {
+                debugPrint('Web: Audio URL validation failed before play, refreshing...');
+                await _refreshAudioUrlIfNeeded();
+                if (_currentAudioUrl == null || !await _validateAudioUrl(_currentAudioUrl!)) {
+                  debugPrint('Web: URL still invalid after refresh, falling back to TTS');
+                  if (_currentVerses.isNotEmpty) {
+                    _playbackMode = AudioPlaybackMode.tts;
+                    _currentAudioUrl = null;
+                    String allText = _currentVerses.map((v) => v.odiyaText).join(' ');
+                    _totalDuration = _calculateTtsDuration(allText);
+                    _durationController.add(_totalDuration);
+                    _updatePlayerState(AudioPlayerState.paused);
+                    await _playTTS();
+                    return;
+                  }
                 }
               }
               
@@ -952,6 +1049,36 @@ class AudioStreamingService {
     _ttsTimer?.cancel();
     _ttsTimer = null;
     _updatePlayerState(AudioPlayerState.stopped);
+  }
+
+  // Validate if an audio URL is still accessible
+  Future<bool> _validateAudioUrl(String url) async {
+    try {
+      debugPrint('Validating audio URL: $url');
+      
+      // For web, use a simple HTTP HEAD request to check if URL is accessible
+      if (kIsWeb) {
+        // Create a temporary audio element to test if URL is accessible
+        final testPlayer = AudioPlayer();
+        try {
+          await testPlayer.setSource(UrlSource(url)).timeout(Duration(seconds: 5));
+          await testPlayer.dispose();
+          debugPrint('Audio URL validation successful');
+          return true;
+        } catch (e) {
+          debugPrint('Audio URL validation failed: $e');
+          await testPlayer.dispose();
+          return false;
+        }
+      } else {
+        // For mobile/desktop, we can use HTTP client to check URL
+        // For now, assume URL is valid if it's properly formatted
+        return url.startsWith('http') && Uri.tryParse(url) != null;
+      }
+    } catch (e) {
+      debugPrint('Error validating audio URL: $e');
+      return false;
+    }
   }
 
   // Test if audio player works with a simple test URL

@@ -23,3 +23,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ODIYABIBLE_6621F }}
           channelId: live
           projectId: odiyabible-6621f
+          target: odiya-bible-app

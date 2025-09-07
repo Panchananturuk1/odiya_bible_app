@@ -23,14 +23,24 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> get _screens => [
     TestamentSelectionScreen(
       onNavigateToReading: () {
-        _onTabTapped(1); // Navigate to reading tab
+        if (_currentIndex != 1) {
+          setState(() => _currentIndex = 1);
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(1);
+          }
+        }
       },
     ),
     const BibleReadingScreen(),
     const SearchScreen(),
     BookmarksScreen(
       onNavigateToReading: () {
-        _onTabTapped(1); // Navigate to reading tab
+        if (_currentIndex != 1) {
+          setState(() => _currentIndex = 1);
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(1);
+          }
+        }
       },
     ),
     const SettingsScreen(),
@@ -67,6 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onTabTapped(int index) {
+    if (index == _currentIndex) return;
+    if (!_pageController.hasClients) {
+      setState(() => _currentIndex = index);
+      return;
+    }
     setState(() {
       _currentIndex = index;
     });
@@ -334,6 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: SafeArea(
               child: PageView(
+                physics: const NeverScrollableScrollPhysics(),
                 controller: _pageController,
                 onPageChanged: _onPageChanged,
                 children: _screens,

@@ -186,15 +186,10 @@ class AudioStreamingProvider with ChangeNotifier {
         
         // On web, show the audio player UI as soon as audio is loaded,
         // so the user can press Play (required due to autoplay policies)
-        if (kIsWeb) {
-          // Check if we have audio URL or if service is in TTS mode
-          bool hasTtsMode = _audioService.playbackMode == AudioPlaybackMode.tts;
-          bool hasAudioUrl = _currentAudioUrl != null;
-          
-          if (hasAudioUrl || hasTtsMode) {
-             _isVisible = true;
-             notifyListeners();
-           }
+        if (kIsWeb && (_currentAudioUrl != null || _audioService.playbackMode == AudioPlaybackMode.tts)) {
+          _isVisible = true;
+          debugPrint('Audio player visibility set to true on web after load');
+          notifyListeners();
         }
         
         // Verse timings are handled by AudioStreamingService; avoid duplicate fetching here

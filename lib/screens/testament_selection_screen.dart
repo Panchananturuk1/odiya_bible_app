@@ -360,7 +360,9 @@ class TestamentSelectionScreen extends StatelessWidget {
                 try {
                   await bibleProvider.selectBook(book.id);
                   await bibleProvider.loadChapter(book.id, chapterIndex + 1);
-                  if (onNavigateToReading != null) {
+                  
+                  // Switch to the Bible reading tab
+                  if (context.mounted && onNavigateToReading != null) {
                     onNavigateToReading!();
                   }
                 } catch (e) {

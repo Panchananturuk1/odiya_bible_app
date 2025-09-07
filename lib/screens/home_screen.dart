@@ -20,22 +20,18 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
 
-  void _navigateToReadingTab() {
-    if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _onTabTapped(1);
-    });
-  }
-
   List<Widget> get _screens => [
     TestamentSelectionScreen(
-      onNavigateToReading: _navigateToReadingTab,
+      onNavigateToReading: () {
+        _onTabTapped(1); // Navigate to reading tab
+      },
     ),
     const BibleReadingScreen(),
     const SearchScreen(),
     BookmarksScreen(
-      onNavigateToReading: _navigateToReadingTab,
+      onNavigateToReading: () {
+        _onTabTapped(1); // Navigate to reading tab
+      },
     ),
     const SettingsScreen(),
   ];
@@ -71,28 +67,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onTabTapped(int index) {
-    if (!mounted) return;
     setState(() {
       _currentIndex = index;
     });
-    if (_pageController.hasClients) {
-      _pageController.animateToPage(
-        index,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        if (_pageController.hasClients) {
-          _pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        }
-      });
-    }
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   void _onPageChanged(int index) {
@@ -606,14 +588,10 @@ class _HomeScreenState extends State<HomeScreen> {
             book.totalChapters,
             (chapterIndex) => ListTile(
               title: Text('Chapter ${chapterIndex + 1}'),
-              onTap: () async {
+              onTap: () {
                 Navigator.pop(context);
-                try {
-                  await bibleProvider.selectBook(book.id);
-                  await bibleProvider.loadChapter(book.id, chapterIndex + 1);
-                } catch (e) {
-                  debugPrint('Error navigating to chapter: $e');
-                }
+                bibleProvider.selectBook(book.id);
+                bibleProvider.loadChapter(book.id, chapterIndex + 1);
               },
             ),
           ),

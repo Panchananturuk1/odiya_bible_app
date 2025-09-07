@@ -62,15 +62,16 @@ class BibleBrainApiService {
     // debugPrint('🔍 OT Debug: Book $bookId is NT: $isNT');
 
     if (isNT) {
-      // Prefer DPI (DPIN) for NT to keep the same voice as OT (DPIO); then fall back to WTC
+      // debugPrint('🔍 OT Debug: Using NT filesets for $bookId');
       return <String>[
-        _odiaCompleteAudioFilesetId,          // ORYDPIN1DA - NT non-drama (DPI)
-        _odiaCompleteAudioFilesetDramaId,     // ORYDPIN2DA - NT drama (DPI)
-        _odiaAudioFilesetId,                  // ORYWTCN1DA - NT non-drama (WTC)
-        _odiaAudioFilesetDramaId,             // ORYWTCN2DA - NT drama (WTC)
+        _odiaAudioFilesetId,
+        _odiaAudioFilesetDramaId,
+        _odiaCompleteAudioFilesetId,
+        _odiaCompleteAudioFilesetDramaId,
       ];
     } else {
-      // Old Testament candidates remain DPI-based
+      // debugPrint('🔍 OT Debug: Using OT filesets for $bookId');
+      // debugPrint('🔍 OT Debug: OT candidates: $_odiaOldTestamentAudioFilesetId, $_odiaOldTestamentAudioFilesetDramaId');
       return <String>[
         _odiaOldTestamentAudioFilesetId,
         _odiaOldTestamentAudioFilesetDramaId,
@@ -205,12 +206,12 @@ class BibleBrainApiService {
   // Get the appropriate FilesetId for audio based on Bible ID
   String _getAudioFilesetId(String bibleId) {
     // For now, use the predefined Odia FilesetIds
-    // Prefer DPI to keep the same voice across OT and NT; fall back to WTC if needed
+    // In a more complete implementation, this could be dynamic based on available filesets
     if (bibleId == 'ORYWTC' || bibleId.startsWith('ORY')) {
-      return _odiaCompleteAudioFilesetId; // Prefer New Testament audio from DPI version to match OT voice
+      return _odiaAudioFilesetId; // New Testament audio
     }
-    // Fallback to DPI New Testament audio FilesetId
-    return _odiaCompleteAudioFilesetId;
+    // Fallback to New Testament audio FilesetId
+    return _odiaAudioFilesetId;
   }
 
   // Generic retry wrapper for API calls
@@ -379,10 +380,8 @@ class BibleBrainApiService {
         for (final filesetId in candidates) {
           // Choose variants (prefer opus16/WebM on web for better compatibility; include MP3 off-web)
           final List<String> variants = kIsWeb
--              ? <String>['${filesetId}-opus16', filesetId]
--              : <String>[filesetId, '${filesetId}-opus16'];
-+              ? <String>[filesetId, '${filesetId}-opus16']
-+              : <String>[filesetId, '${filesetId}-opus16'];
+              ? <String>['${filesetId}-opus16', filesetId]
+              : <String>[filesetId, '${filesetId}-opus16'];
           debugPrint('Variant order for $filesetId: $variants');
           for (final variant in variants) {
             final url = '/bibles/filesets/$variant/$bookId/$chapterId';

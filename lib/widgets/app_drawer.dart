@@ -507,11 +507,15 @@ class AppDrawer extends StatelessWidget {
                         elevation: isCurrentChapter ? 4 : 1,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(8),
-                          onTap: () {
+                          onTap: () async {
                             Navigator.pop(context);
-                            bibleProvider.selectBook(book.id);
-                            bibleProvider.loadChapter(book.id, chapter);
-                            DefaultTabController.of(context)?.animateTo(0);
+                            try {
+                              await bibleProvider.selectBook(book.id);
+                              await bibleProvider.loadChapter(book.id, chapter);
+                              DefaultTabController.of(context)?.animateTo(0);
+                            } catch (e) {
+                              debugPrint('Error navigating to chapter: $e');
+                            }
                           },
                           child: Center(
                             child: Text(

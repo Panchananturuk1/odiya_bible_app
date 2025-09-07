@@ -48,3 +48,4 @@ app.*.map.json
 APK_Export/
 *.apk
 *.aab
+.firebase/hosting.YnVpbGRcd2Vi.cache

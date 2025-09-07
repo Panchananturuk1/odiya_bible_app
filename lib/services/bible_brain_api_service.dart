@@ -62,12 +62,12 @@ class BibleBrainApiService {
     // debugPrint('🔍 OT Debug: Book $bookId is NT: $isNT');
 
     if (isNT) {
-      // debugPrint('🔍 OT Debug: Using NT filesets for $bookId');
+      // Prefer DPI NT filesets first to match OT voice; fall back to WTC
       return <String>[
-        _odiaAudioFilesetId,
-        _odiaAudioFilesetDramaId,
         _odiaCompleteAudioFilesetId,
         _odiaCompleteAudioFilesetDramaId,
+        _odiaAudioFilesetId,
+        _odiaAudioFilesetDramaId,
       ];
     } else {
       // debugPrint('🔍 OT Debug: Using OT filesets for $bookId');
@@ -203,15 +203,14 @@ class BibleBrainApiService {
   // Check if service is initialized
   bool get isInitialized => _isInitialized;
   
-  // Get the appropriate FilesetId for audio based on Bible ID
+  // Get the appropriate FilesetId for audio based on Bible ID    
   String _getAudioFilesetId(String bibleId) {
-    // For now, use the predefined Odia FilesetIds
-    // In a more complete implementation, this could be dynamic based on available filesets
+    // Prefer DPI to keep the same voice across OT and NT; fall back to WTC if needed
     if (bibleId == 'ORYWTC' || bibleId.startsWith('ORY')) {
-      return _odiaAudioFilesetId; // New Testament audio
+      return _odiaCompleteAudioFilesetId; // Prefer NT audio from DPI version to match OT voice
     }
-    // Fallback to New Testament audio FilesetId
-    return _odiaAudioFilesetId;
+    // Fallback to DPI NT audio FilesetId
+    return _odiaCompleteAudioFilesetId;
   }
 
   // Generic retry wrapper for API calls
@@ -378,7 +377,7 @@ class BibleBrainApiService {
     // }
 
         for (final filesetId in candidates) {
-          // Choose variants (prefer opus16/WebM on web for better compatibility; include MP3 off-web)
+          // Choose variants (prefer opus16 first on web to avoid HLS; prefer MP3 first on other platforms)
           final List<String> variants = kIsWeb
               ? <String>['${filesetId}-opus16', filesetId]
               : <String>[filesetId, '${filesetId}-opus16'];

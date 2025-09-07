@@ -41,6 +41,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
   Widget build(BuildContext context) {
     return Consumer2<AudioStreamingProvider, BibleProvider>(
       builder: (context, audioProvider, bibleProvider, child) {
+        // Hide the player if audio provider is not initialized or not visible
         if (!audioProvider.isInitialized || !audioProvider.isVisible) {
           return const SizedBox.shrink();
         }

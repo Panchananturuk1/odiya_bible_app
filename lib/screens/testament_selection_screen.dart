@@ -357,14 +357,12 @@ class TestamentSelectionScreen extends StatelessWidget {
               title: Text('Chapter ${chapterIndex + 1}'),
               onTap: () async {
                 Navigator.pop(context);
-                try {
-                  await bibleProvider.selectBook(book.id);
-                  await bibleProvider.loadChapter(book.id, chapterIndex + 1);
-                  if (onNavigateToReading != null) {
-                    onNavigateToReading!();
-                  }
-                } catch (e) {
-                  debugPrint('Error navigating to chapter: $e');
+                await bibleProvider.selectBook(book.id);
+                await bibleProvider.loadChapter(book.id, chapterIndex + 1);
+                
+                // Switch to the Bible reading tab
+                if (context.mounted && onNavigateToReading != null) {
+                  onNavigateToReading!();
                 }
               },
             ),

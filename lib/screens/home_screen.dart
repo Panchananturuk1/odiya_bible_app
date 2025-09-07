@@ -588,10 +588,14 @@ class _HomeScreenState extends State<HomeScreen> {
             book.totalChapters,
             (chapterIndex) => ListTile(
               title: Text('Chapter ${chapterIndex + 1}'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                bibleProvider.selectBook(book.id);
-                bibleProvider.loadChapter(book.id, chapterIndex + 1);
+                try {
+                  await bibleProvider.selectBook(book.id);
+                  await bibleProvider.loadChapter(book.id, chapterIndex + 1);
+                } catch (e) {
+                  debugPrint('Error navigating to chapter: $e');
+                }
               },
             ),
           ),

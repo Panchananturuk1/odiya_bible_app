@@ -221,22 +221,32 @@ class _BookmarksScreenState extends State<BookmarksScreen>
     return sortedBookmarks.take(20).toList(); // Show last 20 recent bookmarks
   }
 
-  void _navigateToVerse(bookmark, BibleProvider bibleProvider) {
-    // Navigate to the specific verse
-    bibleProvider.selectBook(bookmark.bookId);
-    bibleProvider.loadChapter(bookmark.bookId, bookmark.chapter);
-    
-    // Switch to Bible reading tab
-    if (widget.onNavigateToReading != null) {
-      widget.onNavigateToReading!();
+  void _navigateToVerse(bookmark, BibleProvider bibleProvider) async {
+    try {
+      // Navigate to the specific verse
+      await bibleProvider.selectBook(bookmark.bookId);
+      await bibleProvider.loadChapter(bookmark.bookId, bookmark.chapter);
+      
+      // Switch to Bible reading tab
+      if (widget.onNavigateToReading != null) {
+        widget.onNavigateToReading!();
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Navigated to ${bookmark.reference}'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error navigating to verse: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error navigating to verse'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Navigated to ${bookmark.reference}'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
   }
 
   void _editBookmark(bookmark, BibleProvider bibleProvider) {

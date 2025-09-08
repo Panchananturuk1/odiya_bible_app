@@ -8,6 +8,7 @@ import '../providers/audio_streaming_provider.dart';
 import '../models/verse.dart';
 import '../widgets/chapter_navigation.dart';
 import '../widgets/audio_player_widget.dart';
+import 'copyright_info_screen.dart';
 
 class BibleReadingScreen extends StatefulWidget {
   const BibleReadingScreen({super.key});
@@ -359,9 +360,47 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                     child: ListView.separated(
                       controller: _scrollController,
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 119), // Fixed bottom overflow by reducing padding by 121 pixels
-                      itemCount: bibleProvider.currentChapterContent?.length ?? 0,
+                      itemCount: (bibleProvider.currentChapterContent?.length ?? 0) + 1, // Add 1 for copyright notice
                       separatorBuilder: (_, __) => const SizedBox(height: 2),
                       itemBuilder: (context, index) {
+                        final contentLength = bibleProvider.currentChapterContent?.length ?? 0;
+                        
+                        // Show copyright notice at the end
+                        if (index == contentLength) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                            child: Center(
+                              child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Copyrighted Materials - ',
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                    TextSpan(
+                                       text: 'Learn More',
+                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                         color: Theme.of(context).colorScheme.primary,
+                                       ),
+                                      recognizer: TapGestureRecognizer()..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const CopyrightInfoScreen(),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        
                         final content = bibleProvider.currentChapterContent![index];
                         
                         if (content['type'] == 'heading') {
@@ -622,47 +661,47 @@ class _VerseViewState extends State<_VerseView> {
                         ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.12)
                         : Colors.transparent));
             if (isNarrow) {
-              return <InlineSpan>[
-                TextSpan(
-                  text: ' ' + verseText + ' ',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontSize: widget.fontSize,
-                    backgroundColor: highlightColor,
-                  ),
-                  recognizer: TapGestureRecognizer()..onTap = () => widget.onTapVerse(widget.verse),
-                ),
-              ];
-            } else {
-              return <InlineSpan>[
-                WidgetSpan(
-                  alignment: PlaceholderAlignment.baseline,
-                  baseline: TextBaseline.alphabetic,
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.text,
-                    onEnter: (_) => setState(() => _isHovered = true),
-                    onExit: (_) => setState(() => _isHovered = false),
-                    child: GestureDetector(
-                      onTap: () => widget.onTapVerse(widget.verse),
-                      onLongPress: () => widget.onTapVerse(widget.verse),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: highlightColor,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 0),
-                        margin: const EdgeInsets.only(right: 2),
-                        child: Text(
-                          ' ' + verseText + ' ',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontSize: widget.fontSize,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ];
-            }
+               return <InlineSpan>[
+                 TextSpan(
+                   text: ' ' + verseText + ' ',
+                   style: theme.textTheme.bodyLarge?.copyWith(
+                     fontSize: widget.fontSize,
+                     backgroundColor: highlightColor,
+                   ),
+                   recognizer: TapGestureRecognizer()..onTap = () => widget.onTapVerse(widget.verse),
+                 ),
+               ];
+             } else {
+               return <InlineSpan>[
+                 WidgetSpan(
+                   alignment: PlaceholderAlignment.baseline,
+                   baseline: TextBaseline.alphabetic,
+                   child: MouseRegion(
+                     cursor: SystemMouseCursors.text,
+                     onEnter: (_) => setState(() => _isHovered = true),
+                     onExit: (_) => setState(() => _isHovered = false),
+                     child: GestureDetector(
+                       onTap: () => widget.onTapVerse(widget.verse),
+                       onLongPress: () => widget.onTapVerse(widget.verse),
+                       child: Container(
+                         decoration: BoxDecoration(
+                           color: highlightColor,
+                           borderRadius: BorderRadius.circular(4),
+                         ),
+                         padding: const EdgeInsets.symmetric(horizontal: 0),
+                         margin: const EdgeInsets.only(right: 2),
+                         child: Text(
+                           ' ' + verseText + ' ',
+                           style: theme.textTheme.bodyLarge?.copyWith(
+                             fontSize: widget.fontSize,
+                           ),
+                         ),
+                       ),
+                     ),
+                   ),
+                 ),
+               ];
+             }
           })(),
         ],
       ),

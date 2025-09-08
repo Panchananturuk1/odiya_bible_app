@@ -5,6 +5,7 @@ import '../providers/bible_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/audio_provider.dart';
 import '../models/verse.dart';
+import 'copyright_info_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -248,6 +249,19 @@ class SettingsScreen extends StatelessWidget {
                   subtitle: 'How we handle your data',
                   icon: Icons.privacy_tip,
                   onTap: () => _openPrivacyPolicy(context),
+                ),
+                const Divider(),
+                _buildActionTile(
+                  context,
+                  title: 'Copyright Info',
+                  subtitle: 'Licensing and attribution',
+                  icon: Icons.copyright,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CopyrightInfoScreen(),
+                    ),
+                  ),
                 ),
               ],
             ),

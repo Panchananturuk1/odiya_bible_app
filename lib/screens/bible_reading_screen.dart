@@ -8,6 +8,7 @@ import '../providers/audio_streaming_provider.dart';
 import '../models/verse.dart';
 import '../widgets/chapter_navigation.dart';
 import '../widgets/audio_player_widget.dart';
+import 'copyright_info_screen.dart';
 
 class BibleReadingScreen extends StatefulWidget {
   const BibleReadingScreen({super.key});
@@ -359,9 +360,13 @@ class _BibleReadingScreenState extends State<BibleReadingScreen> {
                     child: ListView.separated(
                       controller: _scrollController,
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 119), // Fixed bottom overflow by reducing padding by 121 pixels
-                      itemCount: bibleProvider.currentChapterContent?.length ?? 0,
+                      itemCount: (bibleProvider.currentChapterContent?.length ?? 0) + 1,
                       separatorBuilder: (_, __) => const SizedBox(height: 2),
                       itemBuilder: (context, index) {
+                        final total = bibleProvider.currentChapterContent?.length ?? 0;
+                        if (index == total) {
+                          return _buildCopyrightFooter(context);
+                        }
                         final content = bibleProvider.currentChapterContent![index];
                         
                         if (content['type'] == 'heading') {
@@ -789,3 +794,38 @@ class _ParagraphViewState extends State<_ParagraphView> {
     );
   }
 }
+
+  Widget _buildCopyrightFooter(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 12),
+        Divider(color: theme.dividerColor.withOpacity(0.4), height: 1),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Copyrighted Materials',
+                  style: theme.textTheme.titleMedium,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const CopyrightInfoScreen()),
+                  );
+                },
+                child: const Text(
+                  'LEARN MORE',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }

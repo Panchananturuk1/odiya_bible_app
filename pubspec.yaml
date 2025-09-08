@@ -41,6 +41,7 @@ flutter:
   assets:
     - assets/data/
     - assets/JSON/
+    - assets/Copyright/
     - assets/JSON/Genesis/
     - assets/JSON/Exodus/
     - assets/JSON/Leviticus/

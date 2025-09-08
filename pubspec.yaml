@@ -110,6 +110,7 @@ flutter:
     - assets/JSON/Revelation/
     - assets/Odiya_USX/
     - assets/Logo/
+    - assets/images/
 
 flutter_launcher_icons:
   android: "launcher_icon"

@@ -1,0 +1,80 @@
+Security Checklist for Odiya Bible App (Flutter / Android)
+
+Goal: Keep your public GitHub repo safe, protect your shipped Play Store app, and lock down backend/services.
+
+PRIORITY QUICK WINS (do these first)
+[ ] Remove any hardcoded secrets from the repo (API keys, service accounts, private URLs)
+[ ] Turn on 2FA for GitHub and Google Play developer accounts
+[ ] Enable branch protection on the default branch (require PR + review, disallow force-push)
+[ ] Use --dart-define for build-time values instead of committing them
+[ ] Build releases with code obfuscation enabled
+[ ] Restrict API keys (Firebase/Google APIs) to your Android package + signing cert
+
+1) GitHub Repository Security
+[ ] Public vs Private: If worried, make the repo private; or split sensitive parts into a private repo
+[ ] Branch protection: require PR reviews + status checks; restrict who can push to main
+[ ] Signed commits/tags: sign release tags; verify signatures in settings
+[ ] CODEOWNERS: require specific reviewers for critical files (build configs, CI, release scripts)
+[ ] Secret scanning: enable GitHub secret scanning and Dependabot alerts
+[ ] Never commit secrets: use environment variables and CI secret stores
+
+2) Secrets and Configuration Management (Flutter)
+[ ] Use --dart-define for configuration in release builds
+    Example: flutter build appbundle --release --dart-define=API_BASE_URL=https://api.example.com
+[ ] Do NOT commit credentials; keep them in CI secrets or local secure storage
+[ ] If using Firebase: remember Firebase web keys aren’t confidential, but still restrict usage (see section 4)
+
+3) Android App Release Hardening
+[ ] Use Play App Signing (recommended by Google). Keep upload key safe.
+[ ] Obfuscate Dart code:
+    - Build command: flutter build appbundle --release --obfuscate --split-debug-info=build/obf/<timestamp>/
+    - Keep the split-debug-info directory safe and DO NOT commit it publicly
+[ ] R8/ProGuard is ON by default for release; only add keep rules if libraries require reflection
+[ ] Disable debug logging in release; avoid printing sensitive data
+[ ] Verify no debug-only permissions are present in release manifest
+
+4) Lock Down Backend and Third‑Party Services
+[ ] Never trust the client; enforce auth/authorization server-side
+[ ] Google Play Integrity API: validate tokens server-side to ensure requests come from your signed package
+[ ] Firebase (if used)
+    - Firestore/Storage security rules: least privilege. File: firestore.rules
+    - Enable Firebase App Check (Play Integrity provider for Android)
+    - Restrict API keys to your Android package name + SHA-256 signing certificate
+[ ] Rate limiting and abuse detection on any public endpoints
+
+5) Network Security
+[ ] HTTPS only for all endpoints
+[ ] Consider certificate pinning for critical APIs (understand update/rotation process before pinning)
+
+6) Monitoring & Response
+[ ] Monitor Play Console for impersonator/copycat apps
+[ ] Consider trademarking app name/icon if brand protection is important
+[ ] Set up alerts for releases and error monitoring (Crashlytics/Sentry)
+
+7) Open-Source Hygiene
+[ ] Add a clear LICENSE file and attribution requirements (if applicable)
+[ ] SECURITY.md with how to report vulnerabilities (optionally)
+
+8) Practical Audits You Can Run Now
+[ ] Search the repo for secrets
+    - Look for patterns like key=, token=, "-----BEGIN", or service account JSON
+[ ] Optional tools: gitleaks or trufflehog (run locally/CI) to catch leaked secrets
+[ ] Review firestore.rules to ensure proper read/write conditions
+
+Notes specific to your project
+- Repo path: c:\Users\Monu\Desktop\AppDevelopment\BibleApp2\odiya_bible_app
+- Firestore rules file present: firestore.rules — review for least-privilege access
+- Web builds: remember asset paths are case-sensitive; avoid embedding secrets in Dart code
+- Don’t publish split-debug-info directories; store them privately for crash symbolication
+
+Release Command Examples (safe to copy)
+- Android App Bundle with obfuscation:
+  flutter build appbundle --release --obfuscate --split-debug-info=build/obf/$(Get-Date -Format yyyyMMdd_HHmmss)/
+- Android APK (if needed for sideload testing):
+  flutter build apk --release --obfuscate --split-debug-info=build/obf/$(Get-Date -Format yyyyMMdd_HHmmss)/
+
+If you want, I can help you:
+- Add CODEOWNERS and branch protection guidance
+- Wire --dart-define into your build/release workflow
+- Review firestore.rules
+- Prepare a Play Integrity/App Check integration plan

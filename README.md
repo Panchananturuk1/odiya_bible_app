@@ -8,7 +8,8 @@ A Flutter-based Bible application featuring the complete Odia Bible with advance
 
 Explore the live application: [Odiya Bible App](https://odiyabible-6621f.web.app/)
 
-![Bible App Preview](http://images-panchanan.s3-website.ap-south-1.amazonaws.com/Bible/Bible_Home.jpg)
+![Bible App Preview](https://images-panchanan.s3.ap-south-1.amazonaws.com/Bible/1.Home_Screen.jpg)
+![Bible App Preview](https://images-panchanan.s3.ap-south-1.amazonaws.com/Bible/2.Reading_Screen.jpg)
 
 ## Features
 

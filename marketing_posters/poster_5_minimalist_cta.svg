@@ -1,0 +1,146 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1f2937;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#374151;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#111827;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f9fafb;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="ctaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="url(#bgGradient)"/>
+  
+  <!-- Subtle Light Effects -->
+  <circle cx="540" cy="400" r="300" fill="url(#glowGradient)"/>
+  <circle cx="200" cy="1200" r="150" fill="url(#glowGradient)" opacity="0.5"/>
+  <circle cx="880" cy="1600" r="200" fill="url(#glowGradient)" opacity="0.3"/>
+  
+  <!-- Main Content Card -->
+  <rect x="80" y="200" width="920" height="1520" rx="40" fill="url(#cardGradient)" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- App Icon/Logo Area -->
+  <circle cx="540" cy="350" r="100" fill="url(#ctaGradient)"/>
+  <circle cx="540" cy="350" r="80" fill="#ffffff"/>
+  <text x="540" y="375" text-anchor="middle" fill="#3b82f6" font-family="Arial, sans-serif" font-size="60" font-weight="bold">ଓ</text>
+  
+  <!-- Main Headline -->
+  <text x="540" y="520" text-anchor="middle" fill="#1f2937" font-family="Arial, sans-serif" font-size="48" font-weight="bold">Odiya Bible</text>
+  <text x="540" y="570" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="28">Complete • Audio • Free</text>
+  
+  <!-- Value Proposition -->
+  <text x="540" y="680" text-anchor="middle" fill="#374151" font-family="Arial, sans-serif" font-size="32" font-weight="600">Read, Listen, Study</text>
+  <text x="540" y="720" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="24">The complete Odia Bible in your pocket</text>
+  
+  <!-- Key Features - Minimalist Icons -->
+  <g transform="translate(240, 800)">
+    <!-- Read -->
+    <g>
+      <rect x="0" y="0" width="40" height="30" rx="5" fill="#3b82f6" opacity="0.1"/>
+      <rect x="5" y="5" width="30" height="20" rx="3" fill="#3b82f6"/>
+      <line x1="10" y1="12" x2="30" y2="12" stroke="#ffffff" stroke-width="2"/>
+      <line x1="10" y1="18" x2="25" y2="18" stroke="#ffffff" stroke-width="2"/>
+      <text x="20" y="55" text-anchor="middle" fill="#1f2937" font-family="Arial, sans-serif" font-size="18" font-weight="600">Read</text>
+      <text x="20" y="75" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="14">Beautiful Typography</text>
+    </g>
+    
+    <!-- Listen -->
+    <g transform="translate(200, 0)">
+      <circle cx="20" cy="15" r="15" fill="#3b82f6" opacity="0.1"/>
+      <circle cx="20" cy="15" r="10" fill="#3b82f6"/>
+      <polygon points="15,10 15,20 25,15" fill="#ffffff"/>
+      <text x="20" y="55" text-anchor="middle" fill="#1f2937" font-family="Arial, sans-serif" font-size="18" font-weight="600">Listen</text>
+      <text x="20" y="75" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="14">Audio Narration</text>
+    </g>
+    
+    <!-- Study -->
+    <g transform="translate(400, 0)">
+      <circle cx="20" cy="15" r="12" fill="none" stroke="#3b82f6" stroke-width="3"/>
+      <line x1="28" y1="23" x2="35" y2="30" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+      <text x="20" y="55" text-anchor="middle" fill="#1f2937" font-family="Arial, sans-serif" font-size="18" font-weight="600">Study</text>
+      <text x="20" y="75" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="14">Search & Notes</text>
+    </g>
+  </g>
+  
+  <!-- Statistics/Trust Indicators -->
+  <g transform="translate(200, 950)">
+    <rect x="0" y="0" width="680" height="120" rx="20" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    
+    <!-- Stat 1 -->
+    <text x="113" y="40" text-anchor="middle" fill="#3b82f6" font-family="Arial, sans-serif" font-size="32" font-weight="bold">66</text>
+    <text x="113" y="65" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="16">Bible Books</text>
+    <text x="113" y="85" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="14">Complete Library</text>
+    
+    <!-- Stat 2 -->
+    <text x="340" y="40" text-anchor="middle" fill="#3b82f6" font-family="Arial, sans-serif" font-size="32" font-weight="bold">100%</text>
+    <text x="340" y="65" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="16">Free</text>
+    <text x="340" y="85" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="14">No Hidden Costs</text>
+    
+    <!-- Stat 3 -->
+    <text x="567" y="40" text-anchor="middle" fill="#3b82f6" font-family="Arial, sans-serif" font-size="32" font-weight="bold">0</text>
+    <text x="567" y="65" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="16">Ads</text>
+    <text x="567" y="85" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="14">Distraction Free</text>
+  </g>
+  
+  <!-- Main Scripture Quote -->
+  <rect x="150" y="1120" width="780" height="120" rx="15" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="540" y="1160" text-anchor="middle" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">"Thy word is a lamp unto my feet,</text>
+  <text x="540" y="1190" text-anchor="middle" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">and a light unto my path."</text>
+  <text x="540" y="1220" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="18">Psalm 119:105</text>
+  
+  <!-- Primary CTA Button -->
+  <rect x="140" y="1300" width="800" height="100" rx="50" fill="url(#ctaGradient)" stroke="#2563eb" stroke-width="2"/>
+  <text x="540" y="1365" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="36" font-weight="bold">Download Free Now</text>
+  
+  <!-- Secondary Info -->
+  <text x="540" y="1450" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="20">Available on all platforms</text>
+  
+  <!-- Platform Icons Row -->
+  <g transform="translate(360, 1480)">
+    <!-- Android -->
+    <rect x="0" y="0" width="60" height="40" rx="8" fill="#34d399"/>
+    <text x="30" y="27" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600">Android</text>
+    
+    <!-- iOS -->
+    <rect x="80" y="0" width="60" height="40" rx="8" fill="#6b7280"/>
+    <text x="110" y="27" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600">iOS</text>
+    
+    <!-- Web -->
+    <rect x="160" y="0" width="60" height="40" rx="8" fill="#3b82f6"/>
+    <text x="190" y="27" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600">Web</text>
+    
+    <!-- Windows -->
+    <rect x="240" y="0" width="60" height="40" rx="8" fill="#0ea5e9"/>
+    <text x="270" y="27" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="600">Windows</text>
+  </g>
+  
+  <!-- Trust Badges -->
+  <g transform="translate(300, 1560)">
+    <text x="240" y="20" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="16">✓ Privacy First  ✓ Offline Ready  ✓ Open Source</text>
+  </g>
+  
+  <!-- App Store Badges -->
+  <g transform="translate(240, 1600)">
+    <!-- Google Play -->
+    <rect x="0" y="0" width="280" height="80" rx="15" fill="#000000"/>
+    <text x="140" y="30" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="14">GET IT ON</text>
+    <text x="140" y="55" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Google Play</text>
+    
+    <!-- App Store -->
+    <rect x="320" y="0" width="280" height="80" rx="15" fill="#000000"/>
+    <text x="460" y="30" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="14">Download on the</text>
+    <text x="460" y="55" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" font-weight="bold">App Store</text>
+  </g>
+</svg>

@@ -1,0 +1,152 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <defs>
+    <radialGradient id="bgGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#5b21b6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3730a3;stop-opacity:1" />
+    </radialGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.98" />
+      <stop offset="100%" style="stop-color:#faf5ff;stop-opacity:0.95" />
+    </linearGradient>
+    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#a855f7;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="url(#bgGradient)"/>
+  
+  <!-- Floating Elements -->
+  <circle cx="150" cy="200" r="60" fill="#ffffff" opacity="0.1"/>
+  <circle cx="930" cy="400" r="80" fill="#ffffff" opacity="0.08"/>
+  <circle cx="100" cy="1600" r="100" fill="#ffffff" opacity="0.06"/>
+  
+  <!-- Sound Waves Background -->
+  <path d="M 0 600 Q 270 550 540 600 T 1080 600" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.2"/>
+  <path d="M 0 650 Q 270 600 540 650 T 1080 650" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.15"/>
+  <path d="M 0 700 Q 270 650 540 700 T 1080 700" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.1"/>
+  
+  <!-- Main Content Card -->
+  <rect x="60" y="150" width="960" height="1620" rx="30" fill="url(#cardGradient)" stroke="#ffffff" stroke-width="2"/>
+  
+  <!-- Header Section -->
+  <text x="540" y="250" text-anchor="middle" fill="#7c3aed" font-family="Arial, sans-serif" font-size="42" font-weight="bold">Listen to God's Word</text>
+  <text x="540" y="290" text-anchor="middle" fill="#6b21a8" font-family="Arial, sans-serif" font-size="24">ପରମେଶ୍ୱରଙ୍କ ବାକ୍ୟ ଶୁଣନ୍ତୁ</text>
+  
+  <!-- Large Audio Icon -->
+  <circle cx="540" cy="420" r="100" fill="#7c3aed" opacity="0.1"/>
+  <circle cx="540" cy="420" r="70" fill="#7c3aed"/>
+  <polygon points="510,390 510,450 550,420" fill="#ffffff"/>
+  <circle cx="570" cy="420" r="8" fill="#ffffff"/>
+  <circle cx="590" cy="420" r="12" fill="#ffffff" opacity="0.7"/>
+  <circle cx="615" cy="420" r="16" fill="#ffffff" opacity="0.5"/>
+  
+  <!-- Audio Features -->
+  <text x="540" y="580" text-anchor="middle" fill="#7c3aed" font-family="Arial, sans-serif" font-size="32" font-weight="600">Premium Audio Experience</text>
+  
+  <!-- Feature List -->
+  <g transform="translate(120, 650)">
+    <!-- High Quality Narration -->
+    <circle cx="30" cy="30" r="20" fill="#7c3aed"/>
+    <text x="25" y="37" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" font-weight="bold">♪</text>
+    <text x="70" y="25" fill="#7c3aed" font-family="Arial, sans-serif" font-size="24" font-weight="600">High-Quality Odia Narration</text>
+    <text x="70" y="50" fill="#6b7280" font-family="Arial, sans-serif" font-size="18">Professional voice artists bring Scripture to life</text>
+    
+    <!-- TTS Features -->
+    <circle cx="30" cy="120" r="20" fill="#a855f7"/>
+    <text x="22" y="127" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" font-weight="bold">TTS</text>
+    <text x="70" y="115" fill="#7c3aed" font-family="Arial, sans-serif" font-size="24" font-weight="600">Text-to-Speech Technology</text>
+    <text x="70" y="140" fill="#6b7280" font-family="Arial, sans-serif" font-size="18">Adjustable speed, pitch, and volume controls</text>
+    
+    <!-- Auto-play -->
+    <circle cx="30" cy="210" r="20" fill="#c084fc"/>
+    <text x="22" y="217" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" font-weight="bold">⟲</text>
+    <text x="70" y="205" fill="#7c3aed" font-family="Arial, sans-serif" font-size="24" font-weight="600">Auto-Play Chapters</text>
+    <text x="70" y="230" fill="#6b7280" font-family="Arial, sans-serif" font-size="18">Continuous listening for meditation and study</text>
+    
+    <!-- Offline Access -->
+    <circle cx="30" cy="300" r="20" fill="#ddd6fe"/>
+    <text x="22" y="307" fill="#7c3aed" font-family="Arial, sans-serif" font-size="16" font-weight="bold">⚡</text>
+    <text x="70" y="295" fill="#7c3aed" font-family="Arial, sans-serif" font-size="24" font-weight="600">Works Offline</text>
+    <text x="70" y="320" fill="#6b7280" font-family="Arial, sans-serif" font-size="18">Listen anywhere, anytime without internet</text>
+  </g>
+  
+  <!-- Audio Waveform Visualization -->
+  <g transform="translate(150, 1100)">
+    <rect x="0" y="40" width="8" height="20" fill="url(#waveGradient)"/>
+    <rect x="15" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="30" y="20" width="8" height="60" fill="url(#waveGradient)"/>
+    <rect x="45" y="10" width="8" height="80" fill="url(#waveGradient)"/>
+    <rect x="60" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="75" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="90" y="15" width="8" height="70" fill="url(#waveGradient)"/>
+    <rect x="105" y="5" width="8" height="90" fill="url(#waveGradient)"/>
+    <rect x="120" y="20" width="8" height="60" fill="url(#waveGradient)"/>
+    <rect x="135" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="150" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="165" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="180" y="15" width="8" height="70" fill="url(#waveGradient)"/>
+    <rect x="195" y="40" width="8" height="20" fill="url(#waveGradient)"/>
+    <rect x="210" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="225" y="20" width="8" height="60" fill="url(#waveGradient)"/>
+    <rect x="240" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="255" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="270" y="15" width="8" height="70" fill="url(#waveGradient)"/>
+    <rect x="285" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="300" y="40" width="8" height="20" fill="url(#waveGradient)"/>
+    <rect x="315" y="20" width="8" height="60" fill="url(#waveGradient)"/>
+    <rect x="330" y="10" width="8" height="80" fill="url(#waveGradient)"/>
+    <rect x="345" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="360" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="375" y="15" width="8" height="70" fill="url(#waveGradient)"/>
+    <rect x="390" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="405" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="420" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="435" y="20" width="8" height="60" fill="url(#waveGradient)"/>
+    <rect x="450" y="40" width="8" height="20" fill="url(#waveGradient)"/>
+    <rect x="465" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="480" y="15" width="8" height="70" fill="url(#waveGradient)"/>
+    <rect x="495" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="510" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="525" y="20" width="8" height="60" fill="url(#waveGradient)"/>
+    <rect x="540" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="555" y="40" width="8" height="20" fill="url(#waveGradient)"/>
+    <rect x="570" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="585" y="15" width="8" height="70" fill="url(#waveGradient)"/>
+    <rect x="600" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="615" y="20" width="8" height="60" fill="url(#waveGradient)"/>
+    <rect x="630" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="645" y="40" width="8" height="20" fill="url(#waveGradient)"/>
+    <rect x="660" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="675" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="690" y="15" width="8" height="70" fill="url(#waveGradient)"/>
+    <rect x="705" y="30" width="8" height="40" fill="url(#waveGradient)"/>
+    <rect x="720" y="20" width="8" height="60" fill="url(#waveGradient)"/>
+    <rect x="735" y="40" width="8" height="20" fill="url(#waveGradient)"/>
+    <rect x="750" y="25" width="8" height="50" fill="url(#waveGradient)"/>
+    <rect x="765" y="35" width="8" height="30" fill="url(#waveGradient)"/>
+    <rect x="780" y="15" width="8" height="70" fill="url(#waveGradient)"/>
+  </g>
+  
+  <!-- Scripture Quote -->
+  <text x="540" y="1280" text-anchor="middle" fill="#7c3aed" font-family="Arial, sans-serif" font-size="28" font-weight="600">"Faith comes by hearing"</text>
+  <text x="540" y="1315" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="20">Romans 10:17</text>
+  
+  <!-- Call to Action -->
+  <rect x="180" y="1380" width="720" height="80" rx="40" fill="#7c3aed"/>
+  <text x="540" y="1435" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="32" font-weight="bold">Experience Audio Bible</text>
+  
+  <!-- App Info -->
+  <text x="540" y="1520" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="20">Free Download • No Ads • Offline Ready</text>
+  
+  <!-- Bottom Section -->
+  <rect x="290" y="1580" width="500" height="60" rx="30" fill="#000000" opacity="0.8"/>
+  <text x="540" y="1620" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="600">Download Odiya Bible App</text>
+  
+  <!-- Decorative Bottom Wave -->
+  <path d="M 60 1720 Q 270 1700 540 1720 T 1020 1720 L 1020 1770 L 60 1770 Z" fill="#7c3aed" opacity="0.1"/>
+</svg>

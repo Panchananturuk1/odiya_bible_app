@@ -162,10 +162,8 @@ class AudioStreamingProvider with ChangeNotifier {
       // Stop current playbook
       await stop();
       
-      // Convert book ID to proper book abbreviation for API calls
-      final bookIdInt = int.tryParse(bookId) ?? 1;
-      final bookAbbreviation = JsonBibleService.getBookAbbreviationById(bookIdInt);
-      debugPrint('Converting book ID $bookId to abbreviation: $bookAbbreviation');
+      // Do NOT convert to abbreviation here; the service will resolve numeric IDs to English names and USX codes
+      debugPrint('Loading chapter audio for book input "$bookId" (will normalize in service)');
       
       // Update current chapter info
       _currentBookId = bookId;
@@ -174,10 +172,9 @@ class AudioStreamingProvider with ChangeNotifier {
       _currentVerse = null;
       
       // Try to load audio using the AudioStreamingService (which has fallback logic)
-        try {
-          // The AudioStreamingService will try Bible Brain API first, then fallback to TTS
-          // Use the book abbreviation instead of the numeric book ID
-          await _audioService.loadChapterAudio(bookAbbreviation, chapter.toString(), mode: AudioPlaybackMode.streaming, verses: verses);
+      try {
+        // The AudioStreamingService will try Bible Brain API first, then fallback to TTS
+        await _audioService.loadChapterAudio(bookId, chapter.toString(), mode: AudioPlaybackMode.streaming, verses: verses);
         
         // Capture the resolved audio URL from the service so UI knows audio is available
         _currentAudioUrl = _audioService.currentAudioUrl;
@@ -365,30 +362,10 @@ class AudioStreamingProvider with ChangeNotifier {
     notifyListeners();
     
     try {
-      // Get audio URL first
-      final bibleId = _apiService.defaultBibleId;
-      final audioUrl = await _apiService.getChapterAudioUrl(bibleId, bookId, chapter.toString());
-      
-      if (audioUrl == null) {
-        debugPrint('No audio URL available for download');
-        return false;
-      }
-      
-      // Download and cache the audio
-      final cachedPath = await _apiService.downloadAndCacheAudio(
-        audioUrl,
-        bookId,
-        chapter.toString(),
-        onProgress: (received, total) {
-          if (total > 0) {
-            _downloadProgress = received / total;
-            notifyListeners();
-          }
-        },
-      );
-      
-      if (cachedPath != null) {
-        debugPrint('Chapter $bookId:$chapter downloaded successfully to $cachedPath');
+      // Use the service to normalize book and handle USX/URL creation and caching consistently
+      final success = await _audioService.downloadChapterForOffline(bookId, chapter.toString());
+      if (success) {
+        debugPrint('Chapter $bookId:$chapter downloaded successfully');
         return true;
       } else {
         debugPrint('Failed to download chapter $bookId:$chapter');
@@ -409,7 +386,8 @@ class AudioStreamingProvider with ChangeNotifier {
     if (kIsWeb || !_apiService.isInitialized) return false;
     
     try {
-      return await _apiService.isAudioCached(bookId, chapter.toString());
+      // Route through service so numeric IDs are converted to English book names correctly
+      return await _audioService.isChapterAvailableOffline(bookId, chapter.toString());
     } catch (e) {
       debugPrint('Error checking if chapter is downloaded: $e');
       return false;
@@ -421,7 +399,11 @@ class AudioStreamingProvider with ChangeNotifier {
     if (kIsWeb || !_apiService.isInitialized) return false;
     
     try {
-      final cachedPath = await _apiService.getCachedAudioPath(bookId, chapter);
+      // Normalize bookId to English book name for cache filename consistency
+      final normalizedBookName = RegExp(r'^\d+$').hasMatch(bookId)
+          ? JsonBibleService.getBookNameById(int.parse(bookId))
+          : bookId;
+      final cachedPath = await _apiService.getCachedAudioPath(normalizedBookName, chapter);
       if (cachedPath != null) {
         await _audioService.loadChapterAudio(bookId, chapter, mode: AudioPlaybackMode.offline);
         debugPrint('Loaded cached audio from: $cachedPath');
@@ -485,7 +467,11 @@ class AudioStreamingProvider with ChangeNotifier {
     if (kIsWeb || !_apiService.isInitialized) return false;
     
     try {
-      return await _apiService.clearCachedAudio(bookId, chapter);
+      // Normalize to English name before clearing specific cached file
+      final normalizedBookName = RegExp(r'^\d+$').hasMatch(bookId)
+          ? JsonBibleService.getBookNameById(int.parse(bookId))
+          : bookId;
+      return await _apiService.clearCachedAudio(normalizedBookName, chapter);
     } catch (e) {
       debugPrint('Error clearing cached audio: $e');
       return false;

@@ -278,13 +278,7 @@ class JsonBibleService {
     // Check if the index is valid
     if (index >= 0 && index < allBooks.length) {
       String englishName = allBooks[index];
-      String? odiyaName = _bookOdiyaNames[englishName];
-      
-      // Return Odiya name with English in brackets if available
-      if (odiyaName != null) {
-        return '$odiyaName ($englishName)';
-      }
-      
+      // Always return English name for API and USX mappings
       return englishName;
     }
     

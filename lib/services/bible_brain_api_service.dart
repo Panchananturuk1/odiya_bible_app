@@ -203,14 +203,15 @@ class BibleBrainApiService {
   // Check if service is initialized
   bool get isInitialized => _isInitialized;
   
-  // Get the appropriate FilesetId for audio based on Bible ID    
+  // Get the appropriate FilesetId for audio based on Bible ID
   String _getAudioFilesetId(String bibleId) {
-    // Prefer DPI to keep the same voice across OT and NT; fall back to WTC if needed
+    // For now, use the predefined Odia FilesetIds
+    // In a more complete implementation, this could be dynamic based on available filesets
     if (bibleId == 'ORYWTC' || bibleId.startsWith('ORY')) {
-      return _odiaCompleteAudioFilesetId; // Prefer NT audio from DPI version to match OT voice
+      return _odiaAudioFilesetId; // New Testament audio
     }
-    // Fallback to DPI NT audio FilesetId
-    return _odiaCompleteAudioFilesetId;
+    // Fallback to New Testament audio FilesetId
+    return _odiaAudioFilesetId;
   }
 
   // Generic retry wrapper for API calls
@@ -377,7 +378,7 @@ class BibleBrainApiService {
     // }
 
         for (final filesetId in candidates) {
-          // Choose variants (prefer opus16 first on web to avoid HLS; prefer MP3 first on other platforms)
+          // Choose variants (prefer opus16/WebM on web for better compatibility; include MP3 off-web)
           final List<String> variants = kIsWeb
               ? <String>['${filesetId}-opus16', filesetId]
               : <String>[filesetId, '${filesetId}-opus16'];

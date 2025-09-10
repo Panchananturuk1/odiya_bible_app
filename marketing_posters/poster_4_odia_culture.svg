@@ -1,0 +1,124 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#ea580c;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#d97706;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b45309;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.98" />
+      <stop offset="100%" style="stop-color:#fefbf3;stop-opacity:0.95" />
+    </linearGradient>
+    <radialGradient id="sunGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.4" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="url(#bgGradient)"/>
+  
+  <!-- Traditional Pattern Elements -->
+  <g opacity="0.1">
+    <!-- Decorative Border Pattern -->
+    <path d="M 50 100 L 150 100 L 100 150 Z" fill="#ffffff"/>
+    <path d="M 930 100 L 1030 100 L 980 150 Z" fill="#ffffff"/>
+    <path d="M 50 1820 L 150 1820 L 100 1770 Z" fill="#ffffff"/>
+    <path d="M 930 1820 L 1030 1820 L 980 1770 Z" fill="#ffffff"/>
+    
+    <!-- Traditional Motifs -->
+    <circle cx="200" cy="300" r="40" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <circle cx="200" cy="300" r="20" fill="#ffffff"/>
+    <circle cx="880" cy="500" r="40" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <circle cx="880" cy="500" r="20" fill="#ffffff"/>
+  </g>
+  
+  <!-- Sun/Light Element -->
+  <circle cx="540" cy="200" r="100" fill="url(#sunGradient)"/>
+  
+  <!-- Main Content Card -->
+  <rect x="60" y="280" width="960" height="1520" rx="30" fill="url(#cardGradient)" stroke="#ffffff" stroke-width="2"/>
+  
+  <!-- Header with Odia Script -->
+  <text x="540" y="380" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-size="48" font-weight="bold">ଓଡ଼ିଆ ବାଇବଲ</text>
+  <text x="540" y="430" text-anchor="middle" fill="#ea580c" font-family="Arial, sans-serif" font-size="32">Odiya Bible App</text>
+  
+  <!-- Cultural Message -->
+  <text x="540" y="500" text-anchor="middle" fill="#b45309" font-family="Arial, sans-serif" font-size="28" font-weight="600">ଆପଣଙ୍କ ମାତୃଭାଷାରେ ପବିତ୍ର ଶାସ୍ତ୍ର</text>
+  <text x="540" y="540" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="20">Scripture in Your Mother Tongue</text>
+  
+  <!-- Cultural Features -->
+  <g transform="translate(120, 600)">
+    <!-- Odia Script -->
+    <rect x="0" y="0" width="840" height="100" rx="15" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <text x="50" y="35" fill="#dc2626" font-family="Arial, sans-serif" font-size="32" font-weight="bold">ଓ</text>
+    <text x="100" y="30" fill="#dc2626" font-family="Arial, sans-serif" font-size="24" font-weight="600">Beautiful Odia Typography</text>
+    <text x="100" y="55" fill="#92400e" font-family="Arial, sans-serif" font-size="18">Authentic script rendering for natural reading</text>
+    <text x="100" y="80" fill="#92400e" font-family="Arial, sans-serif" font-size="18">Optimized for Odia language characteristics</text>
+    
+    <!-- Cultural Connection -->
+    <rect x="0" y="130" width="840" height="100" rx="15" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <circle cx="50" cy="180" r="25" fill="#dc2626"/>
+    <text x="42" y="187" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="bold">♥</text>
+    <text x="100" y="170" fill="#dc2626" font-family="Arial, sans-serif" font-size="24" font-weight="600">Made for Odia Community</text>
+    <text x="100" y="195" fill="#92400e" font-family="Arial, sans-serif" font-size="18">Designed with deep understanding of Odia culture</text>
+    <text x="100" y="220" fill="#92400e" font-family="Arial, sans-serif" font-size="18">Serving Odia Christians worldwide</text>
+    
+    <!-- Traditional Values -->
+    <rect x="0" y="260" width="840" height="100" rx="15" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <polygon points="35,285 35,315 50,300 65,315 65,285" fill="#dc2626"/>
+    <text x="100" y="300" fill="#dc2626" font-family="Arial, sans-serif" font-size="24" font-weight="600">Preserving Sacred Tradition</text>
+    <text x="100" y="325" fill="#92400e" font-family="Arial, sans-serif" font-size="18">Bringing ancient wisdom to modern technology</text>
+    <text x="100" y="350" fill="#92400e" font-family="Arial, sans-serif" font-size="18">Honoring the heritage of faith</text>
+  </g>
+  
+  <!-- Odia Verse Display -->
+  <rect x="150" y="1000" width="780" height="200" rx="20" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+  <text x="540" y="1040" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-size="20" font-weight="600">Sample Verse in Odia:</text>
+  
+  <!-- John 3:16 in Odia (simplified representation) -->
+  <text x="540" y="1080" text-anchor="middle" fill="#b45309" font-family="Arial, sans-serif" font-size="24" font-weight="500">କାରଣ ପରମେଶ୍ୱର ଜଗତକୁ ଏତେ ପ୍ରେମ କଲେ ଯେ,</text>
+  <text x="540" y="1110" text-anchor="middle" fill="#b45309" font-family="Arial, sans-serif" font-size="24" font-weight="500">ସେ ଆପଣଙ୍କର ଏକମାତ୍ର ପୁତ୍ରଙ୍କୁ ଦାନ କଲେ...</text>
+  
+  <text x="540" y="1150" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="18">"For God so loved the world that he gave his one and only Son..."</text>
+  <text x="540" y="1180" text-anchor="middle" fill="#78716c" font-family="Arial, sans-serif" font-size="16">John 3:16</text>
+  
+  <!-- Community Features -->
+  <g transform="translate(200, 1250)">
+    <text x="340" y="0" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-size="28" font-weight="600">Built for Our Community</text>
+    
+    <!-- Feature Icons -->
+    <circle cx="100" cy="50" r="30" fill="#dc2626" opacity="0.1"/>
+    <text x="100" y="58" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-size="20" font-weight="bold">🏠</text>
+    <text x="100" y="85" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="16" font-weight="600">Family Friendly</text>
+    
+    <circle cx="340" cy="50" r="30" fill="#dc2626" opacity="0.1"/>
+    <text x="340" y="58" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-size="20" font-weight="bold">🌍</text>
+    <text x="340" y="85" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="16" font-weight="600">Global Reach</text>
+    
+    <circle cx="580" cy="50" r="30" fill="#dc2626" opacity="0.1"/>
+    <text x="580" y="58" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-size="20" font-weight="bold">🙏</text>
+    <text x="580" y="85" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="16" font-weight="600">Spiritual Growth</text>
+  </g>
+  
+  <!-- Scripture Quote -->
+  <text x="540" y="1420" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-size="26" font-weight="600">"ତୁମ୍ଭର ବାକ୍ୟ ମୋ ପାଦର ପ୍ରଦୀପ"</text>
+  <text x="540" y="1450" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="20">"Your word is a lamp to my feet"</text>
+  <text x="540" y="1480" text-anchor="middle" fill="#78716c" font-family="Arial, sans-serif" font-size="18">Psalm 119:105</text>
+  
+  <!-- Call to Action -->
+  <rect x="180" y="1530" width="720" height="80" rx="40" fill="#dc2626"/>
+  <text x="540" y="1585" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="30" font-weight="bold">ଆଜି ଡାଉନଲୋଡ୍ କରନ୍ତୁ</text>
+  
+  <!-- Bottom Info -->
+  <text x="540" y="1660" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="20">Free • Offline • No Ads • Made with Love</text>
+  
+  <!-- App Store Section -->
+  <rect x="290" y="1700" width="500" height="60" rx="30" fill="#000000" opacity="0.8"/>
+  <text x="540" y="1740" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="600">Download Odiya Bible</text>
+  
+  <!-- Traditional Border Bottom -->
+  <rect x="60" y="1780" width="960" height="20" fill="#dc2626" opacity="0.2" rx="10"/>
+</svg>

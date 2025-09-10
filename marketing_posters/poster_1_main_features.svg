@@ -1,0 +1,92 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="200" cy="300" r="100" fill="#ffffff" opacity="0.1"/>
+  <circle cx="880" cy="500" r="80" fill="#ffffff" opacity="0.08"/>
+  <circle cx="150" cy="1400" r="120" fill="#ffffff" opacity="0.06"/>
+  
+  <!-- Main Content Card -->
+  <rect x="60" y="200" width="960" height="1520" rx="30" fill="url(#cardGradient)" stroke="#ffffff" stroke-width="2" opacity="0.95"/>
+  
+  <!-- App Icon Placeholder -->
+  <circle cx="540" cy="350" r="80" fill="#1e40af" stroke="#ffffff" stroke-width="4"/>
+  <text x="540" y="365" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="48" font-weight="bold">ଓ</text>
+  
+  <!-- App Title -->
+  <text x="540" y="480" text-anchor="middle" fill="#1e40af" font-family="Arial, sans-serif" font-size="48" font-weight="bold">Odiya Bible App</text>
+  <text x="540" y="520" text-anchor="middle" fill="#64748b" font-family="Arial, sans-serif" font-size="24">ଓଡ଼ିଆ ବାଇବଲ ଆପ୍</text>
+  
+  <!-- Main Tagline -->
+  <text x="540" y="600" text-anchor="middle" fill="#1e40af" font-family="Arial, sans-serif" font-size="32" font-weight="600">Discover Scripture in Odia</text>
+  <text x="540" y="640" text-anchor="middle" fill="#64748b" font-family="Arial, sans-serif" font-size="20">Complete Bible • Audio • Search • Notes</text>
+  
+  <!-- Feature Icons and Text -->
+  <!-- Bible Icon -->
+  <rect x="150" y="720" width="60" height="40" rx="5" fill="#1e40af"/>
+  <rect x="155" y="725" width="50" height="30" rx="3" fill="#ffffff"/>
+  <line x1="165" y1="735" x2="195" y2="735" stroke="#1e40af" stroke-width="2"/>
+  <line x1="165" y1="745" x2="190" y2="745" stroke="#1e40af" stroke-width="2"/>
+  <text x="240" y="745" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">Complete Odia Bible</text>
+  <text x="240" y="770" fill="#64748b" font-family="Arial, sans-serif" font-size="18">All 66 books with beautiful typography</text>
+  
+  <!-- Audio Icon -->
+  <circle cx="180" cy="840" r="30" fill="#1e40af"/>
+  <polygon points="170,830 170,850 185,840" fill="#ffffff"/>
+  <circle cx="195" cy="840" r="3" fill="#ffffff"/>
+  <circle cx="205" cy="840" r="5" fill="#ffffff" opacity="0.7"/>
+  <text x="240" y="850" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">Audio Experience</text>
+  <text x="240" y="875" fill="#64748b" font-family="Arial, sans-serif" font-size="18">High-quality narration & TTS</text>
+  
+  <!-- Search Icon -->
+  <circle cx="180" cy="945" r="20" fill="none" stroke="#1e40af" stroke-width="4"/>
+  <line x1="195" y1="960" x2="210" y2="975" stroke="#1e40af" stroke-width="4"/>
+  <text x="240" y="955" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">Smart Search</text>
+  <text x="240" y="980" fill="#64748b" font-family="Arial, sans-serif" font-size="18">Find verses instantly</text>
+  
+  <!-- Bookmark Icon -->
+  <polygon points="165,1020 165,1080 180,1065 195,1080 195,1020" fill="#1e40af"/>
+  <text x="240" y="1055" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">Personal Study</text>
+  <text x="240" y="1080" fill="#64748b" font-family="Arial, sans-serif" font-size="18">Bookmarks, notes & highlights</text>
+  
+  <!-- Settings Icon -->
+  <circle cx="180" cy="1150" r="25" fill="none" stroke="#1e40af" stroke-width="4"/>
+  <circle cx="180" cy="1150" r="8" fill="#1e40af"/>
+  <text x="240" y="1160" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">Customizable</text>
+  <text x="240" y="1185" fill="#64748b" font-family="Arial, sans-serif" font-size="18">Dark mode, fonts & more</text>
+  
+  <!-- Privacy Icon -->
+  <rect x="165" y="1220" width="30" height="35" rx="5" fill="none" stroke="#1e40af" stroke-width="4"/>
+  <circle cx="180" cy="1230" r="5" fill="#1e40af"/>
+  <text x="240" y="1245" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">Privacy First</text>
+  <text x="240" y="1270" fill="#64748b" font-family="Arial, sans-serif" font-size="18">Offline access, no data collection</text>
+  
+  <!-- Call to Action -->
+  <rect x="200" y="1350" width="680" height="80" rx="40" fill="#1e40af"/>
+  <text x="540" y="1405" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="32" font-weight="bold">Download Free Today</text>
+  
+  <!-- Platform Icons -->
+  <text x="540" y="1480" text-anchor="middle" fill="#64748b" font-family="Arial, sans-serif" font-size="20">Available on Android • iOS • Web</text>
+  
+  <!-- Bottom Tagline -->
+  <text x="540" y="1580" text-anchor="middle" fill="#1e40af" font-family="Arial, sans-serif" font-size="24" font-weight="600">"Thy word is a lamp unto my feet"</text>
+  <text x="540" y="1610" text-anchor="middle" fill="#64748b" font-family="Arial, sans-serif" font-size="18">Psalm 119:105</text>
+  
+  <!-- App Store Badge Placeholder -->
+  <rect x="340" y="1650" width="400" height="60" rx="10" fill="#000000" opacity="0.8"/>
+  <text x="540" y="1690" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="600">Get it on Google Play</text>
+</svg>

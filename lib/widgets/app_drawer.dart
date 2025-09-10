@@ -30,13 +30,13 @@ class AppDrawer extends StatelessWidget {
               // Drawer Header
               DrawerHeader(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                    ],
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/side-menu.png'),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.3),
+                      BlendMode.darken,
+                    ),
                   ),
                 ),
                 child: SingleChildScrollView(
@@ -45,11 +45,6 @@ class AppDrawer extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(
-                            Icons.menu_book,
-                            size: 36,
-                            color: Colors.white,
-                          ),
                           const Spacer(),
                           // Profile/Login action
                           InkWell(

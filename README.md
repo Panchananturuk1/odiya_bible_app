@@ -10,7 +10,7 @@ Explore the live application: [Odiya Bible App](https://odiya-bible-app.web.app/
 
 <img src="https://images-panchanan.s3.ap-south-1.amazonaws.com/Bible/1.Home_Screen.jpg" alt="Bible App Preview" width="300">
 
-<img src="https://drive.google.com/file/d/1Y5IJENJJQviQhmLH_s9TyhRy7gcFGyx9/view?usp=drive_link" alt="Bible App Preview" width="300">
+<img src="https://drive.google.com/uc?export=view&id=1Y5IJENJJQviQhmLH_s9TyhRy7gcFGyx9" alt="Bible App Preview" width="300">
 
 
 
